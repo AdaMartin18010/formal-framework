@@ -1,10 +1,12 @@
 # 回滚建模DSL草案
 
 ## 1. 设计目标
+
 - 用统一DSL描述回滚触发、操作、恢复策略、监控等要素。
 - 支持自动生成K8s Rollback、Helm Rollback、GitOps等配置。
 
 ## 2. 基本语法结构
+
 ```dsl
 rollback auto_rollback {
   trigger: "deployment_failed"
@@ -33,6 +35,7 @@ rollback data_restore {
 ```
 
 ## 3. 关键元素
+
 - rollback：回滚声明
 - trigger/action/monitor/stages/snapshot：触发、操作、监控、阶段、快照
 
@@ -50,9 +53,11 @@ rollback data_restore {
 | snapshot: "db_backup_20240601"                | 快照点         |
 
 ## 5. 与主流标准的映射
+
 - 可自动转换为K8s Rollback、Helm Rollback、GitOps等配置
 - 支持与主流运维、监控、审计工具集成
 
 ## 6. 递归扩展建议
+
 - 支持多级回滚、补偿机制、自动审计
-- 支持回滚依赖、数据一致性校验 
+- 支持回滚依赖、数据一致性校验
