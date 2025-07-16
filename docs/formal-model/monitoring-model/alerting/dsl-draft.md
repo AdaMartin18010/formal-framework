@@ -1,6 +1,7 @@
 # 告警模型DSL草案
 
 ## 1. 设计目标
+
 - 用声明式语法描述告警规则、分级、抑制、通知、闭环等流程
 - 支持多源多级告警统一建模
 - 便于自动生成告警与通知配置
@@ -27,6 +28,7 @@ alert_notify "OpsTeam" {
 ```
 
 ## 3. 关键元素
+
 - alert_rule：告警规则定义
 - alert_suppression：告警抑制规则
 - alert_notify：告警通知配置
@@ -69,6 +71,7 @@ alert_recovery "AutoClean" {
 ---
 
 ## 6. 递归扩展建议
+
 - 支持多级告警聚合与降噪
 - 告警与日志、指标、追踪的统一DSL
 - 告警闭环与AI自愈的集成
@@ -115,6 +118,7 @@ mindmap
 若 alert_rule、alert_suppression、alert_notify、alert_recovery 语法均具备完备性，则任意告警检测与响应流程均可通过DSL自动生成配置与推理链路。
 
 **证明思路：**  
+
 - 每个环节均可形式化为DSL声明；
 - DSL可自动转化为告警/通知/自愈配置；
-- 组合DSL可推导出完整的告警处理链路。 
+- 组合DSL可推导出完整的告警处理链路。
