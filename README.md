@@ -2,134 +2,163 @@
 
 ## 项目概述
 
-本项目是研究推理和探索形式化模型方案: 从形式化的模型出发,能否尽可能的生成软件工程项目的绝大部分设计和实现.
+本项目致力于研究推理和探索形式化模型方案：以形式化模型为基础，自动化生成软件工程项目的绝大部分设计与实现。
 
 ### 核心研究方向
 
-1. 本项目是研究推理和探索形式化模型方案: 从形式化的模型出发,能否尽可能的生成软件工程项目的绝大部分设计和实现.
-2. 从定义和描述 软件之间的交互 视角 --- openapi，asyncapi,grpc,qgraph等 能否 结合AI 创造自动化设计和实现.
-3. 从定义和刻画 软件的数据模型 视角 --- postgres MySQL sqlite3 等 能否结合AI 创造自动化设计和实现.
-4. 从定义和刻画 软件的功能模型 视角 --- 结合编程语言的开源成熟的框架等 能否结合AI 创造自动化设计和实现.
-5. 从定义和描述 软件的运行环境 视角 --- docker compose kubernetes 等 能否结合AI 创造自动化设计和实现.
-6. 从定义和描述 软件的部署方式 视角 --- helm chart kustomize 等 能否结合AI 创造自动化设计和实现.
-7. 从定义和描述 软件的监控方式 视角 --- prometheus grafana 等 能否结合AI 创造自动化设计和实现.
-8. 从定义和描述 软件的测试方式 视角 --- pytest unittest behave etc. 能否结合AI 创造自动化设计和实现.
-9. 从定义和描述 软件的持续集成方式 视角 --- Jenkins Travis CI GitLab CI/CD etc. 能否结合AI 创造自动化设计和实现.
-10. 从定义和描述 软件工程分布式设计模式模型 视角 --- 容错和恢复 自我感知和调整 组合和控制 等能否结合AI 创造自动化设计和实现.
+1. 以形式化模型为核心，探索自动化生成软件工程设计与实现的可行性。
+2. 交互模型（API、协议、消息、契约等）——结合AI，自动化设计与实现。
+3. 数据模型（数据库、查询、迁移、索引等）——结合AI，自动化设计与实现。
+4. 功能模型（业务逻辑、状态机、工作流、规则引擎等）——结合AI，自动化设计与实现。
+5. 运行时模型（容器、编排、网络、存储等）——结合AI，自动化设计与实现。
+6. 部署模型（基础设施、配置、版本、回滚等）——结合AI，自动化设计与实现。
+7. 监控模型（指标、告警、日志、追踪等）——结合AI，自动化设计与实现。
+8. **控制调度模型（Controlling & Scheduling Model）**——任务调度、实时控制、事件驱动、状态机等，尤其在IOT、工业互联网、嵌入式等非互联网架构中是核心必备能力，结合AI实现自动化建模与运行时自适应。
+9. 测试模型（测试用例、断言、覆盖率、性能等）——结合AI，自动化设计与实现。
+10. CI/CD模型（流水线、阶段、触发、质量门禁等）——结合AI，自动化设计与实现。
+11. 分布式模式模型（容错、一致性、负载均衡、服务发现等）——结合AI，自动化设计与实现。
 
-等等
+### 行业架构模型扩展
 
-来从架构设计视角，功能视角，测试视角，部署视角，监控视角，持续集成视角，分布式设计模式模型视角，等等
-能结合AI 持续构建创造基础软件工程组件架构模型，探索持续构建的可能性。
+- **IOT行业技术架构模型**：强调设备接入、边缘计算、实时控制、分布式调度、数据采集与分析等，控制调度与运行时自适应为核心。
+- **Web3行业技术架构模型**：强调去中心化、智能合约、链上链下协同、分布式一致性、可验证计算等。
+- **智能家居行业技术架构模型**：强调多协议设备互联、场景联动、实时控制、数据安全与隐私、用户自定义自动化等。
+- **工业互联网/嵌入式行业模型**：强调高可靠性、实时性、工业协议适配、分层控制、边缘与云协同等。
+- **其它行业**：可根据实际需求扩展，如金融、医疗、能源等。
 
-## 技术栈选择
+### 目录结构建议（综合行业与通用模型）
 
-### 后端服务
+```text
+formal-framework/
+  README.md
+  docs/
+    formal-model/
+      interaction-model/
+      data-model/
+      functional-model/
+      runtime-model/
+      deployment-model/
+      monitoring-model/
+      controlling-model/           # 控制调度模型，IOT/工业/嵌入式等行业核心
+      testing-model/
+      cicd-model/
+      distributed-pattern-model/
+    industry-model/
+      iot-architecture/            # 代表项目：ThingsBoard, KubeEdge, EMQX, EdgeX Foundry
+        device-access/
+        edge-computing/
+        real-time-control/
+        distributed-scheduling/
+        data-collection/
+      web3-architecture/           # 代表项目：Ethereum, Geth, MetaMask, Chainlink, IPFS
+        smart-contract/
+        consensus/
+        onchain-offchain/
+      smart-home-architecture/     # 代表项目：Home Assistant, OpenHAB, Domoticz
+        device-interoperability/
+        scenario-automation/
+        privacy-security/
+      industrial-internet-architecture/ # 代表项目：OPC UA, SCADA, Kepware, EdgeX Foundry
+        protocol-adaptation/
+        layered-control/
+        edge-cloud-collaboration/
+      ai-infrastructure-architecture/   # 代表项目：OpenAI, MLflow, TensorFlow Serving, Feast, Airflow
+        model-serving/
+        feature-store/
+        workflow-orchestration/
+      cloud-native-architecture/        # 代表项目：Kubernetes, Istio, Prometheus, Knative, ArgoCD
+        container-management/
+        service-mesh/
+        observability/
+        serverless/
+        gitops/
+      finance-architecture/             # 代表项目：Mambu, Fineract, Hyperledger, Quorum, Open Banking
+        core-banking/
+        payment-gateway/
+        risk-management/
+        trading-system/
+        blockchain-finance/
+        regulatory-compliance/
+        data-analytics/
+      accounting-model/                 # 代表项目：Odoo, SAP, QuickBooks, Xero, LedgerSMB
+        theory.md
+        dsl-draft.md
+      reconciliation-model/             # 代表项目：ReconArt, BlackLine, AutoRek
+        theory.md
+        dsl-draft.md
+      clearing-model/                   # 代表项目：CLS, DTCC, Euroclear, Clearstream
+        theory.md
+        dsl-draft.md
+      settlement-model/                 # 代表项目：SWIFT, Euroclear, Clearstream, Ripple
+        theory.md
+        dsl-draft.md
+      payment-model/                    # 代表项目：Stripe, Adyen, PayPal, Square, Alipay, WeChat Pay
+        theory.md
+        dsl-draft.md
+      oa-office-model/                  # 代表项目：OnlyOffice, Nextcloud, EGroupware, Zimbra, OpenProject
+        document-management/
+        workflow-automation/
+        calendar-collaboration/
+        communication/
+        theory.md
+        dsl-draft.md
+      enterprise-management-model/      # 代表项目：ERPNext, Odoo, Dolibarr, Tryton, Metasfresh
+        hr-management/
+        asset-management/
+        procurement/
+        crm/
+        project-management/
+        theory.md
+        dsl-draft.md
+      enterprise-data-analytics-model/  # 代表项目：Metabase, Superset, Apache Druid, Redash, PowerBI
+        bi-reporting/
+        data-warehouse/
+        data-lake/
+        real-time-analytics/
+        data-visualization/
+        theory.md
+        dsl-draft.md
+      logistics-model/                  # 代表项目：OpenTMS, OpenLMIS
+        theory.md
+        dsl-draft.md
+      order-model/                      # 代表项目：Odoo, ERPNext
+        theory.md
+        dsl-draft.md
+      business-model/                   # 代表项目：Magento, Shopware
+        theory.md
+        dsl-draft.md
+      sales-model/                      # 代表项目：Salesforce, SuiteCRM
+        theory.md
+        dsl-draft.md
+      # 可持续扩展更多行业，每个子目录建议包含 theory.md 和 dsl-draft.md
+```
 
-- **主选语言**: Rust, Golang
-- **原因**: 高性能、内存安全、并发能力强，适合构建微服务和分布式系统
+- 每个模型/行业子目录下建议包含：
+  - theory.md：理论与可行性探讨
+  - dsl-draft.md：领域专用语言（DSL）草案
 
-### 前端展现
+### 工程实践性原则
 
-- **主选技术**: WebAssembly + React/Vue
-- **原因**: 跨平台、高性能、接近原生性能，适合复杂的前端交互
+#### 确定性原则
 
-## 确定性模型理论探索主题
+1. **模型确定性**：所有模型都有明确的语法和语义定义
+2. **生成确定性**：相同输入产生相同输出
+3. **验证确定性**：模型验证结果可重现
+4. **测试确定性**：测试结果稳定可预期
 
-### 1. 形式化模型理论 (Formal Model Theory)
+#### AI构建确定性
 
-- **模型定义语言**: 设计DSL用于描述软件系统的各个方面
-- **模型验证**: 确保模型的一致性和完整性
-- **模型转换**: 在不同抽象层次间转换模型
-- **模型组合**: 将多个子模型组合成完整系统
+1. **提示工程**：标准化的AI提示模板
+2. **上下文管理**：明确的上下文边界和传递
+3. **结果验证**：AI生成结果的自动验证
+4. **迭代优化**：基于反馈的持续改进
 
-### 2. 交互模型理论 (Interaction Model Theory)
+#### 理论确定性
 
-- **API规范模型**: OpenAPI, AsyncAPI, gRPC的形式化定义
-- **协议模型**: HTTP, WebSocket, gRPC等协议的形式化描述
-- **消息模型**: 请求/响应、事件、流等消息模式
-- **契约模型**: 服务间契约的形式化定义
-
-### 3. 数据模型理论 (Data Model Theory)
-
-- **实体关系模型**: 数据库表结构的形式化定义
-- **查询模型**: SQL查询的形式化描述
-- **迁移模型**: 数据库版本管理的形式化
-- **索引模型**: 性能优化的形式化策略
-
-### 4. 功能模型理论 (Functional Model Theory)
-
-- **业务逻辑模型**: 业务流程的形式化描述
-- **状态机模型**: 系统状态转换的形式化
-- **工作流模型**: 复杂业务流程的形式化
-- **规则引擎模型**: 业务规则的形式化定义
-
-### 5. 运行时模型理论 (Runtime Model Theory)
-
-- **容器模型**: Docker容器的形式化定义
-- **编排模型**: Kubernetes资源的形式化描述
-- **网络模型**: 服务网格的形式化定义
-- **存储模型**: 持久化存储的形式化描述
-
-### 6. 部署模型理论 (Deployment Model Theory)
-
-- **基础设施模型**: 云资源的形式化定义
-- **配置模型**: 环境配置的形式化描述
-- **版本模型**: 部署版本管理的形式化
-- **回滚模型**: 故障恢复的形式化策略
-
-### 7. 监控模型理论 (Monitoring Model Theory)
-
-- **指标模型**: 监控指标的形式化定义
-- **告警模型**: 告警规则的形式化描述
-- **日志模型**: 日志格式的形式化定义
-- **追踪模型**: 分布式追踪的形式化
-
-### 8. 测试模型理论 (Testing Model Theory)
-
-- **测试用例模型**: 测试场景的形式化定义
-- **断言模型**: 测试验证的形式化描述
-- **覆盖率模型**: 测试覆盖的形式化度量
-- **性能模型**: 性能测试的形式化定义
-
-### 9. CI/CD模型理论 (CI/CD Model Theory)
-
-- **流水线模型**: 构建流水线的形式化定义
-- **阶段模型**: 构建阶段的形式化描述
-- **触发模型**: 构建触发的形式化规则
-- **质量门禁模型**: 质量检查的形式化定义
-
-### 10. 分布式模式模型理论 (Distributed Pattern Model Theory)
-
-- **容错模型**: 故障处理的形式化策略
-- **一致性模型**: 数据一致性的形式化定义
-- **负载均衡模型**: 流量分配的形式化策略
-- **服务发现模型**: 服务注册发现的形式化
-
-## 工程实践性原则
-
-### 确定性原则
-
-1. **模型确定性**: 所有模型都有明确的语法和语义定义
-2. **生成确定性**: 相同输入产生相同输出
-3. **验证确定性**: 模型验证结果可重现
-4. **测试确定性**: 测试结果稳定可预期
-
-### AI构建确定性
-
-1. **提示工程**: 标准化的AI提示模板
-2. **上下文管理**: 明确的上下文边界和传递
-3. **结果验证**: AI生成结果的自动验证
-4. **迭代优化**: 基于反馈的持续改进
-
-### 理论确定性
-
-1. **形式化定义**: 所有概念都有严格的数学定义
-2. **公理化系统**: 基于公理的推理系统
-3. **类型安全**: 强类型系统确保正确性
-4. **可证明性**: 关键性质的可证明性
-
-## 开发路线图
+1. **形式化定义**：所有概念都有严格的数学定义
+2. **公理化系统**：基于公理的推理系统
+3. **类型安全**：强类型系统确保正确性
+4. **可证明性**：关键性质的可证明性
 
 ## 贡献指南
 
@@ -138,3 +167,4 @@
 ## 许可证
 
 本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+
