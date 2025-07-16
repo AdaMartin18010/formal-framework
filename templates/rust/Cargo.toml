@@ -1,0 +1,136 @@
+[package]
+name = "{{project_name}}"
+version = "{{version}}"
+edition = "2021"
+authors = ["{{author}}"]
+description = "{{description}}"
+license = "MIT"
+repository = "{{repository}}"
+keywords = ["{{keywords}}"]
+categories = ["{{categories}}"]
+
+[dependencies]
+# Web框架
+actix-web = "4.4"
+actix-rt = "2.9"
+
+# 序列化/反序列化
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# 数据库
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid"] }
+redis = { version = "0.23", features = ["tokio-comp"] }
+
+# 认证
+jsonwebtoken = "9.2"
+bcrypt = "0.15"
+
+# 配置
+config = "0.14"
+dotenv = "0.15"
+
+# 日志
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# 错误处理
+anyhow = "1.0"
+thiserror = "1.0"
+
+# 验证
+validator = { version = "0.16", features = ["derive"] }
+
+# 时间处理
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1.0", features = ["v4", "serde"] }
+
+# HTTP客户端
+reqwest = { version = "0.11", features = ["json"] }
+
+# 异步运行时
+tokio = { version = "1.0", features = ["full"] }
+
+# 并发
+parking_lot = "0.12"
+
+# 工具
+rand = "0.8"
+base64 = "0.21"
+
+# 开发依赖
+[dev-dependencies]
+tokio-test = "0.4"
+mockall = "0.12"
+testcontainers = "0.15"
+
+[features]
+default = ["postgres", "redis"]
+postgres = ["sqlx/runtime-tokio-rustls", "sqlx/postgres"]
+redis = ["redis/tokio-comp"]
+mysql = ["sqlx/runtime-tokio-rustls", "sqlx/mysql"]
+sqlite = ["sqlx/runtime-tokio-rustls", "sqlx/sqlite"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true
+
+[[bin]]
+name = "{{project_name}}"
+path = "src/main.rs"
+
+[lib]
+name = "{{project_name}}_lib"
+path = "src/lib.rs"
+
+# 工作空间配置（如果有多个crate）
+[workspace]
+members = [
+    "src/core",
+    "src/api",
+    "src/models",
+    "src/services",
+]
+
+# 构建脚本
+[build-dependencies]
+cc = "1.0"
+
+# 测试配置
+[test]
+harness = true
+
+# 基准测试配置
+[[bench]]
+name = "benchmarks"
+harness = false
+
+# 示例配置
+[[example]]
+name = "basic"
+path = "examples/basic.rs"
+
+# 集成测试
+[[test]]
+name = "integration_tests"
+path = "tests/integration_tests.rs"
+
+# 文档测试
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+# 发布配置
+[package.metadata.release]
+pre-release-commit-message = "chore: release {{project_name}} {{version}}"
+post-release-commit-message = "chore: prepare for next development iteration"
+tag-name = "{{project_name}}-{{version}}"
+tag-message = "{{project_name}} {{version}}" 

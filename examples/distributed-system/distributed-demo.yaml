@@ -1,0 +1,46 @@
+# 分布式系统示例模型定义
+model:
+  name: "DistributedDemo"
+  type: "distributed-system"
+  version: "1.0.0"
+  description: "分布式系统典型模式示例"
+  interaction:
+    - type: "gRPC"
+      service: "OrderService"
+      methods:
+        - name: "CreateOrder"
+          input: "CreateOrderRequest"
+          output: "Order"
+  data:
+    entities:
+      - name: "Order"
+        fields:
+          - name: "id"
+            type: "uuid"
+            primary_key: true
+          - name: "amount"
+            type: "decimal"
+          - name: "status"
+            type: "string"
+  distributed:
+    patterns:
+      - name: "circuit_breaker"
+        configuration:
+          failure_threshold: 3
+          timeout: "30s"
+      - name: "retry_pattern"
+        configuration:
+          max_attempts: 2
+          backoff:
+            initial: "100ms"
+            multiplier: 2
+            max_delay: "2s"
+  deployment:
+    environments:
+      - name: "production"
+        replicas: 3
+  monitoring:
+    metrics:
+      - name: "order_created_total"
+        type: "counter"
+        description: "订单创建总数" 

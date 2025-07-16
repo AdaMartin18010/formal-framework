@@ -1,0 +1,36 @@
+# API网关示例模型定义
+model:
+  name: "ApiGatewayDemo"
+  type: "api-gateway"
+  version: "1.0.0"
+  description: "API网关聚合示例"
+  interaction:
+    - type: "REST"
+      base_path: "/api"
+      endpoints:
+        - path: "/users"
+          method: "GET"
+          summary: "用户服务聚合"
+          proxy:
+            target_service: "UserService"
+            path: "/users"
+        - path: "/orders"
+          method: "GET"
+          summary: "订单服务聚合"
+          proxy:
+            target_service: "OrderService"
+            path: "/orders"
+  runtime:
+    container:
+      image: "api-gateway-demo:latest"
+      ports:
+        - container_port: 8080
+  deployment:
+    environments:
+      - name: "production"
+        replicas: 1
+  monitoring:
+    metrics:
+      - name: "gateway_requests_total"
+        type: "counter"
+        description: "总请求数" 

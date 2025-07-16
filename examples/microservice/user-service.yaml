@@ -1,0 +1,1011 @@
+# 用户服务微服务模型定义
+model:
+  name: "UserService"
+  type: "microservice"
+  version: "1.0.0"
+  description: "用户管理微服务"
+  
+  # 元数据
+  metadata:
+    author: "Formal Framework Team"
+    created_at: "2024-01-01T00:00:00Z"
+    tags: ["user", "auth", "microservice"]
+    license: "MIT"
+  
+  # 交互模型 - REST API
+  interaction:
+    - type: "REST"
+      base_path: "/api/v1/users"
+      version: "1.0"
+      security:
+        - type: "JWT"
+          required: true
+      
+      endpoints:
+        - path: "/"
+          method: "GET"
+          summary: "获取用户列表"
+          description: "分页获取用户列表"
+          parameters:
+            - name: "page"
+              type: "integer"
+              default: 1
+              description: "页码"
+            - name: "size"
+              type: "integer"
+              default: 20
+              description: "每页大小"
+          responses:
+            - code: 200
+              description: "成功"
+              schema: "UserList"
+            - code: 400
+              description: "参数错误"
+              schema: "ErrorResponse"
+            - code: 401
+              description: "未授权"
+              schema: "ErrorResponse"
+        
+        - path: "/{id}"
+          method: "GET"
+          summary: "获取用户详情"
+          description: "根据用户ID获取用户详情"
+          parameters:
+            - name: "id"
+              type: "string"
+              format: "uuid"
+              required: true
+              description: "用户ID"
+          responses:
+            - code: 200
+              description: "成功"
+              schema: "User"
+            - code: 404
+              description: "用户不存在"
+              schema: "ErrorResponse"
+        
+        - path: "/"
+          method: "POST"
+          summary: "创建用户"
+          description: "创建新用户"
+          request_body:
+            required: true
+            schema: "CreateUserRequest"
+          responses:
+            - code: 201
+              description: "创建成功"
+              schema: "User"
+            - code: 400
+              description: "参数错误"
+              schema: "ErrorResponse"
+        
+        - path: "/{id}"
+          method: "PUT"
+          summary: "更新用户"
+          description: "更新用户信息"
+          parameters:
+            - name: "id"
+              type: "string"
+              format: "uuid"
+              required: true
+              description: "用户ID"
+          request_body:
+            required: true
+            schema: "UpdateUserRequest"
+          responses:
+            - code: 200
+              description: "更新成功"
+              schema: "User"
+            - code: 404
+              description: "用户不存在"
+              schema: "ErrorResponse"
+        
+        - path: "/{id}"
+          method: "DELETE"
+          summary: "删除用户"
+          description: "删除用户"
+          parameters:
+            - name: "id"
+              type: "string"
+              format: "uuid"
+              required: true
+              description: "用户ID"
+          responses:
+            - code: 204
+              description: "删除成功"
+            - code: 404
+              description: "用户不存在"
+              schema: "ErrorResponse"
+  
+  # 数据模型
+  data:
+    database:
+      type: "postgresql"
+      name: "user_service_db"
+      version: "13"
+      
+    entities:
+      - name: "User"
+        table: "users"
+        description: "用户实体"
+        fields:
+          - name: "id"
+            type: "uuid"
+            primary_key: true
+            description: "用户ID"
+            constraints:
+              - not_null: true
+              - unique: true
+          
+          - name: "username"
+            type: "varchar"
+            length: 50
+            description: "用户名"
+            constraints:
+              - not_null: true
+              - unique: true
+          
+          - name: "email"
+            type: "varchar"
+            length: 100
+            description: "邮箱"
+            constraints:
+              - not_null: true
+              - unique: true
+              - pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+          
+          - name: "password_hash"
+            type: "varchar"
+            length: 255
+            description: "密码哈希"
+            constraints:
+              - not_null: true
+          
+          - name: "first_name"
+            type: "varchar"
+            length: 50
+            description: "名"
+          
+          - name: "last_name"
+            type: "varchar"
+            length: 50
+            description: "姓"
+          
+          - name: "phone"
+            type: "varchar"
+            length: 20
+            description: "电话号码"
+          
+          - name: "status"
+            type: "enum"
+            values: ["active", "inactive", "suspended"]
+            default: "active"
+            description: "用户状态"
+          
+          - name: "created_at"
+            type: "timestamp"
+            default: "CURRENT_TIMESTAMP"
+            description: "创建时间"
+          
+          - name: "updated_at"
+            type: "timestamp"
+            default: "CURRENT_TIMESTAMP"
+            description: "更新时间"
+        
+        indexes:
+          - name: "idx_users_email"
+            fields: ["email"]
+            type: "btree"
+          
+          - name: "idx_users_username"
+            fields: ["username"]
+            type: "btree"
+          
+          - name: "idx_users_status"
+            fields: ["status"]
+            type: "btree"
+      
+      - name: "UserProfile"
+        table: "user_profiles"
+        description: "用户档案"
+        fields:
+          - name: "id"
+            type: "uuid"
+            primary_key: true
+            description: "档案ID"
+          
+          - name: "user_id"
+            type: "uuid"
+            foreign_key: "users.id"
+            description: "用户ID"
+            constraints:
+              - not_null: true
+          
+          - name: "avatar_url"
+            type: "varchar"
+            length: 255
+            description: "头像URL"
+          
+          - name: "bio"
+            type: "text"
+            description: "个人简介"
+          
+          - name: "location"
+            type: "varchar"
+            length: 100
+            description: "所在地"
+          
+          - name: "website"
+            type: "varchar"
+            length: 255
+            description: "个人网站"
+          
+          - name: "created_at"
+            type: "timestamp"
+            default: "CURRENT_TIMESTAMP"
+            description: "创建时间"
+          
+          - name: "updated_at"
+            type: "timestamp"
+            default: "CURRENT_TIMESTAMP"
+            description: "更新时间"
+    
+    schemas:
+      - name: "User"
+        type: "object"
+        properties:
+          id:
+            type: "string"
+            format: "uuid"
+            description: "用户ID"
+          username:
+            type: "string"
+            description: "用户名"
+          email:
+            type: "string"
+            format: "email"
+            description: "邮箱"
+          first_name:
+            type: "string"
+            description: "名"
+          last_name:
+            type: "string"
+            description: "姓"
+          phone:
+            type: "string"
+            description: "电话号码"
+          status:
+            type: "string"
+            enum: ["active", "inactive", "suspended"]
+            description: "用户状态"
+          created_at:
+            type: "string"
+            format: "date-time"
+            description: "创建时间"
+          updated_at:
+            type: "string"
+            format: "date-time"
+            description: "更新时间"
+        required: ["id", "username", "email", "status"]
+      
+      - name: "UserList"
+        type: "object"
+        properties:
+          data:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/User"
+            description: "用户列表"
+          pagination:
+            type: "object"
+            properties:
+              page:
+                type: "integer"
+                description: "当前页码"
+              size:
+                type: "integer"
+                description: "每页大小"
+              total:
+                type: "integer"
+                description: "总记录数"
+              pages:
+                type: "integer"
+                description: "总页数"
+            required: ["page", "size", "total", "pages"]
+        required: ["data", "pagination"]
+      
+      - name: "CreateUserRequest"
+        type: "object"
+        properties:
+          username:
+            type: "string"
+            min_length: 3
+            max_length: 50
+            description: "用户名"
+          email:
+            type: "string"
+            format: "email"
+            description: "邮箱"
+          password:
+            type: "string"
+            min_length: 8
+            description: "密码"
+          first_name:
+            type: "string"
+            description: "名"
+          last_name:
+            type: "string"
+            description: "姓"
+          phone:
+            type: "string"
+            description: "电话号码"
+        required: ["username", "email", "password"]
+      
+      - name: "UpdateUserRequest"
+        type: "object"
+        properties:
+          first_name:
+            type: "string"
+            description: "名"
+          last_name:
+            type: "string"
+            description: "姓"
+          phone:
+            type: "string"
+            description: "电话号码"
+          status:
+            type: "string"
+            enum: ["active", "inactive", "suspended"]
+            description: "用户状态"
+      
+      - name: "ErrorResponse"
+        type: "object"
+        properties:
+          error:
+            type: "string"
+            description: "错误信息"
+          code:
+            type: "string"
+            description: "错误代码"
+          details:
+            type: "object"
+            description: "错误详情"
+        required: ["error", "code"]
+  
+  # 功能模型
+  functional:
+    business_logic:
+      - name: "createUser"
+        description: "创建用户"
+        input: "CreateUserRequest"
+        output: "User"
+        steps:
+          - name: "validate_input"
+            description: "验证输入参数"
+          - name: "check_duplicate"
+            description: "检查用户名和邮箱是否重复"
+          - name: "hash_password"
+            description: "哈希密码"
+          - name: "create_user"
+            description: "创建用户记录"
+          - name: "return_user"
+            description: "返回用户信息"
+      
+      - name: "getUserById"
+        description: "根据ID获取用户"
+        input: "string"  # user_id
+        output: "User"
+        steps:
+          - name: "validate_id"
+            description: "验证用户ID格式"
+          - name: "find_user"
+            description: "查找用户"
+          - name: "return_user"
+            description: "返回用户信息"
+      
+      - name: "updateUser"
+        description: "更新用户信息"
+        input: "UpdateUserRequest"
+        output: "User"
+        steps:
+          - name: "validate_input"
+            description: "验证输入参数"
+          - name: "find_user"
+            description: "查找用户"
+          - name: "update_user"
+            description: "更新用户信息"
+          - name: "return_user"
+            description: "返回更新后的用户信息"
+      
+      - name: "deleteUser"
+        description: "删除用户"
+        input: "string"  # user_id
+        output: "void"
+        steps:
+          - name: "validate_id"
+            description: "验证用户ID格式"
+          - name: "find_user"
+            description: "查找用户"
+          - name: "delete_user"
+            description: "删除用户"
+      
+      - name: "listUsers"
+        description: "获取用户列表"
+        input: "ListUsersRequest"
+        output: "UserList"
+        steps:
+          - name: "validate_pagination"
+            description: "验证分页参数"
+          - name: "build_query"
+            description: "构建查询条件"
+          - name: "execute_query"
+            description: "执行查询"
+          - name: "return_list"
+            description: "返回用户列表"
+    
+    validations:
+      - name: "validate_email"
+        description: "验证邮箱格式"
+        pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+      
+      - name: "validate_password"
+        description: "验证密码强度"
+        min_length: 8
+        require_uppercase: true
+        require_lowercase: true
+        require_digit: true
+        require_special: true
+      
+      - name: "validate_username"
+        description: "验证用户名"
+        min_length: 3
+        max_length: 50
+        pattern: "^[a-zA-Z0-9_]+$"
+  
+  # 运行时模型
+  runtime:
+    container:
+      image: "formal-framework/user-service:latest"
+      ports:
+        - container_port: 8080
+          host_port: 8080
+          protocol: "tcp"
+      
+      environment:
+        - name: "DATABASE_URL"
+          value: "postgresql://user:password@localhost:5432/user_service_db"
+        - name: "REDIS_URL"
+          value: "redis://localhost:6379"
+        - name: "JWT_SECRET"
+          value_from:
+            secret_key_ref:
+              name: "user-service-secrets"
+              key: "jwt-secret"
+      
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+      
+      health_check:
+        http_get:
+          path: "/health"
+          port: 8080
+        initial_delay_seconds: 30
+        period_seconds: 10
+        timeout_seconds: 5
+        failure_threshold: 3
+        success_threshold: 1
+    
+    kubernetes:
+      deployment:
+        name: "user-service"
+        replicas: 3
+        strategy:
+          type: "RollingUpdate"
+          rolling_update:
+            max_surge: 1
+            max_unavailable: 0
+      
+      service:
+        name: "user-service"
+        type: "ClusterIP"
+        ports:
+          - port: 80
+            target_port: 8080
+            protocol: "TCP"
+      
+      ingress:
+        name: "user-service-ingress"
+        annotations:
+          nginx.ingress.kubernetes.io/rewrite-target: "/"
+        rules:
+          - host: "api.example.com"
+            http:
+              paths:
+                - path: "/api/v1/users"
+                  path_type: "Prefix"
+                  backend:
+                    service:
+                      name: "user-service"
+                      port:
+                        number: 80
+      
+      secrets:
+        - name: "user-service-secrets"
+          data:
+            jwt-secret: "base64_encoded_jwt_secret"
+            database-password: "base64_encoded_db_password"
+  
+  # 部署模型
+  deployment:
+    environments:
+      - name: "development"
+        replicas: 1
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      
+      - name: "staging"
+        replicas: 2
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      
+      - name: "production"
+        replicas: 3
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+    
+    helm:
+      chart:
+        name: "user-service"
+        version: "1.0.0"
+        description: "User Service Helm Chart"
+      
+      values:
+        replicaCount: 3
+        image:
+          repository: "formal-framework/user-service"
+          tag: "latest"
+          pullPolicy: "IfNotPresent"
+        
+        service:
+          type: "ClusterIP"
+          port: 80
+        
+        ingress:
+          enabled: true
+          className: "nginx"
+          annotations:
+            nginx.ingress.kubernetes.io/rewrite-target: "/"
+          hosts:
+            - host: "api.example.com"
+              paths:
+                - path: "/api/v1/users"
+                  pathType: "Prefix"
+        
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+  
+  # 监控模型
+  monitoring:
+    metrics:
+      - name: "user_created_total"
+        type: "counter"
+        description: "Total number of users created"
+        labels: ["status"]
+      
+      - name: "user_requests_total"
+        type: "counter"
+        description: "Total number of user requests"
+        labels: ["method", "endpoint", "status"]
+      
+      - name: "user_request_duration_seconds"
+        type: "histogram"
+        description: "User request duration in seconds"
+        labels: ["method", "endpoint"]
+        buckets: [0.1, 0.5, 1.0, 2.0, 5.0]
+      
+      - name: "user_active_count"
+        type: "gauge"
+        description: "Number of active users"
+    
+    alerts:
+      - name: "high_error_rate"
+        description: "High error rate for user service"
+        condition: "rate(user_requests_total{status=~\"5..\"}[5m]) > 0.1"
+        duration: "5m"
+        severity: "critical"
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }}"
+      
+      - name: "high_latency"
+        description: "High latency for user service"
+        condition: "histogram_quantile(0.95, rate(user_request_duration_seconds_bucket[5m])) > 2"
+        duration: "5m"
+        severity: "warning"
+        annotations:
+          summary: "High latency detected"
+          description: "95th percentile latency is {{ $value }}s"
+    
+    logging:
+      level: "info"
+      format: "json"
+      fields:
+        - name: "service"
+          value: "user-service"
+        - name: "version"
+          value: "1.0.0"
+      
+      outputs:
+        - type: "stdout"
+        - type: "file"
+          path: "/var/log/user-service.log"
+        - type: "elasticsearch"
+          url: "http://elasticsearch:9200"
+          index: "user-service-logs"
+  
+  # 测试模型
+  testing:
+    unit_tests:
+      - name: "test_create_user"
+        description: "Test user creation"
+        input: "CreateUserRequest"
+        expected_output: "User"
+        mocks:
+          - name: "database"
+            type: "postgresql"
+            behavior: "return_success"
+      
+      - name: "test_get_user_by_id"
+        description: "Test get user by ID"
+        input: "string"
+        expected_output: "User"
+        mocks:
+          - name: "database"
+            type: "postgresql"
+            behavior: "return_user"
+      
+      - name: "test_update_user"
+        description: "Test user update"
+        input: "UpdateUserRequest"
+        expected_output: "User"
+        mocks:
+          - name: "database"
+            type: "postgresql"
+            behavior: "return_updated_user"
+      
+      - name: "test_delete_user"
+        description: "Test user deletion"
+        input: "string"
+        expected_output: "void"
+        mocks:
+          - name: "database"
+            type: "postgresql"
+            behavior: "return_success"
+    
+    integration_tests:
+      - name: "test_user_crud_operations"
+        description: "Test complete CRUD operations"
+        steps:
+          - name: "create_user"
+            description: "Create a new user"
+          - name: "get_user"
+            description: "Retrieve the created user"
+          - name: "update_user"
+            description: "Update the user"
+          - name: "delete_user"
+            description: "Delete the user"
+        
+        data:
+          - name: "test_user"
+            username: "testuser"
+            email: "test@example.com"
+            password: "TestPassword123!"
+            first_name: "Test"
+            last_name: "User"
+    
+    performance_tests:
+      - name: "test_user_list_performance"
+        description: "Test user list endpoint performance"
+        endpoint: "GET /api/v1/users"
+        load:
+          users: 100
+          duration: "5m"
+          ramp_up: "1m"
+        
+        assertions:
+          - name: "response_time_p95"
+            condition: "< 500ms"
+          - name: "error_rate"
+            condition: "< 1%"
+          - name: "throughput"
+            condition: "> 1000 req/s"
+      
+      - name: "test_user_creation_performance"
+        description: "Test user creation endpoint performance"
+        endpoint: "POST /api/v1/users"
+        load:
+          users: 50
+          duration: "3m"
+          ramp_up: "30s"
+        
+        assertions:
+          - name: "response_time_p95"
+            condition: "< 1s"
+          - name: "error_rate"
+            condition: "< 0.5%"
+          - name: "throughput"
+            condition: "> 500 req/s"
+    
+    e2e_tests:
+      - name: "test_user_registration_flow"
+        description: "Test complete user registration flow"
+        steps:
+          - name: "navigate_to_registration"
+            action: "navigate"
+            url: "/register"
+          
+          - name: "fill_registration_form"
+            action: "fill_form"
+            data:
+              username: "newuser"
+              email: "newuser@example.com"
+              password: "NewPassword123!"
+              first_name: "New"
+              last_name: "User"
+          
+          - name: "submit_registration"
+            action: "click"
+            selector: "button[type='submit']"
+          
+          - name: "verify_success"
+            action: "assert"
+            condition: "url_contains('/dashboard')"
+          
+          - name: "verify_user_created"
+            action: "api_call"
+            method: "GET"
+            url: "/api/v1/users/newuser"
+            expected_status: 200
+  
+  # CI/CD模型
+  ci_cd:
+    pipeline:
+      name: "user-service-pipeline"
+      triggers:
+        - type: "push"
+          branch: "main"
+        - type: "pull_request"
+          branch: "main"
+      
+      stages:
+        - name: "build"
+          steps:
+            - name: "checkout"
+              action: "git_checkout"
+            
+            - name: "setup_rust"
+              action: "setup_rust"
+              version: "1.70"
+            
+            - name: "build"
+              action: "cargo_build"
+              args: ["--release"]
+            
+            - name: "test"
+              action: "cargo_test"
+              args: ["--all-features"]
+            
+            - name: "lint"
+              action: "cargo_clippy"
+              args: ["--all-targets", "--all-features"]
+            
+            - name: "security_scan"
+              action: "cargo_audit"
+        
+        - name: "test"
+          steps:
+            - name: "unit_tests"
+              action: "run_tests"
+              type: "unit"
+              coverage_threshold: 80
+            
+            - name: "integration_tests"
+              action: "run_tests"
+              type: "integration"
+            
+            - name: "performance_tests"
+              action: "run_tests"
+              type: "performance"
+        
+        - name: "security"
+          steps:
+            - name: "vulnerability_scan"
+              action: "trivy_scan"
+              target: "target/release/user-service"
+            
+            - name: "dependency_check"
+              action: "cargo_audit"
+        
+        - name: "deploy_staging"
+          environment: "staging"
+          steps:
+            - name: "build_image"
+              action: "docker_build"
+              context: "."
+              dockerfile: "Dockerfile"
+              tags: ["user-service:staging"]
+            
+            - name: "push_image"
+              action: "docker_push"
+              image: "user-service:staging"
+              registry: "registry.example.com"
+            
+            - name: "deploy"
+              action: "helm_upgrade"
+              chart: "user-service"
+              namespace: "staging"
+              values:
+                image.tag: "staging"
+                replicaCount: 2
+        
+        - name: "deploy_production"
+          environment: "production"
+          manual_approval: true
+          steps:
+            - name: "build_image"
+              action: "docker_build"
+              context: "."
+              dockerfile: "Dockerfile"
+              tags: ["user-service:latest"]
+            
+            - name: "push_image"
+              action: "docker_push"
+              image: "user-service:latest"
+              registry: "registry.example.com"
+            
+            - name: "deploy"
+              action: "helm_upgrade"
+              chart: "user-service"
+              namespace: "production"
+              values:
+                image.tag: "latest"
+                replicaCount: 3
+            
+            - name: "health_check"
+              action: "wait_for_health"
+              url: "https://api.example.com/health"
+              timeout: "5m"
+      
+      quality_gates:
+        - name: "test_coverage"
+          condition: ">= 80%"
+          stage: "test"
+        
+        - name: "security_scan"
+          condition: "no_critical_vulnerabilities"
+          stage: "security"
+        
+        - name: "performance_tests"
+          condition: "all_tests_passed"
+          stage: "test"
+  
+  # 分布式模型
+  distributed:
+    patterns:
+      - name: "circuit_breaker"
+        description: "Circuit breaker pattern for external dependencies"
+        configuration:
+          failure_threshold: 5
+          timeout: "30s"
+          reset_timeout: "60s"
+        
+        dependencies:
+          - name: "database"
+            type: "postgresql"
+            circuit_breaker: true
+          
+          - name: "redis"
+            type: "redis"
+            circuit_breaker: true
+      
+      - name: "retry_pattern"
+        description: "Retry pattern for transient failures"
+        configuration:
+          max_attempts: 3
+          backoff:
+            initial: "100ms"
+            multiplier: 2
+            max_delay: "5s"
+        
+        operations:
+          - name: "database_operations"
+            retry: true
+          
+          - name: "external_api_calls"
+            retry: true
+      
+      - name: "bulkhead_pattern"
+        description: "Bulkhead pattern for resource isolation"
+        configuration:
+          max_concurrent_requests: 100
+          max_queue_size: 50
+          timeout: "30s"
+        
+        resources:
+          - name: "database_pool"
+            max_connections: 20
+            isolation: true
+          
+          - name: "http_client"
+            max_connections: 50
+            isolation: true
+      
+      - name: "caching_pattern"
+        description: "Caching pattern for performance optimization"
+        configuration:
+          ttl: "1h"
+          max_size: 1000
+          eviction_policy: "lru"
+        
+        cacheable_operations:
+          - name: "get_user_by_id"
+            cache_key: "user:{id}"
+            ttl: "30m"
+          
+          - name: "list_users"
+            cache_key: "users:list:{page}:{size}"
+            ttl: "5m"
+      
+      - name: "service_discovery"
+        description: "Service discovery pattern"
+        type: "kubernetes"
+        configuration:
+          namespace: "user-service"
+          service_name: "user-service"
+          port: 80
+        
+        health_check:
+          path: "/health"
+          interval: "30s"
+          timeout: "5s"
+          failure_threshold: 3
+      
+      - name: "load_balancing"
+        description: "Load balancing pattern"
+        type: "round_robin"
+        configuration:
+          health_check: true
+          sticky_sessions: false
+        
+        targets:
+          - name: "user-service-1"
+            weight: 1
+          - name: "user-service-2"
+            weight: 1
+          - name: "user-service-3"
+            weight: 1 

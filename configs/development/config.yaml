@@ -1,0 +1,205 @@
+# 开发环境配置
+environment: development
+
+# 服务器配置
+server:
+  host: "127.0.0.1"
+  port: 8080
+  workers: 4
+  timeout: 30
+
+# 数据库配置
+database:
+  postgresql:
+    host: "localhost"
+    port: 5432
+    database: "formal_framework_dev"
+    username: "formal_user"
+    password: "dev_password"
+    max_connections: 10
+    min_connections: 2
+  
+  redis:
+    host: "localhost"
+    port: 6379
+    database: 0
+    password: ""
+    max_connections: 20
+
+# AI服务配置
+ai:
+  openai:
+    api_key: "${OPENAI_API_KEY}"
+    model: "gpt-4"
+    max_tokens: 4000
+    temperature: 0.7
+  
+  anthropic:
+    api_key: "${ANTHROPIC_API_KEY}"
+    model: "claude-3-sonnet"
+    max_tokens: 4000
+
+# 日志配置
+logging:
+  level: "debug"
+  format: "json"
+  output: "stdout"
+  file:
+    enabled: true
+    path: "logs/formal-framework.log"
+    max_size: "100MB"
+    max_files: 10
+
+# 缓存配置
+cache:
+  redis:
+    enabled: true
+    ttl: 3600
+    max_size: 1000
+  
+  memory:
+    enabled: true
+    ttl: 1800
+    max_size: 500
+
+# 安全配置
+security:
+  jwt:
+    secret: "${JWT_SECRET}"
+    expires_in: 86400
+  
+  cors:
+    allowed_origins: ["http://localhost:3000", "http://localhost:8080"]
+    allowed_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    allowed_headers: ["*"]
+  
+  rate_limit:
+    enabled: true
+    requests_per_minute: 100
+
+# 代码生成配置
+code_generation:
+  templates_path: "templates"
+  output_path: "generated"
+  backup_enabled: true
+  backup_path: "backups"
+  
+  languages:
+    rust:
+      enabled: true
+      cargo_toml_template: "templates/rust/Cargo.toml"
+      main_rs_template: "templates/rust/src/main.rs"
+    
+    golang:
+      enabled: true
+      go_mod_template: "templates/golang/go.mod"
+      main_go_template: "templates/golang/main.go"
+    
+    frontend:
+      enabled: true
+      react_template: "templates/frontend/react"
+      vue_template: "templates/frontend/vue"
+
+# 模型配置
+models:
+  validation:
+    strict: false
+    auto_fix: true
+  
+  storage:
+    type: "file"  # file, database
+    path: "models"
+  
+  transformation:
+    cache_enabled: true
+    cache_ttl: 1800
+
+# 监控配置
+monitoring:
+  metrics:
+    enabled: true
+    port: 9090
+    path: "/metrics"
+  
+  health_check:
+    enabled: true
+    port: 8081
+    path: "/health"
+  
+  tracing:
+    enabled: true
+    jaeger:
+      host: "localhost"
+      port: 6831
+
+# 开发工具配置
+development:
+  hot_reload: true
+  debug_mode: true
+  profiling:
+    enabled: true
+    port: 6060
+  
+  testing:
+    parallel: true
+    timeout: 300
+    coverage:
+      enabled: true
+      threshold: 80
+
+# 插件配置
+plugins:
+  enabled: true
+  path: "plugins"
+  auto_load: true
+  
+  registry:
+    url: "https://plugins.formal-framework.com"
+    timeout: 30
+
+# 通知配置
+notifications:
+  email:
+    enabled: false
+    smtp:
+      host: "localhost"
+      port: 587
+      username: ""
+      password: ""
+  
+  webhook:
+    enabled: false
+    url: ""
+    timeout: 10
+
+# 备份配置
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # 每天凌晨2点
+  retention: 7  # 保留7天
+  path: "backups"
+  
+  databases:
+    - name: "postgresql"
+      enabled: true
+      tables: ["*"]
+    
+    - name: "redis"
+      enabled: true
+
+# 部署配置
+deployment:
+  docker:
+    enabled: true
+    registry: "localhost:5000"
+    namespace: "formal-framework"
+  
+  kubernetes:
+    enabled: false
+    namespace: "formal-framework"
+    replicas: 1
+  
+  helm:
+    enabled: false
+    chart_path: "helm/formal-framework"
+    values_path: "helm/values.yaml" 
