@@ -3,7 +3,7 @@
 本目录聚焦于软件工程自动化中最具可行性的形式化建模方向，兼顾互联网与非互联网（如IOT、工业、嵌入式、金融等）行业的核心需求。
 每个子模块均包含理论探讨与DSL草案，旨在为自动化生成与验证提供基础。
 
-## 子模块与可行性简述
+## 1. 子模块与可行性简述
 
 - **交互模型（interaction-model）**：API、协议、消息、契约等领域标准成熟，形式化抽象和验证可行性高。
 - **数据模型（data-model）**：数据库结构、查询、迁移等有丰富的建模经验，易于自动化。
@@ -16,59 +16,68 @@
 - **CI/CD模型（cicd-model）**：流水线、阶段、触发等流程可自动化建模。
 - **分布式模式模型（distributed-pattern-model）**：容错、一致性、负载均衡等有理论基础，适合形式化。
 
-## 行业架构模型分类建议（结合主流开源软件与基础设施）
+## 2. 行业架构模型分类建议（结合主流开源软件与基础设施）
 
-- **iot-architecture/**
-  - device-access/           # 设备接入（如MQTT、EMQX、ThingsBoard）
-  - edge-computing/         # 边缘计算（如KubeEdge、OpenYurt、EdgeX Foundry）
-  - real-time-control/      # 实时控制（如PLC、OPC UA、ROS）
-  - distributed-scheduling/ # 分布式调度（如Kubernetes、KubeEdge调度）
-  - data-collection/        # 数据采集（如Telegraf、Prometheus、InfluxDB）
-  - iot-platform/           # IOT平台（如ThingsBoard、OpenIoT、Mainflux）
+### 2.1 iot-architecture/
 
-- **web3-architecture/**
-  - smart-contract/         # 智能合约（如Solidity、Move、OpenZeppelin）
-  - consensus/              # 共识机制（如Tendermint、HotStuff、PBFT）
-  - onchain-offchain/       # 链上链下协同（如Chainlink、The Graph）
-  - wallet-identity/        # 钱包与身份（如MetaMask、DID、WalletConnect）
-  - node-infrastructure/    # 节点基础设施（如Geth、OpenEthereum、IPFS、Filecoin）
+- device-access/           # 设备接入（如MQTT、EMQX、ThingsBoard）
+- edge-computing/         # 边缘计算（如KubeEdge、OpenYurt、EdgeX Foundry）
+- real-time-control/      # 实时控制（如PLC、OPC UA、ROS）
+- distributed-scheduling/ # 分布式调度（如Kubernetes、KubeEdge调度）
+- data-collection/        # 数据采集（如Telegraf、Prometheus、InfluxDB）
+- iot-platform/           # IOT平台（如ThingsBoard、OpenIoT、Mainflux）
 
-- **smart-home-architecture/**
-  - device-interoperability/ # 设备互联（如Home Assistant、OpenHAB、Matter、Zigbee2MQTT）
-  - scenario-automation/     # 场景自动化（如Node-RED、Home Assistant Automations）
-  - privacy-security/        # 隐私安全（如OpenZWave、加密通信）
-  - voice-assistant/         # 语音助手（如Mycroft、Rhasspy、Google Assistant集成）
+### 2.2 web3-architecture/
 
-- **industrial-internet-architecture/**
-  - protocol-adaptation/     # 工业协议适配（如OPC UA、Modbus、BACnet、Profinet）
-  - layered-control/         # 分层控制（如SCADA、DCS、PLC）
-  - edge-cloud-collaboration/# 边缘云协同（如KubeEdge、Azure IoT Edge、AWS Greengrass）
-  - industrial-platform/     # 工业平台（如MindSphere、ThingWorx、工业PaaS）
+- smart-contract/         # 智能合约（如Solidity、Move、OpenZeppelin）
+- consensus/              # 共识机制（如Tendermint、HotStuff、PBFT）
+- onchain-offchain/       # 链上链下协同（如Chainlink、The Graph）
+- wallet-identity/        # 钱包与身份（如MetaMask、DID、WalletConnect）
+- node-infrastructure/    # 节点基础设施（如Geth、OpenEthereum、IPFS、Filecoin）
 
-- **ai-infrastructure-architecture/**
-  - model-serving/           # AI模型服务（如TensorFlow Serving、Triton Inference Server、Seldon Core）
-  - data-pipeline/           # 数据管道（如Airflow、Kubeflow Pipelines、Dagster）
-  - distributed-training/    # 分布式训练（如Horovod、Ray、Kubeflow）
-  - feature-store/           # 特征存储（如Feast、Hopsworks）
-  - mlops/                   # MLOps平台（如MLflow、Kubeflow、Metaflow）
+### 2.3 smart-home-architecture/
 
-- **cloud-native-architecture/**
-  - container-orchestration/ # 容器编排（如Kubernetes、OpenShift、Rancher）
-  - service-mesh/            # 服务网格（如Istio、Linkerd、Consul）
-  - observability/           # 可观测性（如Prometheus、Grafana、Jaeger、Loki）
-  - api-gateway/             # API网关（如Kong、APISIX、Envoy）
-  - serverless/              # 无服务器（如Knative、OpenFaaS、Kubeless）
+- device-interoperability/ # 设备互联（如Home Assistant、OpenHAB、Matter、Zigbee2MQTT）
+- scenario-automation/     # 场景自动化（如Node-RED、Home Assistant Automations）
+- privacy-security/        # 隐私安全（如OpenZWave、加密通信）
+- voice-assistant/         # 语音助手（如Mycroft、Rhasspy、Google Assistant集成）
 
-- **finance-architecture/**
-  - core-banking/            # 核心银行系统（如Mambu、Fineract、Temenos）
-  - payment-gateway/         # 支付网关（如Stripe、Adyen、PayPal、Open Payment Hub）
-  - risk-management/         # 风险管理（如OpenGamma、QuantLib、RiskQuantLib）
-  - trading-system/          # 交易系统（如QuickFIX、FIX协议、AlgoTrader）
-  - blockchain-finance/      # 区块链金融（如Hyperledger Fabric、Corda、Quorum）
-  - regulatory-compliance/   # 合规监管（如OpenRegTech、RegTech开源工具）
-  - data-analytics/          # 金融数据分析（如Kdb+/q、ClickHouse、Apache Flink）
+### 2.4 industrial-internet-architecture/
 
-- **其它行业**：可根据实际需求扩展，如医疗（如OpenEHR、FHIR）、能源（如OpenEMS、OpenADR）等
+- protocol-adaptation/     # 工业协议适配（如OPC UA、Modbus、BACnet、Profinet）
+- layered-control/         # 分层控制（如SCADA、DCS、PLC）
+- edge-cloud-collaboration/# 边缘云协同（如KubeEdge、Azure IoT Edge、AWS Greengrass）
+- industrial-platform/     # 工业平台（如MindSphere、ThingWorx、工业PaaS）
+
+### 2.5 ai-infrastructure-architecture/
+
+- model-serving/           # AI模型服务（如TensorFlow Serving、Triton Inference Server、Seldon Core）
+- data-pipeline/           # 数据管道（如Airflow、Kubeflow Pipelines、Dagster）
+- distributed-training/    # 分布式训练（如Horovod、Ray、Kubeflow）
+- feature-store/           # 特征存储（如Feast、Hopsworks）
+- mlops/                   # MLOps平台（如MLflow、Kubeflow、Metaflow）
+
+### 2.6 cloud-native-architecture/
+
+- container-orchestration/ # 容器编排（如Kubernetes、OpenShift、Rancher）
+- service-mesh/            # 服务网格（如Istio、Linkerd、Consul）
+- observability/           # 可观测性（如Prometheus、Grafana、Jaeger、Loki）
+- api-gateway/             # API网关（如Kong、APISIX、Envoy）
+- serverless/              # 无服务器（如Knative、OpenFaaS、Kubeless）
+
+### 2.7 finance-architecture/
+
+- core-banking/            # 核心银行系统（如Mambu、Fineract、Temenos）
+- payment-gateway/         # 支付网关（如Stripe、Adyen、PayPal、Open Payment Hub）
+- risk-management/         # 风险管理（如OpenGamma、QuantLib、RiskQuantLib）
+- trading-system/          # 交易系统（如QuickFIX、FIX协议、AlgoTrader）
+- blockchain-finance/      # 区块链金融（如Hyperledger Fabric、Corda、Quorum）
+- regulatory-compliance/   # 合规监管（如OpenRegTech、RegTech开源工具）
+- data-analytics/          # 金融数据分析（如Kdb+/q、ClickHouse、Apache Flink）
+
+### 2.8 其它行业
+
+可根据实际需求扩展，如医疗（如OpenEHR、FHIR）、能源（如OpenEMS、OpenADR）等
 
 每个模型/行业子目录下建议包含：
 
@@ -81,20 +90,20 @@
 
 ---
 
-## 递归完善自动化执行计划（核心机制摘要）
+## 3. 递归完善自动化执行计划（核心机制摘要）
 
-### 1. 内容递归完善与自动化工具
+### 3.1 内容递归完善与自动化工具
 
 - 定期自动扫描各模型、子模块、理论、DSL、案例、FAQ等内容，生成内容空白与薄弱点清单。
 - 利用AI辅助自动补全理论空白、案例缺口、方法论细节，生成初稿供社区评审。
 - 自动化工具链包括：内容扫描、结构校验、标准检测、表达lint、知识地图生成、案例覆盖率检测等。
 
-### 2. 结构优化与标准统一
+### 3.2 结构优化与标准统一
 
 - 自动化工具定期校验目录结构、命名、风格、引用、交叉索引，发现问题自动生成结构优化任务。
 - 所有DSL、AST、类型系统、推理规则等，统一采用标准格式（如JSON Schema、OpenAPI、Mermaid等）。
 
-### 3. AI驱动递归完善展望
+### 3.3 AI驱动递归完善展望
 
 - AI自动归纳递归结构、类型系统、行业映射、案例补全。
 - AI智能推理模型关系、异常检测、结构优化、表达规范。
