@@ -4,10 +4,10 @@
 
 Web3架构采用递归分层建模，从区块链底层到应用层，支持多层嵌套与组合：
 
-- **顶层：Web3应用层** → DApp、DeFi、NFT、DAO、GameFi等去中心化应用
-- **中层：智能合约层** → 合约开发、部署、执行、升级、治理
+- **顶层：Web3应用层** → DApp、DeFi、NFT、DAO等去中心化应用
+- **中层：智能合约层** → 合约开发、部署、执行、升级
 - **底层：区块链层** → 共识机制、节点网络、钱包身份、链上链下交互
-- **横向扩展：生态映射** → 以太坊、Polkadot、Solana、Cosmos、Polygon等公链生态
+- **横向扩展：生态映射** → 以太坊、Polkadot、Solana、Cosmos等公链生态
 
 ## 2. 行业映射关系
 
@@ -15,12 +15,12 @@ Web3架构采用递归分层建模，从区块链底层到应用层，支持多�
 
 | 通用模型 | Web3模型 | 映射说明 |
 |---------|---------|---------|
-| data-model/entity | web3/smart-contract | 智能合约实体建模，支持状态管理 |
-| data-model/query | web3/onchain-query | 链上数据查询与分析 |
-| functional-model/business-logic | web3/defi-logic | DeFi业务逻辑 |
-| functional-model/rule-engine | web3/consensus | 共识机制规则引擎 |
-| interaction-model/protocol | web3/blockchain-protocol | 区块链通信协议 |
-| monitoring-model/metrics | web3/blockchain-metrics | 区块链监控指标 |
+| data-model/entity | smart-contract/contract | 智能合约实体建模，支持状态管理 |
+| data-model/query | onchain-offchain/query | 链上链下数据查询与分析 |
+| functional-model/business-logic | smart-contract/logic | 智能合约业务逻辑 |
+| functional-model/rule-engine | consensus/consensus | 共识机制规则引擎 |
+| interaction-model/protocol | node-infrastructure/protocol | 节点通信协议 |
+| monitoring-model/metrics | web3/monitoring | 区块链监控指标 |
 
 ### 2.2 递归扩展示例
 
@@ -41,8 +41,8 @@ web3:
 
 ```python
 # 智能合约递归生成伪代码
-def generate_web3_contract(contract_type, business_logic):
-    base_contract = get_base_web3_contract(contract_type)
+def generate_smart_contract(contract_type, business_logic):
+    base_contract = get_base_contract(contract_type)
     business_rules = generate_business_rules(business_logic)
     security_checks = generate_security_checks(contract_type)
     gas_optimization = optimize_gas_usage(base_contract)
@@ -69,41 +69,41 @@ def infer_consensus_rules(network_size, security_requirements):
 
 ### 4.1 DeFi系统建模
 
-- **流动性池**：自动做市商、流动性提供、收益分配、无常损失
-- **借贷协议**：抵押品管理、利率计算、清算机制、风险控制
-- **衍生品**：期权、期货、合成资产、风险管理、杠杆交易
-- **治理代币**：投票机制、提案管理、执行流程、时间锁定
+- **流动性池**：自动做市商、流动性提供、收益分配
+- **借贷协议**：抵押品管理、利率计算、清算机制
+- **衍生品**：期权、期货、合成资产、风险管理
+- **治理代币**：投票机制、提案管理、执行流程
 
 ### 4.2 NFT系统建模
 
-- **代币标准**：ERC-721、ERC-1155、ERC-20、元数据标准
-- **市场机制**：拍卖、固定价格、版税分配、创作者收益
-- **元数据管理**：IPFS存储、链上链下数据同步、元数据验证
-- **权限控制**：铸造权限、转移限制、销毁机制、访问控制
+- **代币标准**：ERC-721、ERC-1155、元数据标准
+- **市场机制**：拍卖、固定价格、版税分配
+- **元数据管理**：IPFS存储、链上链下数据同步
+- **权限控制**：铸造权限、转移限制、销毁机制
 
 ### 4.3 DAO系统建模
 
-- **治理机制**：提案创建、投票、执行、时间锁定、多签钱包
-- **代币经济**：代币分配、激励机制、惩罚机制、经济模型
-- **金库管理**：资金分配、预算管理、审计追踪、风险控制
-- **社区治理**：社区投票、提案讨论、执行监督、争议解决
+- **治理机制**：提案创建、投票、执行、时间锁定
+- **代币经济**：代币分配、激励机制、惩罚机制
+- **多签钱包**：多重签名、阈值设置、权限管理
+- **金库管理**：资金分配、预算管理、审计追踪
 
 ## 5. 最佳实践与常见陷阱
 
 ### 5.1 最佳实践
 
-- **安全优先**：智能合约安全审计、形式化验证、漏洞检测、多重签名
-- **Gas优化**：减少Gas消耗、批量操作、存储优化、算法优化
-- **可升级性**：代理模式、升级机制、向后兼容、版本管理
-- **用户体验**：简化交互、降低门槛、提高可用性、移动适配
-- **合规性**：监管合规、KYC/AML、税务处理、法律风险
+- **安全优先**：智能合约安全审计、形式化验证、漏洞检测
+- **Gas优化**：减少Gas消耗、批量操作、存储优化
+- **可升级性**：代理模式、升级机制、向后兼容
+- **用户体验**：简化交互、降低门槛、提高可用性
+- **合规性**：监管合规、KYC/AML、税务处理
 
 ### 5.2 常见陷阱
 
-- **安全漏洞**：重入攻击、整数溢出、权限控制不当、逻辑错误
-- **Gas消耗过高**：低效算法、冗余存储、不必要的计算、网络拥堵
-- **中心化风险**：过度依赖中心化组件、单点故障、治理集中化
-- **用户体验差**：复杂操作、高Gas费用、网络拥堵、技术门槛高
+- **安全漏洞**：重入攻击、整数溢出、权限控制不当
+- **Gas消耗过高**：低效算法、冗余存储、不必要的计算
+- **中心化风险**：过度依赖中心化组件、单点故障
+- **用户体验差**：复杂操作、高Gas费用、网络拥堵
 
 ## 6. 开源项目映射
 
@@ -132,17 +132,17 @@ def infer_consensus_rules(network_size, security_requirements):
 
 ### 7.1 技术趋势
 
-- **Layer2扩展**：Rollup、状态通道、侧链、等离子体等扩展方案
-- **跨链互操作**：跨链桥、原子交换、统一标准、多链生态
-- **零知识证明**：隐私保护、可扩展性、合规性、ZK Rollup
-- **AI集成**：智能合约AI、预测市场、自动化交易、智能治理
+- **Layer2扩展**：Rollup、状态通道、侧链等扩展方案
+- **跨链互操作**：跨链桥、原子交换、统一标准
+- **零知识证明**：隐私保护、可扩展性、合规性
+- **AI集成**：智能合约AI、预测市场、自动化交易
 
 ### 7.2 应用趋势
 
-- **Web3游戏**：区块链游戏、NFT游戏、元宇宙、GameFi
-- **Web3社交**：去中心化社交、内容创作、社区治理、数据主权
-- **Web3金融**：DeFi、CeFi融合、传统金融接入、普惠金融
-- **Web3身份**：去中心化身份、数字护照、隐私保护、自主权
+- **Web3游戏**：区块链游戏、NFT游戏、元宇宙
+- **Web3社交**：去中心化社交、内容创作、社区治理
+- **Web3金融**：DeFi、CeFi融合、传统金融接入
+- **Web3身份**：去中心化身份、数字护照、隐私保护
 
 ## 8. 递归推理与自动化流程
 
@@ -150,7 +150,7 @@ def infer_consensus_rules(network_size, security_requirements):
 
 ```python
 # 智能合约自动审计
-def audit_web3_contract(contract_code):
+def audit_smart_contract(contract_code):
     security_issues = detect_security_vulnerabilities(contract_code)
     gas_optimization = analyze_gas_usage(contract_code)
     compliance_check = check_regulatory_compliance(contract_code)
