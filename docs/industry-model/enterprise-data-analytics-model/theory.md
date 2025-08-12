@@ -88,9 +88,46 @@ def infer_report_structure(business_questions, data_schema):
 - **仪表板设计**：布局设计、主题定制、响应式设计、移动适配
 - **数据故事**：叙事结构、关键信息、洞察发现、行动建议
 
-## 5. 最佳实践与常见陷阱
+## 5. 已完成模块总结
 
-### 5.1 最佳实践
+### 5.1 数据可视化模块 (data-visualization)
+
+- **理论文档**: 完整的可视化语法理论、交互模型理论、布局算法理论
+- **DSL设计**: 支持D3.js、Tableau、PowerBI、Plotly的跨平台配置
+- **核心特性**: 图表建模、交互建模、布局建模、展示建模
+- **代码生成**: 支持React组件、D3.js代码的自动生成
+
+### 5.2 实时分析模块 (real-time-analytics)
+
+- **理论文档**: 流处理理论、实时计算理论、监控理论
+- **DSL设计**: 支持Apache Kafka、Flink、Storm、Spark Streaming
+- **核心特性**: 流处理建模、实时计算建模、监控建模、分析建模
+- **代码生成**: 支持Apache Flink、Kafka Streams代码生成
+
+### 5.3 数据湖模块 (data-lake)
+
+- **理论文档**: 数据湖架构理论、数据生命周期理论、数据治理理论
+- **DSL设计**: 支持AWS S3、Azure Data Lake、Google Cloud Storage
+- **核心特性**: 存储建模、治理建模、访问建模、集成建模
+- **代码生成**: 支持AWS Glue、Azure Data Lake代码生成
+
+### 5.4 数据仓库模块 (data-warehouse)
+
+- **理论文档**: 维度建模理论、ETL理论、OLAP理论
+- **DSL设计**: 支持Snowflake、Redshift、BigQuery、Synapse
+- **核心特性**: 建模建模、ETL建模、OLAP建模、性能建模
+- **代码生成**: 支持Snowflake DDL、Python ETL代码生成
+
+### 5.5 BI报表模块 (bi-reporting)
+
+- **理论文档**: BI报表架构理论、报表设计理论、仪表盘理论
+- **DSL设计**: 支持Tableau、Power BI、QlikView、Looker
+- **核心特性**: 报表建模、仪表盘建模、数据建模、用户建模
+- **代码生成**: 支持Tableau、Power BI代码生成
+
+## 6. 最佳实践与常见陷阱
+
+### 6.1 最佳实践
 
 - **数据质量优先**：数据验证、清洗、标准化、质量监控
 - **性能优化**：查询优化、索引设计、分区策略、缓存机制

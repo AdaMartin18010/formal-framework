@@ -1,0 +1,152 @@
+name: Quality Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # 每周一凌晨2点运行
+    - cron: '0 2 * * 1'
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Run content scanner
+        run: |
+          python tools/content_scanner.py --verbose --output reports/ci_content_scan_report.md
+          
+      - name: Generate knowledge graph
+        run: |
+          python tools/knowledge_graph_generator.py --visualize --export-data --report
+          
+      - name: Upload content scan report
+        uses: actions/upload-artifact@v3
+        with:
+          name: content-scan-report
+          path: reports/ci_content_scan_report.md
+          
+      - name: Upload knowledge graph
+        uses: actions/upload-artifact@v3
+        with:
+          name: knowledge-graph
+          path: |
+            reports/knowledge_graph.png
+            reports/knowledge_graph_data.json
+            reports/knowledge_graph_report.md
+          
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // 读取扫描报告
+            let scanReport = '';
+            try {
+              scanReport = fs.readFileSync('reports/ci_content_scan_report.md', 'utf8');
+            } catch (e) {
+              scanReport = '扫描报告生成失败';
+            }
+            
+            // 提取关键信息
+            const totalFilesMatch = scanReport.match(/总文件数.*?(\d+)/);
+            const analyzedFilesMatch = scanReport.match(/已分析文件数.*?(\d+)/);
+            const missingFilesMatch = scanReport.match(/缺失文件数.*?(\d+)/);
+            const lowQualityFilesMatch = scanReport.match(/低质量文件数.*?(\d+)/);
+            const avgScoreMatch = scanReport.match(/平均质量分数.*?(\d+\.\d+)/);
+            
+            const totalFiles = totalFilesMatch ? totalFilesMatch[1] : 'N/A';
+            const analyzedFiles = analyzedFilesMatch ? analyzedFilesMatch[1] : 'N/A';
+            const missingFiles = missingFilesMatch ? missingFilesMatch[1] : 'N/A';
+            const lowQualityFiles = lowQualityFilesMatch ? lowQualityFilesMatch[1] : 'N/A';
+            const avgScore = avgScoreMatch ? avgScoreMatch[1] : 'N/A';
+            
+            const comment = `## 📊 质量检查结果
+            
+            ### 扫描概览
+            - **总文件数**: ${totalFiles}
+            - **已分析文件数**: ${analyzedFiles}
+            - **缺失文件数**: ${missingFiles}
+            - **低质量文件数**: ${lowQualityFiles}
+            - **平均质量分数**: ${avgScore}
+            
+            ### 详细报告
+            详细报告已作为构建产物上传，可在 Actions 页面下载。
+            
+            ### 建议
+            ${missingFiles > 0 ? `⚠️ 发现 ${missingFiles} 个缺失文件，建议补充` : '✅ 无缺失文件'}
+            ${lowQualityFiles > 0 ? `⚠️ 发现 ${lowQualityFiles} 个低质量文件，建议改进` : '✅ 文件质量良好'}
+            ${avgScore < 0.7 ? '⚠️ 平均质量分数较低，建议整体改进' : '✅ 平均质量分数良好'}
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  ai-completion:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Run AI completion
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python tools/ai_completer.py --pattern "**/theory.md" "**/dsl-draft.md" --output-dir reports/ai_completed
+          
+      - name: Upload AI completion results
+        uses: actions/upload-artifact@v3
+        with:
+          name: ai-completion-results
+          path: reports/ai_completed/
+          
+      - name: Create completion PR
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'feat: AI自动补全文档内容'
+          title: '🤖 AI自动补全文档内容'
+          body: |
+            ## AI自动补全结果
+            
+            本次自动补全包含以下改进：
+            - 补充缺失的理论章节
+            - 完善DSL文档内容
+            - 添加代码示例和最佳实践
+            
+            详细结果请查看构建产物。
+          branch: ai-completion-$(date +%Y%m%d)
+          base: main 
