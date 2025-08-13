@@ -12,12 +12,17 @@ import json
 import re
 import networkx as nx
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
 from pathlib import Path
 from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass
 from datetime import datetime
 import argparse
 from collections import defaultdict
+
+# 字体设置：优先使用系统中文字体，其次 SimHei，最后 DejaVu Sans
+rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'DejaVu Sans']
+rcParams['axes.unicode_minus'] = False
 
 
 @dataclass
@@ -63,10 +68,24 @@ class KnowledgeGraphGenerator:
         """加载配置文件"""
         try:
             with open(config_path, 'r', encoding='utf-8') as f:
-                return yaml.safe_load(f)
+                user_cfg = yaml.safe_load(f) or {}
+            default_cfg = self._get_default_config()
+            return self._merge_config(default_cfg, user_cfg)
         except FileNotFoundError:
             print(f"警告: 配置文件 {config_path} 不存在，使用默认配置")
             return self._get_default_config()
+    
+    def _merge_config(self, base: Dict, override: Dict) -> Dict:
+        """递归合并配置: override 覆盖 base"""
+        if not isinstance(base, dict):
+            return override
+        result = dict(base)
+        for key, value in (override or {}).items():
+            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                result[key] = self._merge_config(result[key], value)
+            else:
+                result[key] = value
+        return result
     
     def _get_default_config(self) -> Dict:
         """获取默认配置"""
@@ -316,7 +335,42 @@ class KnowledgeGraphGenerator:
                         )
                         relationships.append(relationship)
         
+        # 基于标题层级抽取“包含”关系
+        relationships.extend(self._extract_heading_hierarchy_relationships(content))
+        
         return relationships
+
+    def _extract_heading_hierarchy_relationships(self, content: str) -> List[Relationship]:
+        """根据Markdown标题层级生成父子“包含”关系"""
+        rels: List[Relationship] = []
+        stack: List[Tuple[int, str]] = []  # (level, title)
+        
+        for raw in content.split('\n'):
+            line = raw.rstrip()
+            if not line.startswith('#'):
+                continue
+            # 统计开头#数量作为标题层级
+            level = len(line) - len(line.lstrip('#'))
+            title = line.lstrip('#').strip()
+            if not title:
+                continue
+            # 维护栈，找到最近的父级
+            while stack and level <= stack[-1][0]:
+                stack.pop()
+            if stack:
+                parent_title = stack[-1][1]
+                if parent_title in self.concepts and title in self.concepts:
+                    rels.append(
+                        Relationship(
+                            source=parent_title,
+                            target=title,
+                            type='包含',
+                            weight=0.5,
+                            description=f"{parent_title} 包含 {title}"
+                        )
+                    )
+            stack.append((level, title))
+        return rels
     
     def _extract_cross_file_relationships(self, content: str, file_path: Path) -> List[Relationship]:
         """提取文件间的关系"""
@@ -428,7 +482,7 @@ class KnowledgeGraphGenerator:
             edge_type = data.get('type', '关联')
             if edge_type == '包含':
                 edge_colors.append('red')
-                edge_weights.append(2.0)
+                edge_weights.append(1.0)
             elif edge_type == '依赖':
                 edge_colors.append('blue')
                 edge_weights.append(1.5)
@@ -442,14 +496,14 @@ class KnowledgeGraphGenerator:
         nx.draw_networkx_edges(graph, pos,
                               edge_color=edge_colors,
                               width=edge_weights,
-                              alpha=0.6,
+                              alpha=0.3,
                               arrows=True,
-                              arrowsize=20)
+                              arrowsize=12)
         
         # 绘制标签
         nx.draw_networkx_labels(graph, pos,
                                font_size=layout_config['font_size'],
-                               font_family='SimHei')
+                               font_family='sans-serif')
         
         # 添加图例
         legend_elements = [
