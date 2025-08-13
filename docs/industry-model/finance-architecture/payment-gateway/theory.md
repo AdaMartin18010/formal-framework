@@ -1,58 +1,125 @@
-# 支付网关理论探讨
+# 支付网关理论
 
-## 1 形式化目标
+## 概念定义
 
-- 以结构化方式描述支付网关、支付渠道、风控规则、清算结算等。
-- 支持Stripe、Adyen、PayPal等主流支付网关平台的统一建模。
-- 便于自动生成支付网关配置、风控规则、清算策略等。
+### 支付网关
 
-## 2. 核心概念
+支付网关是商户系统与多支付渠道（卡组织、钱包、银行）之间的中介层，提供收单、清算结算、风控合规、对账等能力。
 
-- **支付模型**：支付类型、渠道管理、路由策略等。
-- **风控模型**：风险评估、限额管理、监控预警等。
-- **清算模型**：清算规则、结算周期、对账处理等。
-- **合规模型**：监管合规、反洗钱、KYC等。
+### 核心概念
 
-## 3. 支付网关
+- 支付意图（Payment Intent）
+- 支付方法（Payment Method）
+- 风控规则（Risk Rules）
+- 清算结算（Clearing & Settlement）
 
-- Stripe（在线支付处理）
-- Adyen（全球支付平台）
-- PayPal（数字支付）
-- Square（移动支付）
+## 理论基础
 
-## 4 可行性分析
+### 形式化建模
 
-- 支付网关结构化强，标准化程度高，适合DSL抽象。
-- 可自动生成支付网关配置、风控规则、清算策略。
-- 易于与AI结合进行支付优化、风险分析建议。
+```yaml
+payment_gateway:
+  intent:
+    definition: "pi = (id, amount, currency, method, status, metadata)"
+  risk:
+    definition: "r = (rules, score, decision)"
+  clearing:
+    definition: "c = (cycle, fee, scheme, net, payable)"
+```
 
-## 5自动化价值
+### 公理化系统
 
-- 降低手工配置和维护支付网关的成本。
-- 提高支付网关的安全性和合规性。
-- 支持自动化风险控制和支付优化。
+```yaml
+axioms:
+  - name: 金额守恒
+    rule: "auth_amount >= capture_amount >= refund_amount >= 0"
+  - name: 风控先决
+    rule: "risk.decision must be PASS before capture"
+  - name: 对账平衡
+    rule: "sum(payouts) + fees = net_receivable"
+  - name: 合规模型
+    rule: "kyc/aml checks must pass for high-risk profiles"
+```
 
-## 6. 与AI结合点
+### 类型安全与配置示例
 
-- 智能补全支付配置、风控规则。
-- 自动推理支付依赖、风险模式。
-- 智能生成优化、监控建议。
+```yaml
+# Stripe 风格配置（抽象）
+merchant:
+  id: m_123
+  methods: ["card", "alipay", "wechat"]
+  webhooks:
+    - event: payment_intent.succeeded
+      url: https://merchant.example.com/webhooks/stripe
+risk:
+  rules:
+    - name: high_amount
+      when: amount > 10000 && country in ["US", "EU"]
+      action: MANUAL_REVIEW
+    - name: velocity
+      when: count(user_id, 10m) > 5
+      action: DECLINE
+clearing:
+  cycle: D+1
+  fee:
+    scheme: interchange++
+    value: 2.9% + $0.3
+```
 
-## 7. 递归细分方向
+## 应用案例
 
-- 支付建模
-- 风控建模
-- 清算建模
-- 合规建模
+### 案例1：多渠道路由与降级
 
-每一方向均可进一步细化理论与DSL设计。
+```yaml
+smart_routing:
+  prefer: ["stripe", "adyen", "paypal"]
+  rules:
+    - when: issuer = "CN" && method = "card"
+      route: adyen
+    - when: method = "wallet"
+      route: paypal
+    - when: gateway.unavailable
+      fallback: next
+```
 
-## 理论确定性与论证推理
+### 案例2：分账与结算
 
-在支付网关领域，理论确定性是实现支付处理自动化、风险控制、合规管理的基础。以 Stripe、Adyen、PayPal、Square 等主流支付网关平台为例：1 **形式化定义**  
-   支付规则、风控策略、清算要求等均有标准化描述和配置语言。2 **公理化系统**  
-   通过规则引擎和支付管理，实现支付逻辑的自动推理与风险控制。3. **类型安全**  
-   支付参数、风控配置、清算规则等严格定义，防止支付错误。4. **可证明性**  
-   关键属性如支付正确性、风险控制等可通过验证和测试进行形式化证明。
+```yaml
+split_settlement:
+  order: o_123
+  splits:
+    - party: supplier
+      amount: 70%
+    - party: platform
+      amount: 30%
+  settlement: D+1
+```
 
-这些理论基础为支付网关的自动化配置、风险控制和合规管理提供了理论支撑。
+## 最佳实践
+
+```yaml
+best_practices:
+  - name: PCI-DSS合规
+    description: "使用令牌化与合规托管，减少卡数据暴露"
+  - name: 分层风控
+    description: "静态规则+机器学习+人工复核"
+  - name: 幂等与重试
+    description: "请求幂等键+幂等回调处理"
+  - name: Webhook安全
+    description: "签名校验、重放防护、重试策略"
+  - name: 对账自动化
+    description: "平台账与渠道账差异自动对齐与告警"
+```
+
+## 开源/平台映射
+
+- Stripe, Adyen, PayPal, Braintree
+
+## 相关链接
+
+- 内部: `docs/industry-model/finance-architecture/theory.md`
+- 外部: `https://stripe.com/docs`, `https://docs.adyen.com/`, `https://developer.paypal.com/`
+
+## 总结
+
+支付网关通过策略化路由、分层风控与自动化清结算，确保支付的安全、合规与高可用。形式化建模与公理化约束可显著提升可验证性与可运维性。

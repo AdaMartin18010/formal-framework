@@ -1,58 +1,153 @@
-# 无服务器理论探讨
+# 无服务器理论
 
-## 1 形式化目标
+## 概念定义
 
-- 以结构化方式描述无服务器、函数、事件、触发器等。
-- 支持AWS Lambda、Azure Functions、Knative等主流无服务器平台的统一建模。
-- 便于自动生成函数配置、事件规则、触发器等。
+### 无服务器计算（Serverless）
 
-## 2. 核心概念
+以事件驱动与函数即服务（FaaS）为核心的云原生范式，开发者关注业务逻辑，平台负责弹性伸缩、运行时与计费。
 
-- **函数模型**：代码、运行时、内存、超时等。
-- **事件模型**：触发器、事件源、事件格式等。
-- **触发器模型**：HTTP、定时、消息队列等。
-- **扩展模型**：自动扩缩容、并发控制等。
+### 核心概念
 
-## 3. 已有标准
+- **函数（Function）**: 部署与计费最小单元
+- **事件（Event）**: 触发函数执行的输入
+- **触发器（Trigger）**: 将事件源与函数绑定
+- **并发（Concurrency）**: 并行执行度与资源隔离
 
-- AWS Lambda（函数计算）
-- Azure Functions（微软）
-- Google Cloud Functions（谷歌）
-- Knative（Kubernetes原生）
+## 理论基础
 
-## 4. 可行性分析
+### 形式化建模理论
 
-- 无服务器结构化强，标准化程度高，适合DSL抽象。
-- 可自动生成函数配置、事件规则、触发器。
-- 易于与AI结合进行资源优化、自动扩缩容建议。
+```yaml
+serverless:
+  function:
+    definition: "f = (code, runtime, memory, timeout, env, perms)"
+  trigger:
+    definition: "t = (source, filter, mapping)"
+  scaling:
+    definition: "s = (min, max, concurrency, cooldown)"
+```
 
-## 5自动化价值
+### 公理化系统
 
-- 降低手工编写和维护无服务器函数的成本。
-- 提高函数部署的一致性和可扩展性。
-- 支持自动化扩缩容和事件处理。
+```yaml
+axioms:
+  - name: "幂等性"
+    rule: "for events possibly delivered >=1 times, f must be idempotent"
+  - name: "最短冷启动路径"
+    rule: "runtime.init <= configured_threshold"
+  - name: "权限最小化"
+    rule: "function.permissions subset_of required_permissions"
+  - name: "背压与限流"
+    rule: "queue_depth <= max_backlog and qps <= limit"
+```
 
-## 6. 与AI结合点
+### 类型安全与配置示例
 
-- 智能补全函数配置、事件规则。
-- 自动推理函数依赖、事件模式。
-- 智能生成扩缩容、优化建议。
+```yaml
+# AWS SAM/CloudFormation（精简）
+Resources:
+  HelloFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.handler
+      Runtime: nodejs18.x
+      MemorySize: 256
+      Timeout: 10
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /hello
+            Method: get
+```
 
-## 7. 递归细分方向
+```yaml
+# Knative Service（精简）
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: hello
+spec:
+  template:
+    spec:
+      containers:
+        - image: gcr.io/demo/hello:latest
+          env:
+            - name: TARGET
+              value: "World"
+      containerConcurrency: 100
+  traffic:
+    - latestRevision: true
+      percent: 100
+```
 
-- 函数建模
-- 事件建模
-- 触发器建模
-- 扩展建模
+## 应用案例
 
-每一方向均可进一步细化理论与DSL设计。
+### 案例1：事件驱动图像处理
 
-## 理论确定性与论证推理
+```yaml
+event_image_pipeline:
+  triggers:
+    - source: s3:ObjectCreated
+      filter: { suffix: ".jpg" }
+  functions:
+    - name: resize
+      memory: 512
+      timeout: 15
+    - name: classify
+      memory: 1024
+      timeout: 20
+  queues:
+    - name: image-jobs
+      dlq: image-dlq
+```
 
-在无服务器领域，理论确定性是实现函数自动化、事件驱动、弹性扩缩的基础。以 AWS Lambda、Azure Functions、Knative、OpenFaaS 等主流开源项目为例：1 **形式化定义**  
-   函数、事件、触发器等均有标准化描述和配置语言。2 **公理化系统**  
-   通过规则引擎和事件驱动，实现函数逻辑的自动推理与执行。3. **类型安全**  
-   函数类型、事件格式、触发器参数等严格定义，防止执行错误。4. **可证明性**  
-   关键属性如函数正确性、事件处理等可通过验证和测试进行形式化证明。
+### 案例2：API后端
 
-这些理论基础为无服务器平台的自动化部署、事件处理和弹性扩缩提供了理论支撑。
+```yaml
+serverless_api:
+  http:
+    base_path: /api
+    routes:
+      - path: /orders
+        method: POST
+        function: createOrder
+      - path: /orders/{id}
+        method: GET
+        function: getOrder
+  auth: oidc
+  rate_limit:
+    per_minute: 120
+```
+
+## 最佳实践
+
+```yaml
+best_practices:
+  - name: 冷启动优化
+    tips: ["预热", "轻量依赖", "较小镜像"]
+  - name: 幂等与重试
+    tips: ["幂等键", "指数退避", "DLQ"]
+  - name: 观测性
+    tips: ["结构化日志", "分布式追踪", "自定义指标"]
+  - name: 安全
+    tips: ["最小权限IAM", "密钥管理", "输入校验"]
+  - name: 成本优化
+    tips: ["右尺寸运行内存", "按需并发", "缓存复用"]
+```
+
+## 开源项目映射
+
+- Knative, OpenFaaS, AWS SAM/Serverless Framework
+
+## 相关链接
+
+- 内部: `docs/industry-model/cloud-native-architecture/theory.md`
+- 外部: `https://knative.dev/`, `https://www.serverless.com/`
+
+## 总结
+
+无服务器通过事件驱动与细粒度伸缩提升迭代效率与成本效率。遵循幂等、权限最小化与可观测性原则可显著提升可靠性。
