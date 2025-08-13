@@ -3,9 +3,11 @@
 ## 概念定义
 
 ### 区块链金融
+
 区块链金融是指基于区块链技术构建的去中心化金融服务体系，包括DeFi（去中心化金融）、数字资产、智能合约等创新金融模式。
 
 ### 核心概念
+
 - **DeFi（去中心化金融）**：基于区块链技术构建的无需中介的金融服务
 - **智能合约**：自动执行的程序化合约，确保交易的安全性和透明性
 - **流动性挖矿**：通过提供流动性获得代币奖励的机制
@@ -14,6 +16,7 @@
 ## 理论基础
 
 ### 形式化建模理论
+
 基于密码学和经济学理论，构建区块链金融的数学基础：
 
 ```yaml
@@ -46,6 +49,7 @@ blockchain_finance:
 ```
 
 ### 公理化系统
+
 通过形式化验证实现区块链金融逻辑的自动推理：
 
 ```yaml
@@ -69,6 +73,7 @@ axioms:
 ```
 
 ### 类型安全理论
+
 确保智能合约和协议的类型安全：
 
 ```solidity
@@ -122,6 +127,7 @@ interface LiquidityPool {
 ## 应用案例
 
 ### 案例1：去中心化交易所（DEX）
+
 ```yaml
 # Uniswap V3 配置示例
 uniswap_v3:
@@ -155,6 +161,7 @@ uniswap_v3:
 ```
 
 ### 案例2：借贷协议
+
 ```yaml
 # Compound 配置示例
 compound:
@@ -193,6 +200,7 @@ compound:
 ```
 
 ### 案例3：稳定币协议
+
 ```yaml
 # MakerDAO 配置示例
 makerdao:
@@ -231,6 +239,7 @@ makerdao:
 ## 最佳实践
 
 ### 1. 智能合约安全最佳实践
+
 ```solidity
 // 安全合约模板
 contract SecureDeFiProtocol {
@@ -286,6 +295,7 @@ contract SecureDeFiProtocol {
 ```
 
 ### 2. 风险管理最佳实践
+
 ```yaml
 risk_management_best_practices:
   - name: "多签名钱包"
@@ -319,6 +329,7 @@ risk_management_best_practices:
 ```
 
 ### 3. 合规最佳实践
+
 ```yaml
 compliance_best_practices:
   - name: "KYC/AML"
@@ -349,21 +360,25 @@ compliance_best_practices:
 ## 开源项目映射
 
 ### Uniswap
+
 - **功能特性**: 去中心化交易所、自动做市商、流动性挖矿
 - **技术架构**: Solidity + TypeScript + React
 - **适用场景**: 代币交换、流动性提供
 
 ### Compound
+
 - **功能特性**: 算法借贷、利率模型、清算机制
 - **技术架构**: Solidity + JavaScript + Python
 - **适用场景**: 加密资产借贷
 
 ### Aave
+
 - **功能特性**: 多抵押品借贷、闪电贷、利率切换
 - **技术架构**: Solidity + TypeScript + React
 - **适用场景**: 高级借贷服务
 
 ### MakerDAO
+
 - **功能特性**: 稳定币发行、多抵押品、治理代币
 - **技术架构**: Solidity + JavaScript + Python
 - **适用场景**: 去中心化稳定币
@@ -371,12 +386,14 @@ compliance_best_practices:
 ## 相关链接
 
 ### 内部文档
+
 - [金融架构](../finance-architecture.md)
 - [支付网关](../payment-gateway/theory.md)
 - [核心银行](../core-banking/theory.md)
 - [风险管理](../risk-management/theory.md)
 
 ### 外部资源
+
 - [以太坊白皮书](https://ethereum.org/en/whitepaper/)
 - [DeFi Pulse](https://defipulse.com/)
 - [CoinGecko](https://www.coingecko.com/)
@@ -387,6 +404,7 @@ compliance_best_practices:
 区块链金融理论为去中心化金融服务提供了坚实的理论基础。通过形式化建模、公理化系统和类型安全理论，可以实现区块链金融的自动化、安全性和合规性。
 
 关键要点：
+
 1. **形式化定义**确保协议逻辑的精确性和一致性
 2. **公理化系统**支持自动化验证和推理
 3. **类型安全**防止智能合约错误和漏洞
