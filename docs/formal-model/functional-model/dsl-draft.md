@@ -1,593 +1,1299 @@
-# 功能建模DSL草案（递归扩展版）
+# 功能模型DSL草案
 
 ## 1. 设计目标
 
-- 用统一DSL描述业务逻辑、规则引擎、状态机、工作流等功能建模要素，支持递归嵌套与复杂组合。
-- 支持自动生成业务代码、规则配置、状态机定义、工作流引擎配置等，便于多业务场景集成。
-- 支持权限、审计、安全、AI自动化等高级特性。
+- 用统一DSL描述业务逻辑、规则引擎、状态机、工作流等功能性组件
+- 支持自动生成Spring Boot、Node.js、Python等主流框架的业务逻辑代码
+- 提供形式化验证和自动化推理能力
+- 支持多语言、多框架的代码生成
+- 实现业务逻辑的自动优化和重构
 
 ## 2. 基本语法结构
 
-```dsl
-# 业务逻辑建模
-business_logic UserRegistration {
-  input: [username, email, password]
-  validation: [
-    { field: username, rule: "length >= 3" },
-    { field: email, rule: "email_format" },
-    { field: password, rule: "strength >= 8" }
-  ]
-  process: [
-    { step: "validate_input", condition: "all_valid" },
-    { step: "hash_password", input: "password" },
-    { step: "create_user", output: "user_id" },
-    { step: "send_welcome_email", input: "user_id" }
-  ]
-  output: "user_id"
-  error_handling: {
-    validation_error: "return_error_message",
-    database_error: "rollback_and_retry",
-    email_error: "log_and_continue"
-  }
-}
+### 2.1 业务逻辑建模 (Business Logic Modeling)
 
-# 规则引擎建模
-rule_engine CreditScore {
+```dsl
+business_logic OrderService {
+  class: "com.example.OrderService"
+  framework: "spring_boot"
+  
+  methods: [
+    {
+      name: "createOrder"
+      description: "创建订单"
+      parameters: [
+        {
+          name: "orderRequest"
+          type: "OrderCreateRequest"
+          validation: {
+            required: true
+            not_null: true
+          }
+        }
+      ]
+      logic: [
+        {
+          step: "validate_request"
+          action: "validateOrderRequest"
+          conditions: [
+            {
+              check: "orderRequest.items != null"
+              message: "订单项不能为空"
+            },
+            {
+              check: "orderRequest.items.size() > 0"
+              message: "订单项数量必须大于0"
+            }
+          ]
+        },
+        {
+          step: "check_inventory"
+          action: "checkInventoryAvailability"
+          service: "inventoryService"
+          method: "checkStock"
+          parameters: {
+            items: "orderRequest.items"
+          }
+          error_handling: {
+            exception: "InsufficientStockException"
+            action: "throw_exception"
+          }
+        },
+        {
+          step: "calculate_total"
+          action: "calculateOrderTotal"
+          logic: [
+            "sum = 0",
+            "for item in orderRequest.items:",
+            "  sum += item.price * item.quantity",
+            "  if item.discount > 0:",
+            "    sum -= item.discount",
+            "return sum"
+          ]
+        },
+        {
+          step: "apply_discount"
+          action: "applyDiscountRules"
+          rules: [
+            {
+              condition: "orderTotal >= 1000"
+              action: "apply 10% discount"
+              calculation: "discount = orderTotal * 0.1"
+            },
+            {
+              condition: "customer.isVip"
+              action: "apply VIP discount"
+              calculation: "discount += orderTotal * 0.05"
+            }
+          ]
+        },
+        {
+          step: "create_order"
+          action: "persistOrder"
+          service: "orderRepository"
+          method: "save"
+          parameters: {
+            order: "new Order(orderRequest, totalAmount, discount)"
+          }
+        },
+        {
+          step: "update_inventory"
+          action: "updateInventory"
+          service: "inventoryService"
+          method: "reduceStock"
+          parameters: {
+            items: "orderRequest.items"
+          }
+        },
+        {
+          step: "send_notification"
+          action: "notifyCustomer"
+          service: "notificationService"
+          method: "sendOrderConfirmation"
+          parameters: {
+            orderId: "order.id",
+            customerEmail: "orderRequest.customerEmail"
+          }
+        }
+      ]
+      return_type: "OrderResponse"
+      exceptions: [
+        "ValidationException",
+        "InsufficientStockException",
+        "PaymentException"
+      ]
+    }
+  ]
+}
+```
+
+### 2.2 规则引擎建模 (Rule Engine Modeling)
+
+```dsl
+rule_engine PricingRuleEngine {
+  framework: "drools"
+  
   rules: [
     {
-      name: "high_income_rule",
-      condition: "income > 50000",
-      action: "add_score(20)"
+      name: "volume_discount_rule"
+      description: "批量购买折扣规则"
+      priority: 1
+      when: [
+        "order.totalAmount >= 1000",
+        "order.customer.type == 'REGULAR'"
+      ]
+      then: [
+        "order.discount = order.totalAmount * 0.1",
+        "order.discountReason = 'Volume Discount'"
+      ]
     },
     {
-      name: "good_history_rule", 
-      condition: "payment_history = 'good'",
-      action: "add_score(15)"
+      name: "vip_customer_rule"
+      description: "VIP客户折扣规则"
+      priority: 2
+      when: [
+        "order.customer.type == 'VIP'",
+        "order.customer.membershipYears >= 2"
+      ]
+      then: [
+        "order.discount += order.totalAmount * 0.05",
+        "order.discountReason += ', VIP Discount'"
+      ]
     },
     {
-      name: "low_debt_rule",
-      condition: "debt_ratio < 0.3",
-      action: "add_score(10)"
+      name: "seasonal_promotion_rule"
+      description: "季节性促销规则"
+      priority: 3
+      when: [
+        "currentDate.month == 12",
+        "order.totalAmount >= 500"
+      ]
+      then: [
+        "order.discount += order.totalAmount * 0.15",
+        "order.discountReason += ', Holiday Promotion'"
+      ]
+    },
+    {
+      name: "new_customer_rule"
+      description: "新客户优惠规则"
+      priority: 4
+      when: [
+        "order.customer.registrationDate >= currentDate - 30",
+        "order.totalAmount >= 200"
+      ]
+      then: [
+        "order.discount += order.totalAmount * 0.08",
+        "order.discountReason += ', New Customer Bonus'"
+      ]
     }
   ]
-  aggregation: "sum"
-  threshold: 60
-  output: "credit_approved"
+  
+  rule_chaining: {
+    enabled: true
+    max_iterations: 10
+    conflict_resolution: "priority"
+  }
+  
+  rule_monitoring: {
+    enabled: true
+    metrics: [
+      "rule_execution_count",
+      "rule_execution_time",
+      "rule_activation_count"
+    ]
+  }
 }
+```
 
-# 状态机建模
-state_machine OrderProcess {
+### 2.3 状态机建模 (State Machine Modeling)
+
+```dsl
+state_machine OrderStateMachine {
+  framework: "spring_statemachine"
+  
   states: [
-    { name: "pending", initial: true },
-    { name: "confirmed" },
-    { name: "shipped" },
-    { name: "delivered", final: true },
-    { name: "cancelled", final: true }
+    {
+      name: "CREATED"
+      description: "订单已创建"
+      entry_actions: [
+        "sendOrderCreatedNotification"
+      ]
+    },
+    {
+      name: "PAYMENT_PENDING"
+      description: "等待支付"
+      entry_actions: [
+        "sendPaymentReminder"
+      ],
+      exit_actions: [
+        "cancelPaymentReminder"
+      ]
+    },
+    {
+      name: "PAID"
+      description: "已支付"
+      entry_actions: [
+        "processPayment",
+        "updateInventory"
+      ]
+    },
+    {
+      name: "PROCESSING"
+      description: "处理中"
+      entry_actions: [
+        "assignToWarehouse"
+      ]
+    },
+    {
+      name: "SHIPPED"
+      description: "已发货"
+      entry_actions: [
+        "generateTrackingNumber",
+        "sendShippingNotification"
+      ]
+    },
+    {
+      name: "DELIVERED"
+      description: "已送达"
+      entry_actions: [
+        "sendDeliveryConfirmation",
+        "requestReview"
+      ]
+    },
+    {
+      name: "CANCELLED"
+      description: "已取消"
+      entry_actions: [
+        "processRefund",
+        "restoreInventory",
+        "sendCancellationNotification"
+      ]
+    }
   ]
+  
   transitions: [
-    { from: "pending", to: "confirmed", event: "confirm_order" },
-    { from: "confirmed", to: "shipped", event: "ship_order" },
-    { from: "shipped", to: "delivered", event: "deliver_order" },
-    { from: "pending", to: "cancelled", event: "cancel_order" },
-    { from: "confirmed", to: "cancelled", event: "cancel_order" }
+    {
+      from: "CREATED"
+      to: "PAYMENT_PENDING"
+      event: "SUBMIT_ORDER"
+      guard: "orderValidationPassed"
+    },
+    {
+      from: "PAYMENT_PENDING"
+      to: "PAID"
+      event: "PAYMENT_RECEIVED"
+      guard: "paymentValidationPassed"
+    },
+    {
+      from: "PAYMENT_PENDING"
+      to: "CANCELLED"
+      event: "PAYMENT_TIMEOUT"
+      guard: "paymentTimeoutReached"
+    },
+    {
+      from: "PAID"
+      to: "PROCESSING"
+      event: "START_PROCESSING"
+      guard: "inventoryAvailable"
+    },
+    {
+      from: "PROCESSING"
+      to: "SHIPPED"
+      event: "SHIP_ORDER"
+      guard: "orderReadyForShipping"
+    },
+    {
+      from: "SHIPPED"
+      to: "DELIVERED"
+      event: "CONFIRM_DELIVERY"
+      guard: "deliveryConfirmed"
+    },
+    {
+      from: ["CREATED", "PAYMENT_PENDING", "PAID"]
+      to: "CANCELLED"
+      event: "CANCEL_ORDER"
+      guard: "orderCancellable"
+    }
   ]
+  
+  guards: [
+    {
+      name: "orderValidationPassed"
+      logic: [
+        "return order.items != null && order.items.size() > 0",
+        "&& order.customer != null",
+        "&& order.shippingAddress != null"
+      ]
+    },
+    {
+      name: "paymentValidationPassed"
+      logic: [
+        "return payment.amount == order.totalAmount",
+        "&& payment.status == 'SUCCESS'",
+        "&& payment.method != null"
+      ]
+    },
+    {
+      name: "inventoryAvailable"
+      logic: [
+        "for item in order.items:",
+        "  if inventoryService.getStock(item.productId) < item.quantity:",
+        "    return false",
+        "return true"
+      ]
+    }
+  ]
+  
   actions: [
-    { state: "confirmed", action: "send_confirmation_email" },
-    { state: "shipped", action: "send_tracking_info" },
-    { state: "delivered", action: "request_feedback" }
-  ]
-}
-
-# 工作流建模
-workflow LoanApplication {
-  steps: [
     {
-      name: "submit_application",
-      type: "user_input",
-      required: ["personal_info", "income_info", "loan_amount"]
+      name: "sendOrderCreatedNotification"
+      service: "notificationService"
+      method: "sendOrderCreated"
+      parameters: {
+        orderId: "order.id",
+        customerEmail: "order.customer.email"
+      }
     },
     {
-      name: "credit_check",
-      type: "automated",
-      service: "credit_bureau_api",
-      timeout: 30
-    },
-    {
-      name: "risk_assessment",
-      type: "automated",
-      rules: "risk_rules",
-      depends_on: ["credit_check"]
-    },
-    {
-      name: "manual_review",
-      type: "human_approval",
-      condition: "risk_score > 0.7",
-      assignee: "loan_officer"
-    },
-    {
-      name: "approve_loan",
-      type: "automated",
-      condition: "risk_score <= 0.7 OR manual_approved",
-      action: "create_loan_contract"
+      name: "processPayment"
+      service: "paymentService"
+      method: "processPayment"
+      parameters: {
+        orderId: "order.id",
+        amount: "order.totalAmount",
+        method: "order.paymentMethod"
+      }
     }
   ]
-  error_handling: {
-    timeout: "retry_3_times",
-    service_error: "fallback_to_manual",
-    approval_timeout: "escalate_to_manager"
+}
+```
+
+### 2.4 工作流建模 (Workflow Modeling)
+
+```dsl
+workflow OrderProcessingWorkflow {
+  framework: "camunda"
+  
+  process: {
+    id: "order-processing"
+    name: "订单处理工作流"
+    version: "1.0"
   }
-}
-```
-
-## 3. 关键元素
-
-- business_logic：业务逻辑定义
-- rule_engine：规则引擎定义
-- state_machine：状态机定义
-- workfow：工作流定义
-- input/output：输入输出定义
-- validation/process：验证与处理步骤
-- rules/conditions：规则与条件
-- states/transitions：状态与转换
-- steps/actions：步骤与动作
-- error_handling：错误处理
-
-## 4. 高级用法与递归扩展
-
-### 4.1 复杂业务逻辑嵌套
-
-```dsl
-business_logic ComplexOrderProcess {
-  input: [order_items, customer_info, payment_method]
   
-  # 嵌套业务逻辑
-  sub_logic: [
+  tasks: [
     {
-      name: "inventory_check",
-      logic: {
-        input: ["order_items"],
-        process: [
-          { step: "check_stock", service: "inventory_api" },
-          { step: "reserve_items", condition: "stock_available" }
+      name: "validate_order"
+      type: "user_task"
+      assignee: "order_validator"
+      description: "验证订单信息"
+      form: {
+        fields: [
+          {
+            name: "orderValid"
+            type: "boolean"
+            label: "订单是否有效"
+          },
+          {
+            name: "validationNotes"
+            type: "text"
+            label: "验证备注"
+          }
         ]
       }
-    },
-    {
-      name: "payment_processing",
-      logic: {
-        input: ["payment_method", "total_amount"],
-        process: [
-          { step: "validate_payment", service: "payment_gateway" },
-          { step: "process_payment", condition: "payment_valid" }
-        ]
-      }
-    }
-  ]
-  
-  # 主流程
-  process: [
-    { step: "validate_order", condition: "all_sub_logic_success" },
-    { step: "create_order", output: "order_id" },
-    { step: "send_confirmation", input: "order_id" }
-  ]
-}
-```
-
-### 4.2 复杂规则引擎组合
-
-```dsl
-rule_engine AdvancedPricing {
-  # 基础规则
-  base_rules: [
-    {
-      name: "base_price",
-      condition: "product_type = 'standard'",
-      action: "set_price(base_price)"
-    }
-  ]
-  
-  # 动态规则
-  dynamic_rules: [
-    {
-      name: "volume_discount",
-      condition: "quantity >= 10",
-      action: "apply_discount(0.1)"
-    },
-    {
-      name: "loyalty_discount",
-      condition: "customer_tier = 'gold'",
-      action: "apply_discount(0.05)"
-    },
-    {
-      name: "seasonal_discount",
-      condition: "current_month in [11, 12]",
-      action: "apply_discount(0.15)"
-    }
-  ]
-  
-  # 规则组合策略
-  combination_strategy: "sequential"
-  final_action: "calculate_total"
-}
-```
-
-### 4.3 嵌套状态机
-
-```dsl
-state_machine NestedOrderProcess {
-  # 主状态机
-  main_states: [
-    { name: "order_created", initial: true },
-    { name: "processing" },
-    { name: "completed", final: true }
-  ]
-  
-  # 子状态机
-  sub_machines: [
-    {
-      name: "payment_state_machine",
-      states: ["pending", "processing", "completed", "failed"],
-      parent_state: "processing"
-    },
-    {
-      name: "shipping_state_machine", 
-      states: ["preparing", "shipped", "delivered"],
-      parent_state: "processing"
-    }
-  ]
-  
-  # 状态转换
-  transitions: [
-    { from: "order_created", to: "processing", event: "start_processing" },
-    { from: "processing", to: "completed", condition: "all_sub_machines_completed" }
-  ]
-}
-```
-
-### 4.4 复杂工作流编排
-
-```dsl
-workflow EnterpriseOnboarding {
-  # 并行步骤组
-  parallel_groups: [
-    {
-      name: "background_checks",
-      steps: [
-        { name: "criminal_check", type: "automated", service: "criminal_api" },
-        { name: "credit_check", type: "automated", service: "credit_api" },
-        { name: "reference_check", type: "human_task", assignee: "hr_officer" }
+      outcomes: [
+        {
+          condition: "orderValid == true"
+          next: "check_inventory"
+        },
+        {
+          condition: "orderValid == false"
+          next: "reject_order"
+        }
       ]
     },
     {
-      name: "document_processing",
-      steps: [
-        { name: "id_verification", type: "automated", service: "ocr_api" },
-        { name: "contract_generation", type: "automated", template: "employment_contract" }
+      name: "check_inventory"
+      type: "service_task"
+      service: "inventoryService"
+      method: "checkAvailability"
+      input_parameters: {
+        items: "order.items"
+      }
+      output_parameters: {
+        available: "inventoryResult.available"
+        unavailableItems: "inventoryResult.unavailableItems"
+      }
+      outcomes: [
+        {
+          condition: "available == true"
+          next: "process_payment"
+        },
+        {
+          condition: "available == false"
+          next: "notify_out_of_stock"
+        }
+      ]
+    },
+    {
+      name: "process_payment"
+      type: "service_task"
+      service: "paymentService"
+      method: "processPayment"
+      input_parameters: {
+        orderId: "order.id"
+        amount: "order.totalAmount"
+        method: "order.paymentMethod"
+      }
+      output_parameters: {
+        paymentStatus: "paymentResult.status"
+        transactionId: "paymentResult.transactionId"
+      }
+      outcomes: [
+        {
+          condition: "paymentStatus == 'SUCCESS'"
+          next: "prepare_shipment"
+        },
+        {
+          condition: "paymentStatus == 'FAILED'"
+          next: "handle_payment_failure"
+        }
+      ]
+    },
+    {
+      name: "prepare_shipment"
+      type: "user_task"
+      assignee: "warehouse_staff"
+      description: "准备发货"
+      form: {
+        fields: [
+          {
+            name: "packagingComplete"
+            type: "boolean"
+            label: "包装完成"
+          },
+          {
+            name: "trackingNumber"
+            type: "text"
+            label: "跟踪号"
+          }
+        ]
+      }
+      outcomes: [
+        {
+          condition: "packagingComplete == true"
+          next: "ship_order"
+        }
+      ]
+    },
+    {
+      name: "ship_order"
+      type: "service_task"
+      service: "shippingService"
+      method: "shipOrder"
+      input_parameters: {
+        orderId: "order.id"
+        trackingNumber: "trackingNumber"
+        shippingAddress: "order.shippingAddress"
+      }
+      outcomes: [
+        {
+          condition: "true"
+          next: "complete_order"
+        }
       ]
     }
   ]
   
-  # 串行步骤
-  sequential_steps: [
-    { name: "final_approval", type: "human_approval", assignee: "hr_manager" },
-    { name: "system_setup", type: "automated", depends_on: ["background_checks", "document_processing"] },
-    { name: "welcome_kit", type: "automated", action: "send_welcome_email" }
-  ]
-  
-  # 条件分支
-  conditional_branches: [
+  events: [
     {
-      condition: "background_check_failed",
-      steps: [{ name: "rejection_process", type: "automated" }]
+      name: "order_created"
+      type: "start_event"
+      trigger: "message"
+      message_name: "OrderCreated"
     },
     {
-      condition: "requires_additional_documents",
-      steps: [{ name: "document_request", type: "human_task" }]
+      name: "order_completed"
+      type: "end_event"
+      trigger: "message"
+      message_name: "OrderCompleted"
+    },
+    {
+      name: "payment_timeout"
+      type: "intermediate_event"
+      trigger: "timer"
+      timer_definition: "PT24H"
+    }
+  ]
+  
+  variables: [
+    {
+      name: "order"
+      type: "Order"
+      scope: "process"
+    },
+    {
+      name: "paymentResult"
+      type: "PaymentResult"
+      scope: "process"
+    },
+    {
+      name: "inventoryResult"
+      type: "InventoryResult"
+      scope: "process"
     }
   ]
 }
 ```
 
-### 4.5 权限与安全声明
+## 3. 高级特性
+
+### 3.1 业务规则模板 (Business Rule Templates)
 
 ```dsl
-business_logic SensitiveDataProcess {
-  input: [user_data, operation_type]
-  permission: "data_processor"
-  audit: true
+business_rule_template DiscountRuleTemplate {
+  category: "pricing"
   
-  process: [
-    { step: "validate_permission", type: "security_check" },
-    { step: "process_data", type: "business_logic" },
-    { step: "log_operation", type: "audit_log" }
+  parameters: [
+    {
+      name: "threshold"
+      type: "decimal"
+      description: "折扣阈值"
+    },
+    {
+      name: "discount_percentage"
+      type: "decimal"
+      description: "折扣百分比"
+    },
+    {
+      name: "customer_type"
+      type: "string"
+      description: "客户类型"
+    }
   ]
   
-  security: {
-    encryption: "AES256",
-    data_retention: "30_days",
-    access_log: true
+  template: {
+    name: "{{customer_type}}_discount_rule"
+    description: "{{customer_type}}客户折扣规则"
+    when: [
+      "order.totalAmount >= {{threshold}}",
+      "order.customer.type == '{{customer_type}}'"
+    ]
+    then: [
+      "order.discount += order.totalAmount * {{discount_percentage}}",
+      "order.discountReason += ', {{customer_type}} Discount'"
+    ]
   }
+  
+  instances: [
+    {
+      name: "vip_discount"
+      parameters: {
+        threshold: 1000
+        discount_percentage: 0.1
+        customer_type: "VIP"
+      }
+    },
+    {
+      name: "regular_discount"
+      parameters: {
+        threshold: 500
+        discount_percentage: 0.05
+        customer_type: "REGULAR"
+      }
+    }
+  ]
 }
 ```
 
-### 4.6 AI自动化与智能决策
+### 3.2 决策表 (Decision Tables)
 
 ```dsl
-# 支持AI自动生成业务逻辑
-ai_business_logic "处理用户投诉并自动分类" {
-  input: [complaint_text, user_info, order_history]
-  ai_model: "complaint_classifier"
-  confidence_threshold: 0.8
+decision_table ShippingDecisionTable {
+  name: "运费计算决策表"
   
-  auto_generated_logic: {
-    classification: "ai_classify_complaint",
-    routing: "ai_route_to_department",
-    response: "ai_generate_response"
-  }
-  
-  fallback: "escalate_to_human"
-}
-
-# 智能规则引擎
-ai_rule_engine DynamicPricing {
-  ai_model: "price_optimization"
-  learning_rate: 0.01
-  
-  dynamic_rules: [
+  input_columns: [
     {
-      name: "ai_demand_prediction",
-      condition: "ai_predict_demand > threshold",
-      action: "ai_adjust_price"
+      name: "order_total"
+      type: "decimal"
+      description: "订单总额"
     },
     {
-      name: "ai_competitor_analysis", 
-      condition: "ai_analyze_competition",
-      action: "ai_competitive_pricing"
+      name: "shipping_zone"
+      type: "string"
+      description: "配送区域"
+    },
+    {
+      name: "customer_type"
+      type: "string"
+      description: "客户类型"
     }
   ]
   
-  human_override: true
+  output_columns: [
+    {
+      name: "shipping_cost"
+      type: "decimal"
+      description: "运费"
+    },
+    {
+      name: "shipping_method"
+      type: "string"
+      description: "配送方式"
+    }
+  ]
+  
+  rules: [
+    {
+      conditions: {
+        order_total: ">= 1000"
+        shipping_zone: "LOCAL"
+        customer_type: "VIP"
+      }
+      outputs: {
+        shipping_cost: 0
+        shipping_method: "FREE_EXPRESS"
+      }
+    },
+    {
+      conditions: {
+        order_total: ">= 500"
+        shipping_zone: "LOCAL"
+        customer_type: "REGULAR"
+      }
+      outputs: {
+        shipping_cost: 10
+        shipping_method: "STANDARD"
+      }
+    },
+    {
+      conditions: {
+        order_total: "< 500"
+        shipping_zone: "LOCAL"
+        customer_type: "REGULAR"
+      }
+      outputs: {
+        shipping_cost: 20
+        shipping_method: "STANDARD"
+      }
+    },
+    {
+      conditions: {
+        order_total: ">= 1000"
+        shipping_zone: "INTERNATIONAL"
+        customer_type: "VIP"
+      }
+      outputs: {
+        shipping_cost: 50
+        shipping_method: "EXPRESS"
+      }
+    }
+  ]
 }
 ```
 
-## 5. 与主流标准的映射
-
-- 可自动转换为Spring Boot、Node.js、Python等业务代码
-- 支持与Drools、Easy Rules、Camunda等规则引擎集成
-- 支持与AWS Step Functions、Apache Airflow等工作流引擎集成
-- 支持权限、审计、安全策略自动生成
-
-## 6. 递归扩展建议
-
-- 支持复杂业务逻辑嵌套、条件分支、异常处理、补偿机制
-- 支持规则引擎组合、优先级、冲突解决、动态规则
-- 支持状态机嵌套、事件驱动、超时处理、状态持久化
-- 支持工作流并行、分支合并、人工任务、系统集成
-- 支持AI自动生成与优化业务逻辑、规则、状态机、工作流
-- 支持多业务场景、分布式处理、微服务集成
-
-## 7. 工程实践示例
+### 3.3 业务函数库 (Business Function Library)
 
 ```dsl
-# 电商订单处理完整示例
-workflow EcommerceOrderProcess {
-  steps: [
+business_function_library OrderFunctions {
+  functions: [
     {
-      name: "order_validation",
-      type: "automated",
-      rules: "order_validation_rules",
-      timeout: 10
+      name: "calculateOrderTotal"
+      description: "计算订单总额"
+      parameters: [
+        {
+          name: "items"
+          type: "List<OrderItem>"
+        }
+      ]
+      return_type: "decimal"
+      implementation: [
+        "total = 0",
+        "for item in items:",
+        "  total += item.price * item.quantity",
+        "  if item.discount > 0:",
+        "    total -= item.discount",
+        "return total"
+      ]
     },
     {
-      name: "inventory_reservation",
-      type: "automated", 
-      service: "inventory_service",
-      retry: 3
+      name: "applyDiscountRules"
+      description: "应用折扣规则"
+      parameters: [
+        {
+          name: "order"
+          type: "Order"
+        },
+        {
+          name: "rules"
+          type: "List<DiscountRule>"
+        }
+      ]
+      return_type: "decimal"
+      implementation: [
+        "totalDiscount = 0",
+        "for rule in rules:",
+        "  if rule.evaluate(order):",
+        "    discount = rule.calculateDiscount(order)",
+        "    totalDiscount += discount",
+        "return totalDiscount"
+      ]
     },
     {
-      name: "payment_processing",
-      type: "automated",
-      service: "payment_gateway",
-      fallback: "manual_payment_review"
-    },
-    {
-      name: "order_confirmation",
-      type: "automated",
-      action: "send_confirmation_email"
-    },
-    {
-      name: "fulfillment_planning",
-      type: "automated",
-      service: "logistics_service"
+      name: "validateOrderRequest"
+      description: "验证订单请求"
+      parameters: [
+        {
+          name: "request"
+          type: "OrderCreateRequest"
+        }
+      ]
+      return_type: "ValidationResult"
+      implementation: [
+        "errors = []",
+        "if request.items == null or request.items.isEmpty():",
+        "  errors.add('订单项不能为空')",
+        "if request.customer == null:",
+        "  errors.add('客户信息不能为空')",
+        "if request.shippingAddress == null:",
+        "  errors.add('配送地址不能为空')",
+        "return new ValidationResult(errors.isEmpty(), errors)"
+      ]
     }
   ]
-  
-  error_handling: {
-    validation_failed: "return_error_to_customer",
-    inventory_unavailable: "suggest_alternatives",
-    payment_failed: "retry_payment_3_times",
-    system_error: "escalate_to_support"
-  }
-  
-  monitoring: {
-    metrics: ["order_processing_time", "success_rate", "error_rate"],
-    alerts: ["processing_timeout", "high_error_rate"]
+}
+```
+
+## 4. 自动化代码生成
+
+### 4.1 Java Spring Boot 生成
+
+```dsl
+generate_java OrderService {
+  framework: "spring_boot"
+  patterns: [
+    "business_logic",
+    "rule_engine"
+  ]
+  output: {
+    directory: "src/main/java"
+    package: "com.example.orderservice"
   }
 }
 ```
 
----
+生成的代码示例：
 
-## 8. 功能建模递归扩展指南
-
-### 8.1 业务逻辑递归扩展
-
-- **基础业务逻辑**：输入验证、数据处理、输出生成
-- **复杂业务逻辑**：多步骤处理、条件分支、异常处理
-- **嵌套业务逻辑**：子逻辑组合、模块化设计、复用机制
-- **AI增强业务逻辑**：智能决策、自动优化、学习适应
-
-### 8.2 规则引擎递归扩展
-
-- **基础规则**：简单条件-动作规则
-- **复杂规则**：多条件组合、优先级、冲突解决
-- **动态规则**：运行时规则修改、规则版本管理
-- **AI规则**：机器学习规则、智能规则生成
-
-### 8.3 状态机递归扩展
-
-- **基础状态机**：简单状态转换
-- **复杂状态机**：嵌套状态、并发状态、超时处理
-- **事件驱动状态机**：事件触发、异步处理、状态持久化
-- **分布式状态机**：多实例协调、状态同步、故障恢复
-
-### 8.4 工作流递归扩展
-
-- **基础工作流**：串行步骤执行
-- **复杂工作流**：并行执行、条件分支、人工任务
-- **分布式工作流**：跨服务编排、事务管理、补偿机制
-- **智能工作流**：AI辅助决策、自动优化、自适应调整
-
-### 8.5 工程实践递归扩展
-
-- **开发阶段**：DSL设计、代码生成、测试用例
-- **部署阶段**：配置管理、环境隔离、版本控制
-- **运行阶段**：监控告警、性能优化、故障处理
-- **维护阶段**：日志分析、问题诊断、持续改进
-
----
-
-## 9. 自动化工具链集成
-
-### 9.1 代码生成工具
-
-```python
-# 业务逻辑代码生成示例
-def generate_business_logic_code(dsl_definition):
-    """根据DSL定义生成业务逻辑代码"""
-    code = []
-    for logic in dsl_definition.business_logic:
-        # 生成输入验证
-        code.append(generate_validation_code(logic.validation))
-        # 生成处理步骤
-        code.append(generate_process_code(logic.process))
-        # 生成错误处理
-        code.append(generate_error_handling_code(logic.error_handling))
-    return code
-```
-
-### 9.2 规则引擎配置生成
-
-```python
-# 规则引擎配置生成示例
-def generate_rule_engine_config(dsl_definition):
-    """根据DSL定义生成规则引擎配置"""
-    config = {
-        'rules': [],
-        'priority': {},
-        'conflict_resolution': 'priority'
+```java
+@Service
+@Transactional
+public class OrderService {
+    
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    @Autowired
+    private InventoryService inventoryService;
+    
+    @Autowired
+    private PaymentService paymentService;
+    
+    @Autowired
+    private NotificationService notificationService;
+    
+    @Autowired
+    private KieSession kieSession;
+    
+    public OrderResponse createOrder(OrderCreateRequest request) {
+        // 验证请求
+        ValidationResult validation = validateOrderRequest(request);
+        if (!validation.isValid()) {
+            throw new ValidationException(validation.getErrors());
+        }
+        
+        // 检查库存
+        InventoryResult inventory = inventoryService.checkStock(request.getItems());
+        if (!inventory.isAvailable()) {
+            throw new InsufficientStockException(inventory.getUnavailableItems());
+        }
+        
+        // 计算总额
+        BigDecimal totalAmount = calculateOrderTotal(request.getItems());
+        
+        // 应用折扣规则
+        Order order = new Order(request, totalAmount);
+        kieSession.insert(order);
+        kieSession.fireAllRules();
+        kieSession.dispose();
+        
+        // 保存订单
+        Order savedOrder = orderRepository.save(order);
+        
+        // 更新库存
+        inventoryService.reduceStock(request.getItems());
+        
+        // 发送通知
+        notificationService.sendOrderConfirmation(savedOrder.getId(), request.getCustomerEmail());
+        
+        return new OrderResponse(savedOrder);
     }
-    for rule in dsl_definition.rules:
-        config['rules'].append({
-            'name': rule.name,
-            'condition': rule.condition,
-            'action': rule.action,
-            'priority': rule.priority
-        })
-    return config
-```
-
-### 9.3 状态机代码生成
-
-```python
-# 状态机代码生成示例
-def generate_state_machine_code(dsl_definition):
-    """根据DSL定义生成状态机代码"""
-    code = []
-    # 生成状态定义
-    code.append(generate_states_code(dsl_definition.states))
-    # 生成转换逻辑
-    code.append(generate_transitions_code(dsl_definition.transitions))
-    # 生成动作处理
-    code.append(generate_actions_code(dsl_definition.actions))
-    return code
-```
-
-### 9.4 工作流引擎配置生成
-
-```python
-# 工作流引擎配置生成示例
-def generate_workflow_config(dsl_definition):
-    """根据DSL定义生成工作流引擎配置"""
-    config = {
-        'workflow': dsl_definition.name,
-        'steps': [],
-        'error_handling': dsl_definition.error_handling
+    
+    private ValidationResult validateOrderRequest(OrderCreateRequest request) {
+        List<String> errors = new ArrayList<>();
+        
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            errors.add("订单项不能为空");
+        }
+        if (request.getCustomer() == null) {
+            errors.add("客户信息不能为空");
+        }
+        if (request.getShippingAddress() == null) {
+            errors.add("配送地址不能为空");
+        }
+        
+        return new ValidationResult(errors.isEmpty(), errors);
     }
-    for step in dsl_definition.steps:
-        config['steps'].append({
-            'name': step.name,
-            'type': step.type,
-            'service': step.service,
-            'timeout': step.timeout,
-            'retry': step.retry
-        })
-    return config
+    
+    private BigDecimal calculateOrderTotal(List<OrderItem> items) {
+        return items.stream()
+            .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))
+                .subtract(item.getDiscount() != null ? item.getDiscount() : BigDecimal.ZERO))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+}
 ```
 
----
+### 4.2 Python Django 生成
 
-## 10. 最佳实践与常见陷阱
+```dsl
+generate_python OrderService {
+  framework: "django"
+  patterns: [
+    "business_logic",
+    "state_machine"
+  ]
+  output: {
+    directory: "orders"
+    app_name: "orders"
+  }
+}
+```
 
-### 10.1 最佳实践
+生成的代码示例：
 
-- **模块化设计**：将复杂业务逻辑拆分为可复用的模块
-- **错误处理**：为每个步骤定义明确的错误处理策略
-- **监控告警**：为关键步骤添加监控指标和告警规则
-- **版本管理**：对业务逻辑、规则、状态机进行版本控制
-- **测试覆盖**：为所有业务逻辑编写完整的测试用例
+```python
+from django.db import models
+from django.core.exceptions import ValidationError
+from django_fsm import FSMField, transition
+from decimal import Decimal
 
-### 10.2 常见陷阱
+class Order(models.Model):
+    CREATED = 'created'
+    PAYMENT_PENDING = 'payment_pending'
+    PAID = 'paid'
+    PROCESSING = 'processing'
+    SHIPPED = 'shipped'
+    DELIVERED = 'delivered'
+    CANCELLED = 'cancelled'
+    
+    STATE_CHOICES = [
+        (CREATED, '已创建'),
+        (PAYMENT_PENDING, '等待支付'),
+        (PAID, '已支付'),
+        (PROCESSING, '处理中'),
+        (SHIPPED, '已发货'),
+        (DELIVERED, '已送达'),
+        (CANCELLED, '已取消'),
+    ]
+    
+    state = FSMField(default=CREATED, choices=STATE_CHOICES)
+    customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    
+    @transition(field=state, source=CREATED, target=PAYMENT_PENDING)
+    def submit_order(self):
+        """提交订单"""
+        self.validate_order()
+        self.send_order_created_notification()
+    
+    @transition(field=state, source=PAYMENT_PENDING, target=PAID)
+    def receive_payment(self):
+        """收到支付"""
+        self.process_payment()
+        self.update_inventory()
+    
+    @transition(field=state, source=PAID, target=PROCESSING)
+    def start_processing(self):
+        """开始处理"""
+        self.assign_to_warehouse()
+    
+    def validate_order(self):
+        """验证订单"""
+        if not self.items.exists():
+            raise ValidationError("订单项不能为空")
+        if not self.customer:
+            raise ValidationError("客户信息不能为空")
+    
+    def calculate_total(self):
+        """计算订单总额"""
+        total = sum(item.price * item.quantity for item in self.items.all())
+        self.apply_discount_rules(total)
+        return total
+    
+    def apply_discount_rules(self, total):
+        """应用折扣规则"""
+        discount = Decimal('0')
+        
+        # 批量折扣
+        if total >= 1000:
+            discount += total * Decimal('0.1')
+        
+        # VIP折扣
+        if self.customer.type == 'VIP':
+            discount += total * Decimal('0.05')
+        
+        self.discount = discount
+        self.total_amount = total - discount
+```
 
-- **过度复杂化**：避免创建过于复杂的嵌套结构
-- **缺乏错误处理**：确保每个步骤都有适当的错误处理
-- **性能问题**：注意规则引擎和状态机的性能影响
-- **维护困难**：保持DSL定义的可读性和可维护性
-- **测试不足**：确保对生成的代码进行充分测试
+### 4.3 Node.js Express 生成
 
----
+```dsl
+generate_nodejs OrderService {
+  framework: "express"
+  patterns: [
+    "business_logic",
+    "workflow"
+  ]
+  output: {
+    directory: "src/services"
+    module: "order-service"
+  }
+}
+```
 
-## 11. 未来扩展方向
+生成的代码示例：
 
-### 11.1 AI增强功能建模
+```javascript
+const { ValidationError, InsufficientStockError } = require('../errors');
+const OrderRepository = require('../repositories/order-repository');
+const InventoryService = require('./inventory-service');
+const PaymentService = require('./payment-service');
+const NotificationService = require('./notification-service');
 
-- **智能业务逻辑生成**：基于自然语言描述自动生成业务逻辑
-- **规则自动优化**：基于历史数据自动优化规则配置
-- **状态机智能预测**：预测状态转换路径和异常情况
-- **工作流智能编排**：基于业务目标自动编排最优工作流
+class OrderService {
+    constructor() {
+        this.orderRepository = new OrderRepository();
+        this.inventoryService = new InventoryService();
+        this.paymentService = new PaymentService();
+        this.notificationService = new NotificationService();
+    }
+    
+    async createOrder(orderRequest) {
+        try {
+            // 验证请求
+            const validation = this.validateOrderRequest(orderRequest);
+            if (!validation.isValid) {
+                throw new ValidationError(validation.errors);
+            }
+            
+            // 检查库存
+            const inventory = await this.inventoryService.checkStock(orderRequest.items);
+            if (!inventory.available) {
+                throw new InsufficientStockError(inventory.unavailableItems);
+            }
+            
+            // 计算总额
+            const totalAmount = this.calculateOrderTotal(orderRequest.items);
+            
+            // 应用折扣规则
+            const discount = this.applyDiscountRules(orderRequest, totalAmount);
+            const finalAmount = totalAmount - discount;
+            
+            // 创建订单
+            const order = await this.orderRepository.create({
+                ...orderRequest,
+                totalAmount: finalAmount,
+                discount: discount
+            });
+            
+            // 更新库存
+            await this.inventoryService.reduceStock(orderRequest.items);
+            
+            // 发送通知
+            await this.notificationService.sendOrderConfirmation(
+                order.id, 
+                orderRequest.customerEmail
+            );
+            
+            return {
+                success: true,
+                orderId: order.id,
+                totalAmount: finalAmount,
+                discount: discount
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+    validateOrderRequest(request) {
+        const errors = [];
+        
+        if (!request.items || request.items.length === 0) {
+            errors.push('订单项不能为空');
+        }
+        if (!request.customer) {
+            errors.push('客户信息不能为空');
+        }
+        if (!request.shippingAddress) {
+            errors.push('配送地址不能为空');
+        }
+        
+        return {
+            isValid: errors.length === 0,
+            errors: errors
+        };
+    }
+    
+    calculateOrderTotal(items) {
+        return items.reduce((total, item) => {
+            const itemTotal = item.price * item.quantity;
+            const discount = item.discount || 0;
+            return total + itemTotal - discount;
+        }, 0);
+    }
+    
+    applyDiscountRules(request, totalAmount) {
+        let discount = 0;
+        
+        // 批量折扣
+        if (totalAmount >= 1000) {
+            discount += totalAmount * 0.1;
+        }
+        
+        // VIP折扣
+        if (request.customer.type === 'VIP') {
+            discount += totalAmount * 0.05;
+        }
+        
+        return discount;
+    }
+}
 
-### 11.2 分布式功能建模
+module.exports = OrderService;
+```
 
-- **微服务集成**：支持跨微服务的业务逻辑编排
-- **事件驱动架构**：基于事件的松耦合功能建模
-- **分布式事务**：支持跨服务的分布式事务处理
-- **服务网格集成**：与Istio等服务网格平台集成
+## 5. 形式化验证
 
-### 11.3 低代码/无代码平台
+### 5.1 业务逻辑验证
 
-- **可视化编辑器**：提供拖拽式的功能建模界面
-- **模板库**：提供常用业务场景的模板
-- **代码生成**：自动生成多种编程语言的代码
-- **实时预览**：支持功能逻辑的实时预览和调试
+```dsl
+verify_business_logic OrderService {
+  properties: [
+    "order_validation_completeness",
+    "discount_calculation_accuracy",
+    "inventory_consistency"
+  ]
+  constraints: {
+    max_discount_percentage: 0.5
+    min_order_amount: 0.01
+    max_order_items: 100
+  }
+  scenarios: [
+    "normal_order_flow",
+    "discount_edge_cases",
+    "inventory_shortage"
+  ]
+}
+```
 
----
+### 5.2 状态机验证
 
-这个递归扩展版本为功能建模领域提供了：
+```dsl
+verify_state_machine OrderStateMachine {
+  properties: [
+    "state_transition_validity",
+    "deadlock_freedom",
+    "liveness_property"
+  ]
+  constraints: {
+    max_transition_time: "30s"
+    min_state_duration: "1s"
+  }
+  scenarios: [
+    "normal_flow",
+    "cancellation_flow",
+    "payment_failure_flow"
+  ]
+}
+```
 
-1. **完整的DSL语法**：涵盖业务逻辑、规则引擎、状态机、工作流等核心功能建模要素
-2. **递归扩展能力**：支持复杂嵌套、条件分支、异常处理等高级特性
-3. **AI自动化集成**：支持智能生成、自动优化、学习适应等AI增强功能
-4. **工程实践指导**：提供代码生成、配置管理、测试覆盖等工程最佳实践
-5. **未来扩展方向**：涵盖AI增强、分布式处理、低代码平台等前沿技术
+## 6. 监控和可观测性
 
-这种递归扩展确保了功能建模的完整性和实用性，为构建复杂业务系统提供了强大的建模能力。
+### 6.1 业务指标定义
+
+```dsl
+business_metrics OrderService {
+  operational: {
+    orders_created: "counter"
+    orders_processed: "counter"
+    average_processing_time: "histogram"
+    error_rate: "gauge"
+  }
+  business: {
+    total_revenue: "counter"
+    average_order_value: "gauge"
+    customer_satisfaction: "gauge"
+    discount_utilization: "gauge"
+  }
+  performance: {
+    rule_engine_execution_time: "histogram"
+    state_transition_time: "histogram"
+    workflow_completion_time: "histogram"
+  }
+}
+```
+
+### 6.2 告警规则
+
+```dsl
+business_alerts OrderService {
+  high_error_rate: {
+    condition: "error_rate > 0.05"
+    duration: "5m"
+    severity: "warning"
+  }
+  low_processing_throughput: {
+    condition: "orders_processed_per_minute < 10"
+    duration: "10m"
+    severity: "critical"
+  }
+  excessive_discount_usage: {
+    condition: "discount_utilization > 0.8"
+    duration: "1h"
+    severity: "warning"
+  }
+}
+```
+
+## 7. 最佳实践和模式组合
+
+### 7.1 领域驱动设计 (DDD)
+
+```dsl
+ddd_pattern OrderDomain {
+  aggregates: [
+    {
+      name: "Order"
+      entities: ["Order", "OrderItem"]
+      value_objects: ["Money", "Address"]
+      repositories: ["OrderRepository"]
+    },
+    {
+      name: "Customer"
+      entities: ["Customer"]
+      value_objects: ["Email", "Phone"]
+      repositories: ["CustomerRepository"]
+    }
+  ]
+  
+  services: [
+    {
+      name: "OrderService"
+      type: "domain_service"
+      responsibilities: ["order_creation", "discount_calculation"]
+    },
+    {
+      name: "PricingService"
+      type: "domain_service"
+      responsibilities: ["price_calculation", "discount_application"]
+    }
+  ]
+  
+  events: [
+    {
+      name: "OrderCreated"
+      publisher: "Order"
+      subscribers: ["InventoryService", "NotificationService"]
+    },
+    {
+      name: "OrderPaid"
+      publisher: "Order"
+      subscribers: ["ShippingService", "AnalyticsService"]
+    }
+  ]
+}
+```
+
+### 7.2 事件溯源 (Event Sourcing)
+
+```dsl
+event_sourcing_pattern OrderEventSourcing {
+  events: [
+    {
+      name: "OrderCreated"
+      data: {
+        orderId: "string"
+        customerId: "string"
+        items: "OrderItem[]"
+        totalAmount: "decimal"
+      }
+    },
+    {
+      name: "OrderItemAdded"
+      data: {
+        orderId: "string"
+        item: "OrderItem"
+      }
+    },
+    {
+      name: "DiscountApplied"
+      data: {
+        orderId: "string"
+        discountAmount: "decimal"
+        reason: "string"
+      }
+    },
+    {
+      name: "OrderPaid"
+      data: {
+        orderId: "string"
+        paymentMethod: "string"
+        transactionId: "string"
+      }
+    }
+  ]
+  
+  projections: [
+    {
+      name: "OrderSummary"
+      events: ["OrderCreated", "OrderItemAdded", "DiscountApplied", "OrderPaid"]
+      state: {
+        orderId: "string"
+        status: "string"
+        totalAmount: "decimal"
+        discountAmount: "decimal"
+        paidAmount: "decimal"
+      }
+    }
+  ]
+  
+  snapshots: {
+    enabled: true
+    interval: 100
+    strategy: "full_state"
+  }
+}
+```
+
+这个扩展后的功能模型DSL提供了：
+
+1. **详细的语法定义**：涵盖业务逻辑、规则引擎、状态机、工作流等核心模式
+2. **高级特性**：业务规则模板、决策表、业务函数库
+3. **自动化代码生成**：支持Java、Python、Node.js等多语言框架
+4. **形式化验证**：提供属性验证和约束检查
+5. **监控和可观测性**：业务指标定义和告警规则
+6. **最佳实践**：领域驱动设计和事件溯源模式
+7. **标准映射**：与主流框架和模式对接
+8. **递归扩展**：支持复杂的业务逻辑组合和优化
