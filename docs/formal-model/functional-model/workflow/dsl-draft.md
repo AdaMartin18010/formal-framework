@@ -1320,7 +1320,7 @@ workflow "ecommerce_order_workflow" {
 
 这个DSL设计为工作流建模提供了完整的配置语言，支持从简单的线性流程到复杂的并行处理、状态机、事件驱动等各种工作流模式，同时保持了良好的可扩展性和可维护性。
 
-## 2. 基本语法结构
+## 2. 1基本语法结构
 
 ```dsl
 workflow "order_processing_workflow" {
@@ -1441,7 +1441,7 @@ workflow "order_processing_workflow" {
 }
 ```
 
-## 3. 关键元素
+## 3. 1关键元素
 
 - workflow：工作流声明
 - description：描述信息
@@ -1454,9 +1454,9 @@ workflow "order_processing_workflow" {
 - error_handling：错误处理
 - monitoring：监控配置
 
-## 4. 高级用法
+## 4. 1高级用法
 
-### 4.1 并行执行与条件分支
+### 4.1 1并行执行与条件分支
 
 ```dsl
 workflow "complex_order_processing" {
@@ -1576,7 +1576,7 @@ workflow "complex_order_processing" {
 }
 ```
 
-### 4.2 状态机与状态转换
+### 4.2 1状态机与状态转换
 
 ```dsl
 workflow "order_state_machine" {
@@ -1724,7 +1724,7 @@ workflow "order_state_machine" {
 }
 ```
 
-### 4.3 循环与迭代处理
+### 4.3 1循环与迭代处理
 
 ```dsl
 workflow "batch_processing_workflow" {
@@ -1807,7 +1807,7 @@ workflow "batch_processing_workflow" {
 }
 ```
 
-### 4.4 事件驱动工作流
+### 4.4 1事件驱动工作流
 
 ```dsl
 workflow "event_driven_order_workflow" {
@@ -1976,9 +1976,9 @@ workflow "event_driven_order_workflow" {
 }
 ```
 
-## 5. 代码生成模板
+## 5. 1代码生成模板
 
-### 5.1 Java工作流生成
+### 5.1 1Java工作流生成
 
 ```java
 // OrderProcessingWorkflow.java
@@ -2074,7 +2074,7 @@ public class OrderProcessingWorkflow {
 }
 ```
 
-### 5.2 Python工作流生成
+### 5.2 1Python工作流生成
 
 ```python
 # order_processing_workflow.py
@@ -2165,7 +2165,7 @@ class OrderProcessingWorkflow:
         pass
 ```
 
-### 5.3 JavaScript工作流生成
+### 5.3 1JavaScript工作流生成
 
 ```javascript
 // orderProcessingWorkflow.js
@@ -2274,9 +2274,9 @@ class OrderProcessingWorkflow {
 }
 ```
 
-## 6. 验证规则
+## 6. 1验证规则
 
-### 6.1 语法验证规则
+### 6.1 1语法验证规则
 
 ```yaml
 validation:
@@ -2304,7 +2304,7 @@ validation:
     - rule: "step names must be unique within workflow"
 ```
 
-### 6.2 工作流验证规则
+### 6.2 1工作流验证规则
 
 ```yaml
 workflow_validation:
@@ -2324,9 +2324,9 @@ workflow_validation:
     - rule: "timeout mechanisms must be defined for long-running workflows"
 ```
 
-## 7. 最佳实践
+## 7. 1最佳实践
 
-### 7.1 工作流设计模式
+### 7.1 1工作流设计模式
 
 ```dsl
 # 线性处理模式
@@ -2420,7 +2420,7 @@ workflow "parallel_processing" {
 }
 ```
 
-### 7.2 工作流命名规范
+### 7.2 1工作流命名规范
 
 ```dsl
 # 推荐命名模式
@@ -2437,7 +2437,7 @@ workflow "entity_state_machine" {
 }
 ```
 
-## 8. 与主流标准的映射
+## 8. 1与主流标准的映射
 
 | DSL元素 | Apache Airflow | Temporal | Camunda | AWS Step Functions |
 |---------|----------------|----------|---------|-------------------|
@@ -2448,7 +2448,7 @@ workflow "entity_state_machine" {
 | loop | loop | loop | loop | map |
 | error_handling | error handling | error handling | error handling | catch |
 
-## 9. 工程实践示例
+## 9. 1工程实践示例
 
 ```dsl
 # 电商系统工作流示例

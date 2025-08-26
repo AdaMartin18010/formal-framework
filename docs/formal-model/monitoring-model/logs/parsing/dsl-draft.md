@@ -1,492 +1,587 @@
-# 日志解析建模DSL草案
+# 日志解析建模DSL设计
 
-## 1. 设计目标
+## 设计目标
 
-- 用声明式语法描述日志解析规则、格式、字段映射、输出等流程
-- 支持多格式、多模式日志统一解析建模
-- 便于自动生成解析与映射配置
-- 支持复杂解析逻辑、条件解析、多级解析等高级特性
+日志解析建模DSL旨在提供声明式语言定义复杂的日志解析规则，支持多种日志格式、解析策略、字段映射、数据转换，并与主流日志解析平台无缝集成。
 
-## 2. 基本语法结构
+## 基本语法
+
+### 核心结构
 
 ```dsl
-log_parse "web_service_logs" {
+log_parsing "web_service_parsing" {
   description: "Web服务日志解析"
   version: "1.0.0"
-  author: "system"
   
   input: {
     format: "json"
     encoding: "utf-8"
-    timestamp_field: "timestamp"
-    timestamp_format: "ISO8601"
+    source: "filebeat"
   }
   
-  parsing: {
-    type: "structured"
-    rules: [
-      {
-        name: "extract_fields"
-        condition: "true"
-        actions: [
-          {
-            type: "extract"
-            source: "message"
-            target: "parsed_message"
-            pattern: "\\[(.*?)\\] (.*)"
-            groups: ["level", "content"]
-          }
-        ]
-      }
-    ]
-  }
-  
-  field_mapping: [
+  parsers: [
     {
-      source: "timestamp"
-      target: "event_time"
-      type: "timestamp"
-      format: "ISO8601"
-    },
-    {
-      source: "level"
-      target: "severity"
-      type: "string"
-      mapping: {
-        "DEBUG": "debug"
-        "INFO": "info"
-        "WARN": "warning"
-        "ERROR": "error"
-        "FATAL": "critical"
-      }
-    },
-    {
-      source: "message"
-      target: "log_message"
-      type: "string"
-      max_length: 1000
-    },
-    {
-      source: "trace_id"
-      target: "correlation_id"
-      type: "string"
-      required: false
+      name: "json_parser"
+      type: "json"
+      target: "parsed"
+      overwrite_keys: true
     }
   ]
   
-  validation: {
-    enabled: true
-    rules: [
-      {
-        name: "required_fields"
-        condition: "timestamp != null AND level != null"
-        error_message: "Missing required fields: timestamp or level"
-      },
-      {
-        name: "timestamp_format"
-        condition: "timestamp matches ISO8601 pattern"
-        error_message: "Invalid timestamp format"
-      }
-    ]
-  }
-  
-  transformation: {
-    enabled: true
-    rules: [
-      {
-        name: "add_metadata"
-        condition: "true"
-        actions: [
-          {
-            type: "add_field"
-            name: "service"
-            value: "web-service"
-          },
-          {
-            type: "add_field"
-            name: "environment"
-            value: "production"
-          },
-          {
-            type: "add_field"
-            name: "parsed_at"
-            value: "now()"
-            type: "timestamp"
-          }
-        ]
-      }
-    ]
-  }
-  
   output: {
-    format: "json"
-    schema: {
-      type: "object"
-      properties: {
-        event_time: { type: "string", format: "date-time" }
-        severity: { type: "string", enum: ["debug", "info", "warning", "error", "critical"] }
-        log_message: { type: "string" }
-        correlation_id: { type: "string" }
-        service: { type: "string" }
-        environment: { type: "string" }
-        parsed_at: { type: "string", format: "date-time" }
-      }
-      required: ["event_time", "severity", "log_message"]
+    format: "structured"
+    destination: "elasticsearch"
+    index: "parsed-logs"
+  }
+}
+```
+
+### JSON解析器
+
+```dsl
+json_parser "application_logs" {
+  description: "应用程序JSON日志解析"
+  
+  type: "json"
+  target: "parsed"
+  overwrite_keys: true
+  
+  field_mapping: {
+    timestamp: "@timestamp"
+    level: "log.level"
+    message: "message"
+    service: "service.name"
+    trace_id: "trace.id"
+    span_id: "span.id"
+  }
+  
+  validation: {
+    required_fields: ["timestamp", "level", "message"]
+    field_types: {
+      timestamp: "datetime"
+      level: "string"
+      message: "string"
+      service: "string"
+      trace_id: "string"
+      span_id: "string"
     }
   }
+  
+  transformation: [
+    {
+      name: "normalize_timestamp"
+      type: "timestamp"
+      field: "timestamp"
+      format: "ISO8601"
+      timezone: "UTC"
+    },
+    {
+      name: "normalize_level"
+      type: "enum"
+      field: "level"
+      mapping: {
+        "ERROR": "error"
+        "WARN": "warn"
+        "INFO": "info"
+        "DEBUG": "debug"
+      }
+    }
+  ]
   
   error_handling: {
-    enabled: true
-    strategy: "continue"
-    error_field: "parse_error"
-    max_errors: 100
-  }
-  
-  performance: {
-    batch_size: 1000
-    timeout: "30s"
-    max_memory: "512MB"
+    on_error: "drop"
+    error_log: true
+    error_metrics: true
   }
 }
 ```
 
-## 3. 关键元素
-
-- log_parse：日志解析声明
-- description：描述信息
-- version：版本号
-- author：作者
-- input：输入配置
-- parsing：解析规则
-- field_mapping：字段映射
-- validation：验证规则
-- transformation：数据转换
-- output：输出配置
-- error_handling：错误处理
-- performance：性能配置
-
-## 4. 高级用法
-
-### 4.1 多格式日志解析
+### Grok解析器
 
 ```dsl
-log_parse "multi_format_logs" {
-  description: "多格式日志解析"
-  version: "1.0.0"
-  author: "system"
+grok_parser "nginx_access_logs" {
+  description: "Nginx访问日志解析"
   
-  input: {
-    format: "auto"
-    encoding: "utf-8"
-    detect_format: true
+  type: "grok"
+  pattern: "%{IPORHOST:clientip} - %{DATA:ident} - %{DATA:auth} \\[%{HTTPDATE:timestamp}\\] \"%{WORD:verb} %{DATA:request} HTTP/%{NUMBER:httpversion}\" %{NUMBER:response} %{NUMBER:bytes}"
+  
+  field_mapping: {
+    clientip: "client_ip"
+    timestamp: "@timestamp"
+    verb: "http_method"
+    request: "http_request"
+    httpversion: "http_version"
+    response: "http_status_code"
+    bytes: "response_size"
   }
   
-  parsing: {
-    type: "conditional"
-    rules: [
-      {
-        name: "json_logs"
-        condition: "message startsWith '{'"
-        actions: [
-          {
-            type: "parse_json"
-            source: "message"
-            target: "parsed_data"
-          }
-        ]
-      },
-      {
-        name: "syslog_logs"
-        condition: "message matches syslog pattern"
-        actions: [
-          {
-            type: "parse_syslog"
-            source: "message"
-            target: "parsed_data"
-            format: "rfc5424"
-          }
-        ]
-      },
-      {
-        name: "nginx_logs"
-        condition: "message contains 'nginx'"
-        actions: [
-          {
-            type: "parse_nginx"
-            source: "message"
-            target: "parsed_data"
-            format: "combined"
-          }
-        ]
-      },
-      {
-        name: "custom_logs"
-        condition: "true"
-        actions: [
-          {
-            type: "parse_regex"
-            source: "message"
-            target: "parsed_data"
-            pattern: "\\[(.*?)\\] (.*?) - (.*)"
-            groups: ["timestamp", "level", "message"]
-          }
-        ]
-      }
-    ]
-  }
-  
-  field_mapping: [
+  custom_patterns: [
     {
-      source: "parsed_data.timestamp"
-      target: "event_time"
-      type: "timestamp"
-      format: "auto"
-    },
-    {
-      source: "parsed_data.level"
-      target: "severity"
-      type: "string"
-      mapping: {
-        "DEBUG": "debug"
-        "INFO": "info"
-        "WARN": "warning"
-        "ERROR": "error"
-        "FATAL": "critical"
-      }
-    },
-    {
-      source: "parsed_data.message"
-      target: "log_message"
-      type: "string"
+      name: "IPORHOST"
+      pattern: "(?<![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])"
     }
   ]
   
   validation: {
-    enabled: true
-    rules: [
-      {
-        name: "valid_severity"
-        condition: "severity in ['debug', 'info', 'warning', 'error', 'critical']"
-        error_message: "Invalid severity level"
-      }
-    ]
-  }
-  
-  output: {
-    format: "json"
-    schema: {
-      type: "object"
-      properties: {
-        event_time: { type: "string", format: "date-time" }
-        severity: { type: "string" }
-        log_message: { type: "string" }
-        original_format: { type: "string" }
-      }
+    required_fields: ["client_ip", "@timestamp", "http_method", "http_status_code"]
+    field_types: {
+      client_ip: "ip"
+      "@timestamp": "datetime"
+      http_method: "string"
+      http_status_code: "integer"
+      response_size: "integer"
     }
   }
+  
+  transformation: [
+    {
+      name: "parse_request"
+      type: "regex"
+      field: "http_request"
+      pattern: "(?<method>\\w+) (?<path>[^\\s]+) (?<query>[^\\s]*)"
+      target: "parsed_request"
+    },
+    {
+      name: "categorize_status"
+      type: "conditional"
+      field: "http_status_code"
+      rules: [
+        { condition: "value >= 200 AND value < 300", result: "success" },
+        { condition: "value >= 300 AND value < 400", result: "redirect" },
+        { condition: "value >= 400 AND value < 500", result: "client_error" },
+        { condition: "value >= 500", result: "server_error" }
+      ]
+      target: "status_category"
+    }
+  ]
 }
 ```
 
-### 4.2 复杂解析逻辑
+### 正则表达式解析器
 
 ```dsl
-log_parse "complex_parsing" {
-  description: "复杂日志解析"
-  version: "1.0.0"
-  author: "system"
+regex_parser "custom_log_format" {
+  description: "自定义日志格式解析"
   
-  input: {
-    format: "text"
-    encoding: "utf-8"
+  type: "regex"
+  pattern: "\\[(?<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\] \\[(?<level>\\w+)\\] \\[(?<service>\\w+)\\] (?<message>.*)"
+  
+  field_mapping: {
+    timestamp: "@timestamp"
+    level: "log.level"
+    service: "service.name"
+    message: "message"
   }
   
-  parsing: {
-    type: "pipeline"
-    stages: [
-      {
-        name: "stage1_extract_basic"
-        condition: "true"
-        actions: [
-          {
-            type: "extract_regex"
-            source: "message"
-            target: "basic_info"
-            pattern: "\\[(.*?)\\] (.*?) - (.*)"
-            groups: ["timestamp", "level", "content"]
-          }
-        ]
-      },
-      {
-        name: "stage2_extract_metadata"
-        condition: "basic_info.content contains 'metadata'"
-        actions: [
-          {
-            type: "extract_json"
-            source: "basic_info.content"
-            target: "metadata"
-            path: "$.metadata"
-          }
-        ]
-      },
-      {
-        name: "stage3_extract_metrics"
-        condition: "basic_info.content contains 'metrics'"
-        actions: [
-          {
-            type: "extract_json"
-            source: "basic_info.content"
-            target: "metrics"
-            path: "$.metrics"
-          }
-        ]
-      },
-      {
-        name: "stage4_extract_errors"
-        condition: "basic_info.level == 'ERROR'"
-        actions: [
-          {
-            type: "extract_regex"
-            source: "basic_info.content"
-            target: "error_details"
-            pattern: "Error: (.*?) at (.*?) \\((.*?):(.*?)\\)"
-            groups: ["error_message", "function", "file", "line"]
-          }
-        ]
-      }
-    ]
+  validation: {
+    required_fields: ["@timestamp", "log.level", "service.name", "message"]
+    field_types: {
+      "@timestamp": "datetime"
+      "log.level": "string"
+      "service.name": "string"
+      "message": "string"
+    }
   }
   
-  field_mapping: [
+  transformation: [
     {
-      source: "basic_info.timestamp"
-      target: "event_time"
+      name: "parse_timestamp"
       type: "timestamp"
-      format: "ISO8601"
+      field: "@timestamp"
+      format: "yyyy-MM-dd HH:mm:ss.SSS"
+      timezone: "UTC"
     },
     {
-      source: "basic_info.level"
-      target: "severity"
-      type: "string"
-      mapping: {
-        "DEBUG": "debug"
-        "INFO": "info"
-        "WARN": "warning"
-        "ERROR": "error"
-        "FATAL": "critical"
-      }
-    },
-    {
-      source: "basic_info.content"
-      target: "log_message"
-      type: "string"
-    },
-    {
-      source: "metadata"
+      name: "extract_metadata"
+      type: "regex"
+      field: "message"
+      pattern: "\\[(?<component>\\w+)\\] \\[(?<operation>\\w+)\\]"
       target: "metadata"
-      type: "object"
-      required: false
+    }
+  ]
+}
+```
+
+### 多行解析器
+
+```dsl
+multiline_parser "stack_trace_parser" {
+  description: "堆栈跟踪多行解析"
+  
+  type: "multiline"
+  pattern: "^\\["
+  negate: true
+  match: "after"
+  
+  field_mapping: {
+    first_line: "stack_trace_start"
+    continuation_lines: "stack_trace_body"
+  }
+  
+  validation: {
+    required_fields: ["stack_trace_start"]
+    max_lines: 100
+    max_length: 10000
+  }
+  
+  transformation: [
+    {
+      name: "extract_exception"
+      type: "regex"
+      field: "stack_trace_start"
+      pattern: "(?<exception_type>\\w+): (?<exception_message>.*)"
+      target: "exception_info"
     },
     {
-      source: "metrics"
-      target: "metrics"
-      type: "object"
-      required: false
+      name: "parse_stack_frames"
+      type: "regex"
+      field: "stack_trace_body"
+      pattern: "\\s+at (?<class>\\S+)\\.(?<method>\\S+)\\((?<file>\\S+):(?<line>\\d+)\\)"
+      target: "stack_frames"
+      multiple: true
+    }
+  ]
+}
+```
+
+## 高级用法
+
+### 复合解析器
+
+```dsl
+composite_parser "comprehensive_parsing" {
+  description: "综合日志解析"
+  
+  parsers: [
+    {
+      name: "format_detector"
+      type: "format_detection"
+      patterns: [
+        { pattern: "^\\{.*\\}$", format: "json" },
+        { pattern: "^\\[.*\\]", format: "bracket" },
+        { pattern: "^\\d{4}-\\d{2}-\\d{2}", format: "timestamp" }
+      ]
     },
     {
-      source: "error_details"
-      target: "error_info"
-      type: "object"
-      required: false
+      name: "json_parser"
+      type: "json"
+      condition: "format == 'json'"
+      target: "parsed"
+    },
+    {
+      name: "bracket_parser"
+      type: "regex"
+      condition: "format == 'bracket'"
+      pattern: "\\[(?<timestamp>.*?)\\] \\[(?<level>\\w+)\\] (?<message>.*)"
+    },
+    {
+      name: "timestamp_parser"
+      type: "regex"
+      condition: "format == 'timestamp'"
+      pattern: "(?<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) (?<level>\\w+) (?<message>.*)"
     }
   ]
   
-  transformation: {
-    enabled: true
-    rules: [
-      {
-        name: "calculate_metrics"
-        condition: "metrics != null"
-        actions: [
-          {
-            type: "calculate"
-            target: "metrics_summary"
-            expression: "metrics.response_time + metrics.processing_time"
-          }
-        ]
-      },
-      {
-        name: "enrich_error_info"
-        condition: "error_info != null"
-        actions: [
-          {
-            type: "add_field"
-            name: "error_category"
-            value: "application_error"
-          },
-          {
-            type: "add_field"
-            name: "error_priority"
-            value: "high"
-          }
-        ]
-      }
-    ]
+  aggregation: {
+    strategy: "merge"
+    priority: ["json_parser", "bracket_parser", "timestamp_parser"]
   }
   
+  post_processing: [
+    {
+      name: "normalize_fields"
+      type: "field_normalization"
+      fields: ["timestamp", "level", "message"]
+    },
+    {
+      name: "add_metadata"
+      type: "field_addition"
+      fields: {
+        parser_used: "format_detector.result",
+        parsed_at: "now()"
+      }
+    }
+  ]
+}
+```
+
+### 条件解析器
+
+```dsl
+conditional_parser "service_specific_parsing" {
+  description: "服务特定解析"
+  
+  conditions: [
+    {
+      name: "web_service_logs"
+      condition: "service == 'web-service'"
+      parser: {
+        type: "json"
+        target: "web_parsed"
+        field_mapping: {
+          timestamp: "@timestamp"
+          level: "log.level"
+          message: "message"
+          endpoint: "http.endpoint"
+          method: "http.method"
+          status: "http.status"
+          duration: "http.duration"
+        }
+      }
+    },
+    {
+      name: "database_service_logs"
+      condition: "service == 'database-service'"
+      parser: {
+        type: "regex"
+        pattern: "\\[(?<timestamp>.*?)\\] \\[(?<level>\\w+)\\] \\[(?<operation>\\w+)\\] (?<query>.*?) \\((?<duration>\\d+)ms\\)"
+        field_mapping: {
+          timestamp: "@timestamp"
+          level: "log.level"
+          operation: "db.operation"
+          query: "db.query"
+          duration: "db.duration"
+        }
+      }
+    },
+    {
+      name: "cache_service_logs"
+      condition: "service == 'cache-service'"
+      parser: {
+        type: "json"
+        target: "cache_parsed"
+        field_mapping: {
+          timestamp: "@timestamp"
+          level: "log.level"
+          message: "message"
+          cache_key: "cache.key"
+          cache_operation: "cache.operation"
+          cache_hit: "cache.hit"
+        }
+      }
+    }
+  ]
+  
+  default_parser: {
+    type: "regex"
+    pattern: "\\[(?<timestamp>.*?)\\] \\[(?<level>\\w+)\\] \\[(?<service>\\w+)\\] (?<message>.*)"
+  }
+}
+```
+
+### 流式解析器
+
+```dsl
+stream_parser "real_time_parsing" {
+  description: "实时流解析"
+  
+  streaming: {
+    engine: "kafka_streams"
+    mode: "real_time"
+    parallelism: 4
+  }
+  
+  input: {
+    topic: "raw-logs"
+    consumer_group: "log-parsers"
+    auto_offset_reset: "latest"
+  }
+  
+  parsing_pipeline: [
+    {
+      name: "format_detection"
+      type: "stream_processor"
+      operation: "detect_format"
+      output: "detected_format"
+    },
+    {
+      name: "json_parsing"
+      type: "stream_processor"
+      input: "detected_format"
+      condition: "format == 'json'"
+      operation: "parse_json"
+      output: "parsed_json"
+    },
+    {
+      name: "regex_parsing"
+      type: "stream_processor"
+      input: "detected_format"
+      condition: "format == 'regex'"
+      operation: "parse_regex"
+      output: "parsed_regex"
+    },
+    {
+      name: "field_normalization"
+      type: "stream_processor"
+      input: ["parsed_json", "parsed_regex"]
+      operation: "normalize_fields"
+      output: "normalized_logs"
+    }
+  ]
+  
   output: {
-    format: "json"
-    schema: {
-      type: "object"
-      properties: {
-        event_time: { type: "string", format: "date-time" }
-        severity: { type: "string" }
-        log_message: { type: "string" }
-        metadata: { type: "object" }
-        metrics: { type: "object" }
-        error_info: { type: "object" }
-        metrics_summary: { type: "number" }
-        error_category: { type: "string" }
-        error_priority: { type: "string" }
+    topic: "parsed-logs"
+    producer_config: {
+      acks: "all"
+      compression: "snappy"
+      batch_size: 1000
+    }
+  }
+  
+  monitoring: {
+    metrics: [
+      "records_processed",
+      "parsing_success_rate",
+      "parsing_latency",
+      "error_rate"
+    ]
+    alerting: {
+      on_error_rate: {
+        threshold: 0.01
+        severity: "critical"
+      }
+      on_latency: {
+        threshold: "1s"
+        severity: "warning"
       }
     }
   }
 }
 ```
 
-## 5. 代码生成模板
+## 代码生成模板
 
-### 5.1 Logstash配置生成
+### Fluentd配置
 
 ```ruby
-# logstash.conf
+# 生成的Fluentd配置
+<source>
+  @type tail
+  path /var/log/webapp/app.log
+  pos_file /var/log/fluentd/webapp.log.pos
+  tag web-service.logs
+  read_from_head true
+  <parse>
+    @type json
+    time_key timestamp
+    time_format %Y-%m-%dT%H:%M:%S.%LZ
+  </parse>
+</source>
+
+<filter web-service.logs>
+  @type parser
+  key_name message
+  <parse>
+    @type regexp
+    expression /\[(?<timestamp>.*?)\] \[(?<level>\w+)\] \[(?<service>\w+)\] (?<message>.*)/
+  </parse>
+</filter>
+
+<filter web-service.logs>
+  @type record_transformer
+  <record>
+    @timestamp ${time}
+    log_level ${level}
+    service_name ${service}
+    log_message ${message}
+    parsed_at "#{Time.now.utc.iso8601}"
+  </record>
+</filter>
+
+<filter web-service.logs>
+  @type grep
+  <regexp>
+    key log_level
+    pattern /ERROR|WARN|INFO/
+  </regexp>
+</filter>
+
+<match web-service.logs>
+  @type elasticsearch
+  host elasticsearch
+  port 9200
+  logstash_format true
+  logstash_prefix parsed-logs
+  include_tag_key true
+  tag_key @log_name
+  flush_interval 5s
+  <buffer>
+    @type memory
+    flush_interval 5s
+    chunk_limit_size 2M
+    queue_limit_length 8
+    retry_max_interval 30
+    retry_forever false
+  </buffer>
+</match>
+```
+
+### Logstash配置
+
+```ruby
+# 生成的Logstash配置
 input {
-  file {
-    path => "/var/log/webapp/app.log"
-    start_position => "beginning"
-    codec => json
+  beats {
+    port => 5044
+    ssl => true
+    ssl_certificate => "/etc/ssl/certs/logstash.crt"
+    ssl_key => "/etc/ssl/private/logstash.key"
   }
 }
 
 filter {
-  if [message] =~ /\[.*?\] .*? - .*/ {
+  if [fields][service] == "web-service" {
+    json {
+      source => "message"
+      target => "parsed"
+    }
+    
+    date {
+      match => ["parsed.timestamp", "ISO8601"]
+      target => "@timestamp"
+    }
+    
+    mutate {
+      add_field => {
+        "log_level" => "%{[parsed][level]}"
+        "service_name" => "%{[parsed][service]}"
+        "log_message" => "%{[parsed][message]}"
+      }
+      remove_field => ["parsed"]
+    }
+  } else if [fields][service] == "nginx" {
     grok {
-      match => { "message" => "\[%{TIMESTAMP_ISO8601:timestamp}\] %{LOGLEVEL:level} - %{GREEDYDATA:content}" }
+      match => { "message" => "%{IPORHOST:clientip} - %{DATA:ident} - %{DATA:auth} \[%{HTTPDATE:timestamp}\] \"%{WORD:verb} %{DATA:request} HTTP/%{NUMBER:httpversion}\" %{NUMBER:response} %{NUMBER:bytes}" }
+    }
+    
+    date {
+      match => ["timestamp", "dd/MMM/yyyy:HH:mm:ss Z"]
+      target => "@timestamp"
+    }
+    
+    mutate {
+      add_field => {
+        "http_method" => "%{verb}"
+        "http_status_code" => "%{response}"
+        "response_size" => "%{bytes}"
+      }
+      remove_field => ["verb", "response", "bytes", "ident", "auth", "httpversion"]
+    }
+  } else {
+    grok {
+      match => { "message" => "\[%{TIMESTAMP_ISO8601:timestamp}\] \[%{LOGLEVEL:level}\] \[%{DATA:service}\] %{GREEDYDATA:message}" }
+    }
+    
+    date {
+      match => ["timestamp", "ISO8601"]
+      target => "@timestamp"
     }
   }
   
-  date {
-    match => [ "timestamp", "ISO8601" ]
-    target => "@timestamp"
-  }
-  
   mutate {
-    add_field => { "service" => "web-service" }
-    add_field => { "environment" => "production" }
-  }
-  
-  if [level] == "ERROR" {
-    grok {
-      match => { "content" => "Error: %{GREEDYDATA:error_message} at %{DATA:function} \(%{DATA:file}:%{NUMBER:line}\)" }
+    add_field => {
+      "parsed_at" => "%{@timestamp}"
+      "parser_version" => "1.0.0"
     }
   }
 }
@@ -494,617 +589,642 @@ filter {
 output {
   elasticsearch {
     hosts => ["elasticsearch:9200"]
-    index => "web-service-logs"
+    index => "parsed-logs-%{+YYYY.MM.dd}"
+    template_name => "parsed-logs"
+    template_pattern => "parsed-logs-*"
+    template_overwrite => true
   }
 }
 ```
 
-### 5.2 Fluentd配置生成
+### Python实现
 
-```ruby
-# fluentd.conf
-<source>
-  @type tail
-  path /var/log/webapp/app.log
-  pos_file /var/log/fluentd/webapp.log.pos
-  tag webapp.logs
-  format json
-  read_from_head true
-</source>
+```python
+import re
+import json
+import logging
+from datetime import datetime
+from typing import Dict, Any, Optional
 
-<filter webapp.logs>
-  @type parser
-  key_name message
-  <parse>
-    @type regexp
-    expression /\[(?<timestamp>.*?)\] (?<level>.*?) - (?<content>.*)/
-  </parse>
-</filter>
+class LogParser:
+    def __init__(self, config):
+        self.config = config
+        self.parsers = self._initialize_parsers()
+        self.logger = logging.getLogger(__name__)
+    
+    def _initialize_parsers(self):
+        parsers = {}
+        for parser_config in self.config['parsers']:
+            if parser_config['type'] == 'json':
+                parsers[parser_config['name']] = JSONParser(parser_config)
+            elif parser_config['type'] == 'grok':
+                parsers[parser_config['name']] = GrokParser(parser_config)
+            elif parser_config['type'] == 'regex':
+                parsers[parser_config['name']] = RegexParser(parser_config)
+        return parsers
+    
+    def parse(self, log_line: str) -> Optional[Dict[str, Any]]:
+        try:
+            # 检测日志格式
+            format_type = self._detect_format(log_line)
+            
+            # 选择相应的解析器
+            if format_type == 'json':
+                parser = self.parsers.get('json_parser')
+            elif format_type == 'nginx':
+                parser = self.parsers.get('grok_parser')
+            else:
+                parser = self.parsers.get('regex_parser')
+            
+            if parser:
+                result = parser.parse(log_line)
+                if result:
+                    result['parsed_at'] = datetime.utcnow().isoformat()
+                    result['parser_used'] = parser.name
+                return result
+            else:
+                self.logger.warning(f"No parser found for format: {format_type}")
+                return None
+                
+        except Exception as e:
+            self.logger.error(f"Error parsing log line: {e}")
+            return None
+    
+    def _detect_format(self, log_line: str) -> str:
+        if log_line.strip().startswith('{') and log_line.strip().endswith('}'):
+            return 'json'
+        elif 'HTTP/' in log_line and 'GET' in log_line or 'POST' in log_line:
+            return 'nginx'
+        else:
+            return 'custom'
 
-<filter webapp.logs>
-  @type record_transformer
-  enable_ruby true
-  <record>
-    service "web-service"
-    environment "production"
-    parsed_at ${Time.now.utc.iso8601}
-  </record>
-</filter>
+class JSONParser:
+    def __init__(self, config):
+        self.name = config['name']
+        self.target = config.get('target', 'parsed')
+        self.overwrite_keys = config.get('overwrite_keys', True)
+        self.field_mapping = config.get('field_mapping', {})
+    
+    def parse(self, log_line: str) -> Optional[Dict[str, Any]]:
+        try:
+            data = json.loads(log_line)
+            
+            # 应用字段映射
+            result = {}
+            for source_field, target_field in self.field_mapping.items():
+                if source_field in data:
+                    result[target_field] = data[source_field]
+            
+            # 添加原始数据
+            if self.target:
+                result[self.target] = data
+            
+            return result
+        except json.JSONDecodeError:
+            return None
 
-<filter webapp.logs>
-  @type record_transformer
-  <record>
-    severity ${record['level'] == 'DEBUG' ? 'debug' : record['level'] == 'INFO' ? 'info' : record['level'] == 'WARN' ? 'warning' : record['level'] == 'ERROR' ? 'error' : 'critical'}
-  </record>
-</filter>
+class GrokParser:
+    def __init__(self, config):
+        self.name = config['name']
+        self.pattern = config['pattern']
+        self.field_mapping = config.get('field_mapping', {})
+        self.compiled_pattern = re.compile(self.pattern)
+    
+    def parse(self, log_line: str) -> Optional[Dict[str, Any]]:
+        match = self.compiled_pattern.match(log_line)
+        if match:
+            result = {}
+            for source_field, target_field in self.field_mapping.items():
+                if source_field in match.groupdict():
+                    result[target_field] = match.group(source_field)
+            return result
+        return None
 
-<match webapp.logs>
-  @type elasticsearch
-  host elasticsearch
-  port 9200
-  logstash_format true
-  logstash_prefix web-service-logs
-  flush_interval 5s
-</match>
+class RegexParser:
+    def __init__(self, config):
+        self.name = config['name']
+        self.pattern = config['pattern']
+        self.field_mapping = config.get('field_mapping', {})
+        self.compiled_pattern = re.compile(self.pattern)
+    
+    def parse(self, log_line: str) -> Optional[Dict[str, Any]]:
+        match = self.compiled_pattern.match(log_line)
+        if match:
+            result = {}
+            for source_field, target_field in self.field_mapping.items():
+                if source_field in match.groupdict():
+                    result[target_field] = match.group(source_field)
+            return result
+        return None
+
+# 使用示例
+config = {
+    "parsers": [
+        {
+            "name": "json_parser",
+            "type": "json",
+            "target": "parsed",
+            "overwrite_keys": True,
+            "field_mapping": {
+                "timestamp": "@timestamp",
+                "level": "log.level",
+                "message": "message"
+            }
+        },
+        {
+            "name": "grok_parser",
+            "type": "grok",
+            "pattern": r"\[(?P<timestamp>.*?)\] \[(?P<level>\w+)\] \[(?P<service>\w+)\] (?P<message>.*)",
+            "field_mapping": {
+                "timestamp": "@timestamp",
+                "level": "log.level",
+                "service": "service.name",
+                "message": "message"
+            }
+        },
+        {
+            "name": "regex_parser",
+            "type": "regex",
+            "pattern": r"\[(?P<timestamp>.*?)\] \[(?P<level>\w+)\] \[(?P<service>\w+)\] (?P<message>.*)",
+            "field_mapping": {
+                "timestamp": "@timestamp",
+                "level": "log.level",
+                "service": "service.name",
+                "message": "message"
+            }
+        }
+    ]
+}
+
+parser = LogParser(config)
+
+# 测试解析
+json_log = '{"timestamp": "2024-01-01T12:00:00Z", "level": "INFO", "message": "Application started"}'
+custom_log = '[2024-01-01 12:00:00] [INFO] [web-service] Application started'
+
+print(parser.parse(json_log))
+print(parser.parse(custom_log))
 ```
 
-### 5.3 OpenTelemetry Collector配置生成
+## 验证规则
 
-```yaml
-# otel-collector-config.yaml
-receivers:
-  filelog:
-    include: [ /var/log/webapp/*.log ]
-    start_at: end
-    operators:
-      - type: regex_parser
-        regex: '\[(?P<timestamp>.*?)\] (?P<level>.*?) - (?P<content>.*)'
-        timestamp:
-          parse_from: attributes.timestamp
-          layout: RFC3339
-      - type: add_fields
-        fields:
-          service: web-service
-          environment: production
-      - type: move
-        from: attributes.level
-        to: attributes.severity
-
-processors:
-  batch:
-    timeout: 1s
-    send_batch_size: 100
-  transform:
-    log_statements:
-      - context: log
-        statements:
-          - set(attributes["severity"], attributes["level"] == "DEBUG" ? "debug" : attributes["level"] == "INFO" ? "info" : attributes["level"] == "WARN" ? "warning" : attributes["level"] == "ERROR" ? "error" : "critical")
-
-exporters:
-  otlp/elasticsearch:
-    endpoint: elasticsearch:9200
-    tls:
-      insecure: true
-
-service:
-  pipelines:
-    logs:
-      receivers: [filelog]
-      processors: [batch, transform]
-      exporters: [otlp/elasticsearch]
-```
-
-## 6. 验证规则
-
-### 6.1 语法验证规则
-
-```yaml
-validation:
-  required_fields:
-    - log_parse.name
-    - log_parse.description
-    - log_parse.version
-    - log_parse.input
-  
-  type_constraints:
-    - field: "log_parse.name"
-      type: "string"
-      pattern: "^[a-zA-Z_][a-zA-Z0-9_]*$"
-    - field: "log_parse.version"
-      type: "string"
-      pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    - field: "log_parse.input.format"
-      type: "string"
-      enum: ["json", "text", "csv", "syslog", "nginx", "auto"]
-```
-
-### 6.2 解析验证规则
-
-```yaml
-parsing_validation:
-  input_consistency:
-    - rule: "input format must be supported"
-    - rule: "input encoding must be valid"
-    - rule: "timestamp format must be valid"
-  
-  parsing_validation:
-    - rule: "parsing rules must be valid"
-    - rule: "regex patterns must be valid"
-    - rule: "field mappings must be consistent"
-  
-  output_validation:
-    - rule: "output format must be supported"
-    - rule: "output schema must be valid"
-    - rule: "required fields must be mapped"
-```
-
-## 7. 最佳实践
-
-### 7.1 解析设计模式
+### 语法验证
 
 ```dsl
-# 基础解析模式
-log_parse "basic_parse" {
-  description: "基础日志解析"
-  version: "1.0.0"
-  
-  input: {
-    format: "json"
-    encoding: "utf-8"
-  }
-  
-  field_mapping: [
+validation_rules "log_parsing_validation" {
+  syntax: [
     {
-      source: "timestamp"
-      target: "event_time"
-      type: "timestamp"
+      rule: "required_fields"
+      fields: ["description", "version", "input", "parsers"]
+      message: "必须包含描述、版本、输入和解析器"
     },
     {
-      source: "level"
-      target: "severity"
-      type: "string"
+      rule: "valid_parser_type"
+      allowed_types: ["json", "grok", "regex", "multiline"]
+      message: "解析器类型必须是支持的类型"
+    },
+    {
+      rule: "valid_pattern"
+      condition: "pattern is valid regex"
+      message: "正则表达式模式必须有效"
     }
   ]
   
-  output: {
-    format: "json"
-  }
-}
-
-# 条件解析模式
-log_parse "conditional_parse" {
-  description: "条件日志解析"
-  version: "1.0.0"
-  
-  input: {
-    format: "auto"
-    encoding: "utf-8"
-  }
-  
-  parsing: {
-    type: "conditional"
-    rules: [
-      {
-        name: "json_logs"
-        condition: "message startsWith '{'"
-        actions: [
-          {
-            type: "parse_json"
-            source: "message"
-            target: "parsed_data"
-          }
-        ]
-      },
-      {
-        name: "text_logs"
-        condition: "true"
-        actions: [
-          {
-            type: "parse_regex"
-            source: "message"
-            target: "parsed_data"
-            pattern: "\\[(.*?)\\] (.*)"
-            groups: ["timestamp", "content"]
-          }
-        ]
-      }
-    ]
-  }
-  
-  output: {
-    format: "json"
-  }
-}
-```
-
-### 7.2 解析命名规范
-
-```dsl
-# 推荐命名模式
-log_parse "service_format_parse" {
-  # 服务_格式_解析
-}
-
-log_parse "environment_type_parse" {
-  # 环境_类型_解析
-}
-
-log_parse "domain_complexity_parse" {
-  # 领域_复杂度_解析
-}
-```
-
-## 8. 与主流标准的映射
-
-| DSL元素 | Logstash | Fluentd | OpenTelemetry | ELK Stack |
-|---------|----------|---------|---------------|-----------|
-| log_parse | filter | parser | processor | filter |
-| field_mapping | mutate | record_transformer | processor | transform |
-| validation | validate | validate | processor | validate |
-| transformation | mutate | record_transformer | processor | transform |
-| output | output | output | exporter | output |
-
-## 9. 工程实践示例
-
-```dsl
-# 生产环境日志解析配置示例
-log_parse "production_log_parse" {
-  description: "生产环境日志解析"
-  version: "1.0.0"
-  author: "system"
-  
-  input: {
-    format: "auto"
-    encoding: "utf-8"
-    detect_format: true
-    fallback_format: "text"
-  }
-  
-  parsing: {
-    type: "pipeline"
-    stages: [
-      {
-        name: "detect_format"
-        condition: "true"
-        actions: [
-          {
-            type: "detect_format"
-            source: "message"
-            target: "detected_format"
-            formats: ["json", "syslog", "nginx", "custom"]
-          }
-        ]
-      },
-      {
-        name: "parse_json"
-        condition: "detected_format == 'json'"
-        actions: [
-          {
-            type: "parse_json"
-            source: "message"
-            target: "parsed_data"
-            strict: false
-          }
-        ]
-      },
-      {
-        name: "parse_syslog"
-        condition: "detected_format == 'syslog'"
-        actions: [
-          {
-            type: "parse_syslog"
-            source: "message"
-            target: "parsed_data"
-            format: "rfc5424"
-          }
-        ]
-      },
-      {
-        name: "parse_nginx"
-        condition: "detected_format == 'nginx'"
-        actions: [
-          {
-            type: "parse_nginx"
-            source: "message"
-            target: "parsed_data"
-            format: "combined"
-          }
-        ]
-      },
-      {
-        name: "parse_custom"
-        condition: "detected_format == 'custom'"
-        actions: [
-          {
-            type: "parse_regex"
-            source: "message"
-            target: "parsed_data"
-            pattern: "\\[(?P<timestamp>.*?)\\] (?P<level>.*?) - (?P<content>.*)"
-            groups: ["timestamp", "level", "content"]
-          }
-        ]
-      }
-    ]
-  }
-  
-  field_mapping: [
+  semantic: [
     {
-      source: "parsed_data.timestamp"
-      target: "event_time"
+      rule: "field_mapping_validity"
+      condition: "all mapped fields exist in pattern"
+      message: "字段映射中的所有字段必须在模式中存在"
+    },
+    {
+      rule: "target_field_uniqueness"
+      condition: "target fields are unique"
+      message: "目标字段必须是唯一的"
+    }
+  ]
+}
+```
+
+### 性能验证
+
+```dsl
+performance_validation "parsing_performance" {
+  constraints: [
+    {
+      metric: "parsing_latency"
+      threshold: "100ms"
+      action: "warn"
+    },
+    {
+      metric: "throughput"
+      threshold: "10000 logs/sec"
+      action: "error"
+    },
+    {
+      metric: "memory_usage"
+      threshold: "1GB"
+      action: "warn"
+    }
+  ]
+  
+  optimization: [
+    {
+      strategy: "pattern_optimization"
+      enabled: true
+      target_efficiency: 0.95
+    },
+    {
+      strategy: "caching"
+      enabled: true
+      cache_size: "100MB"
+      ttl: "1h"
+    }
+  ]
+}
+```
+
+## 最佳实践
+
+### 设计模式
+
+```dsl
+best_practices "log_parsing_patterns" {
+  patterns: [
+    {
+      name: "format_detection"
+      description: "格式检测模式"
+      implementation: {
+        strategy: "pattern_matching"
+        fallback: "default_parser"
+        confidence_threshold: 0.8
+      }
+    },
+    {
+      name: "incremental_parsing"
+      description: "增量解析模式"
+      implementation: {
+        strategy: "pipeline_processing"
+        stages: ["detect", "parse", "validate", "transform"]
+        error_recovery: true
+      }
+    },
+    {
+      name: "adaptive_parsing"
+      description: "自适应解析模式"
+      implementation: {
+        strategy: "learning_based"
+        feedback_loop: true
+        pattern_evolution: true
+      }
+    }
+  ]
+  
+  anti_patterns: [
+    {
+      name: "over_parsing"
+      description: "过度解析"
+      symptoms: ["high_cpu_usage", "slow_processing"]
+      solution: "optimize_patterns"
+    },
+    {
+      name: "under_parsing"
+      description: "解析不足"
+      symptoms: ["missing_fields", "incomplete_data"]
+      solution: "expand_patterns"
+    }
+  ]
+}
+```
+
+### 监控和告警
+
+```dsl
+monitoring "parsing_monitoring" {
+  metrics: [
+    {
+      name: "log_parsing_rate"
+      type: "counter"
+      labels: ["parser", "format", "status"]
+      unit: "logs/sec"
+    },
+    {
+      name: "parsing_latency"
+      type: "histogram"
+      labels: ["parser", "format"]
+      buckets: [0.1, 0.5, 1, 5, 10, 50]
+    },
+    {
+      name: "parsing_errors"
+      type: "counter"
+      labels: ["parser", "error_type"]
+    },
+    {
+      name: "parsing_accuracy"
+      type: "gauge"
+      labels: ["parser", "format"]
+      range: [0, 1]
+    }
+  ]
+  
+  alerts: [
+    {
+      name: "parsing_failure"
+      condition: "parsing_errors > 0"
+      severity: "critical"
+      action: "restart_parser"
+    },
+    {
+      name: "high_latency"
+      condition: "parsing_latency > 100ms"
+      severity: "warning"
+      action: "optimize_patterns"
+    },
+    {
+      name: "low_accuracy"
+      condition: "parsing_accuracy < 0.9"
+      severity: "warning"
+      action: "review_patterns"
+    }
+  ]
+}
+```
+
+## 主流标准映射
+
+### ELK Stack集成
+
+```dsl
+elk_integration "elk_parsing" {
+  elasticsearch: {
+    index_pattern: "parsed-logs-*"
+    template: {
+      name: "parsed-logs"
+      pattern: "parsed-logs-*"
+      settings: {
+        number_of_shards: 3
+        number_of_replicas: 1
+        refresh_interval: "5s"
+      }
+    }
+  }
+  
+  logstash: {
+    input: {
+      type: "beats"
+      port: 5044
+      ssl: true
+    }
+    filter: [
+      {
+        type: "grok"
+        pattern: "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:level} %{GREEDYDATA:message}"
+      },
+      {
+        type: "date"
+        match: ["timestamp", "ISO8601"]
+        target: "@timestamp"
+      }
+    ]
+    output: {
+      type: "elasticsearch"
+      hosts: ["elasticsearch:9200"]
+      index: "parsed-logs-%{+YYYY.MM.dd}"
+    }
+  }
+  
+  kibana: {
+    index_pattern: "parsed-logs-*"
+    time_field: "@timestamp"
+    visualizations: [
+      {
+        name: "Parsing Success Rate"
+        type: "line"
+        x_axis: "@timestamp"
+        y_axis: "parsing_success_rate"
+      },
+      {
+        name: "Parsing Errors by Type"
+        type: "pie"
+        field: "error_type"
+      }
+    ]
+  }
+}
+```
+
+### Prometheus集成
+
+```dsl
+prometheus_integration "prometheus_parsing" {
+  metrics: [
+    {
+      name: "log_parsing_duration_seconds"
+      type: "histogram"
+      help: "Log parsing execution time"
+      labels: ["parser", "format", "status"]
+    },
+    {
+      name: "log_parsing_events_total"
+      type: "counter"
+      help: "Total number of parsed log events"
+      labels: ["parser", "format", "status"]
+    },
+    {
+      name: "log_parsing_errors_total"
+      type: "counter"
+      help: "Total number of parsing errors"
+      labels: ["parser", "error_type"]
+    },
+    {
+      name: "log_parsing_accuracy"
+      type: "gauge"
+      help: "Parsing accuracy percentage"
+      labels: ["parser", "format"]
+    }
+  ]
+  
+  rules: [
+    {
+      name: "High Parsing Error Rate"
+      expr: "rate(log_parsing_errors_total[5m]) > 0.1"
+      for: "2m"
+      labels: { severity: warning }
+      annotations: { summary: "High log parsing error rate" }
+    },
+    {
+      name: "Parsing Accuracy Degraded"
+      expr: "log_parsing_accuracy < 0.9"
+      for: "5m"
+      labels: { severity: critical }
+      annotations: { summary: "Log parsing accuracy is degraded" }
+    }
+  ]
+  
+  alertmanager: {
+    receivers: [
+      {
+        name: "slack"
+        slack_configs: [
+          {
+            channel: "#alerts"
+            title: "Log Parsing Alert"
+            text: "{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## 工程实践示例
+
+### 微服务日志解析
+
+```dsl
+microservice_parsing "order_service_parsing" {
+  description: "订单服务日志解析"
+  
+  services: [
+    {
+      name: "order-service"
+      format: "json"
+      parsers: [
+        {
+          name: "application_logs"
+          type: "json"
+          field_mapping: {
+            timestamp: "@timestamp"
+            level: "log.level"
+            message: "message"
+            trace_id: "trace.id"
+            span_id: "span.id"
+            user_id: "user.id"
+            order_id: "order.id"
+          }
+        }
+      ]
+    },
+    {
+      name: "payment-service"
+      format: "json"
+      parsers: [
+        {
+          name: "payment_logs"
+          type: "json"
+          field_mapping: {
+            timestamp: "@timestamp"
+            level: "log.level"
+            message: "message"
+            payment_id: "payment.id"
+            amount: "payment.amount"
+            status: "payment.status"
+          }
+        }
+      ]
+    },
+    {
+      name: "inventory-service"
+      format: "custom"
+      parsers: [
+        {
+          name: "inventory_logs"
+          type: "regex"
+          pattern: "\\[(?<timestamp>.*?)\\] \\[(?<level>\\w+)\\] \\[(?<operation>\\w+)\\] (?<message>.*?) \\((?<duration>\\d+)ms\\)"
+          field_mapping: {
+            timestamp: "@timestamp"
+            level: "log.level"
+            operation: "inventory.operation"
+            message: "message"
+            duration: "inventory.duration"
+          }
+        }
+      ]
+    }
+  ]
+  
+  correlation: {
+    enabled: true
+    correlation_key: "trace_id"
+    services: ["order-service", "payment-service", "inventory-service"]
+    time_window: "5m"
+  }
+  
+  validation: {
+    required_fields: ["@timestamp", "log.level", "message"]
+    field_types: {
+      "@timestamp": "datetime"
+      "log.level": "string"
+      "message": "string"
+    }
+  }
+  
+  transformation: [
+    {
+      name: "normalize_timestamp"
       type: "timestamp"
-      format: "auto"
+      field: "@timestamp"
+      format: "ISO8601"
       timezone: "UTC"
     },
     {
-      source: "parsed_data.level"
-      target: "severity"
-      type: "string"
+      name: "normalize_level"
+      type: "enum"
+      field: "log.level"
       mapping: {
-        "DEBUG": "debug"
-        "INFO": "info"
-        "WARN": "warning"
         "ERROR": "error"
-        "FATAL": "critical"
-        "TRACE": "trace"
+        "WARN": "warn"
+        "INFO": "info"
+        "DEBUG": "debug"
       }
-      default: "info"
     },
     {
-      source: "parsed_data.content"
-      target: "log_message"
-      type: "string"
-      max_length: 2000
-      truncate: true
-    },
-    {
-      source: "parsed_data.trace_id"
-      target: "correlation_id"
-      type: "string"
-      required: false
-      pattern: "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
-    },
-    {
-      source: "parsed_data.user_id"
-      target: "user_id"
-      type: "string"
-      required: false
-      mask: true
-    },
-    {
-      source: "parsed_data.ip_address"
-      target: "client_ip"
-      type: "string"
-      required: false
-      validate: "ipv4"
+      name: "add_service_metadata"
+      type: "field_addition"
+      fields: {
+        service_name: "service.name"
+        environment: "production"
+        data_center: "us-east-1"
+      }
     }
   ]
   
-  validation: {
-    enabled: true
-    rules: [
-      {
-        name: "required_fields"
-        condition: "event_time != null AND severity != null"
-        error_message: "Missing required fields: event_time or severity"
-        severity: "error"
-      },
-      {
-        name: "valid_severity"
-        condition: "severity in ['debug', 'info', 'warning', 'error', 'critical', 'trace']"
-        error_message: "Invalid severity level: {severity}"
-        severity: "warning"
-      },
-      {
-        name: "valid_timestamp"
-        condition: "event_time != null AND event_time > '2020-01-01T00:00:00Z'"
-        error_message: "Invalid timestamp: {event_time}"
-        severity: "warning"
-      },
-      {
-        name: "message_length"
-        condition: "log_message != null AND log_message.length <= 2000"
-        error_message: "Log message too long: {log_message.length} characters"
-        severity: "warning"
-      }
-    ]
-    error_handling: {
-      strategy: "continue"
-      error_field: "validation_errors"
-      max_errors: 100
-    }
-  }
-  
-  transformation: {
-    enabled: true
-    rules: [
-      {
-        name: "add_metadata"
-        condition: "true"
-        actions: [
-          {
-            type: "add_field"
-            name: "service"
-            value: "web-service"
-          },
-          {
-            type: "add_field"
-            name: "environment"
-            value: "production"
-          },
-          {
-            type: "add_field"
-            name: "parsed_at"
-            value: "now()"
-            type: "timestamp"
-          },
-          {
-            type: "add_field"
-            name: "parse_version"
-            value: "1.0.0"
-          }
-        ]
-      },
-      {
-        name: "enrich_error_logs"
-        condition: "severity in ['error', 'critical']"
-        actions: [
-          {
-            type: "add_field"
-            name: "error_category"
-            value: "application_error"
-          },
-          {
-            type: "add_field"
-            name: "alert_priority"
-            value: "high"
-          }
-        ]
-      },
-      {
-        name: "mask_sensitive_data"
-        condition: "log_message contains 'password' OR log_message contains 'token'"
-        actions: [
-          {
-            type: "mask_field"
-            field: "log_message"
-            pattern: "(password|token)=[^\\s]+"
-            replacement: "$1=***"
-          }
-        ]
-      },
-      {
-        name: "calculate_metrics"
-        condition: "log_message contains 'response_time'"
-        actions: [
-          {
-            type: "extract_regex"
-            source: "log_message"
-            target: "response_time"
-            pattern: "response_time=(\\d+)"
-            groups: ["time_ms"]
-          },
-          {
-            type: "calculate"
-            target: "response_time_seconds"
-            expression: "response_time.time_ms / 1000"
-            type: "float"
-          }
-        ]
-      }
-    ]
-  }
-  
   output: {
-    format: "json"
-    schema: {
-      type: "object"
-      properties: {
-        event_time: { type: "string", format: "date-time" }
-        severity: { type: "string", enum: ["debug", "info", "warning", "error", "critical", "trace"] }
-        log_message: { type: "string", maxLength: 2000 }
-        correlation_id: { type: "string", format: "uuid" }
-        user_id: { type: "string" }
-        client_ip: { type: "string", format: "ipv4" }
-        service: { type: "string" }
-        environment: { type: "string" }
-        parsed_at: { type: "string", format: "date-time" }
-        parse_version: { type: "string" }
-        error_category: { type: "string" }
-        alert_priority: { type: "string" }
-        response_time_seconds: { type: "number" }
-        validation_errors: { type: "array", items: { type: "string" } }
+    format: "structured"
+    destination: "elasticsearch"
+    index: "microservice-logs"
+    template: {
+      name: "microservice-logs"
+      pattern: "microservice-logs-*"
+      settings: {
+        number_of_shards: 3
+        number_of_replicas: 1
+        refresh_interval: "5s"
       }
-      required: ["event_time", "severity", "log_message", "service", "environment"]
-    }
-    compression: {
-      enabled: true
-      algorithm: "gzip"
-      level: 6
-    }
-  }
-  
-  error_handling: {
-    enabled: true
-    strategy: "continue"
-    error_field: "parse_error"
-    max_errors: 1000
-    error_logging: {
-      enabled: true
-      level: "warn"
-      destination: "parse_errors.log"
-    }
-    fallback: {
-      enabled: true
-      action: "passthrough"
-      add_error_info: true
-    }
-  }
-  
-  performance: {
-    batch_size: 1000
-    timeout: "30s"
-    max_memory: "1GB"
-    parallel_processing: {
-      enabled: true
-      workers: 4
-      queue_size: 10000
-    }
-    caching: {
-      enabled: true
-      max_size: "100MB"
-      ttl: "1h"
     }
   }
   
   monitoring: {
-    enabled: true
     metrics: [
-      "parse_rate",
-      "parse_latency",
-      "error_rate",
-      "format_detection_accuracy",
-      "validation_errors",
-      "transformation_errors"
+      "parsing_success_rate",
+      "parsing_latency",
+      "field_extraction_rate",
+      "correlation_success_rate"
     ]
-    alerts: [
-      {
-        name: "high_parse_error_rate"
-        condition: "error_rate > 0.05"
-        duration: "5m"
-        severity: "warning"
-      },
-      {
-        name: "high_parse_latency"
-        condition: "parse_latency > 5s"
-        duration: "2m"
-        severity: "warning"
+    alerting: {
+      on_parsing_failure: {
+        threshold: 0.01
+        severity: "critical"
+        notification: "pagerduty"
       }
-    ]
-    dashboards: [
-      "https://grafana.example.com/d/log-parsing"
-    ]
-  }
-  
-  security: {
-    enabled: true
-    data_masking: {
-      enabled: true
-      fields: ["password", "token", "api_key", "credit_card"]
-      method: "hash"
-      salt: "random_salt"
-    }
-    encryption: {
-      enabled: true
-      algorithm: "AES-256"
-      key_rotation: "30d"
-    }
-    access_control: {
-      enabled: true
-      audit_logging: true
-      retention_period: "7y"
+      on_high_latency: {
+        threshold: "100ms"
+        severity: "warning"
+        notification: "slack"
+      }
     }
   }
 }
 ```
 
-这个DSL设计为日志解析建模提供了完整的配置语言，支持基础解析、多格式解析、复杂解析逻辑等多种模式，同时保持了良好的可扩展性和可维护性。
+这个DSL设计提供了完整的日志解析建模能力，支持多种日志格式、解析策略、字段映射、数据转换，并能够与主流日志解析平台无缝集成。

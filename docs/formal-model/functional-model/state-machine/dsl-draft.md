@@ -1224,7 +1224,7 @@ state_machine "ecommerce_order_state_machine" {
 
 这个DSL设计为状态机建模提供了完整的配置语言，支持从简单的状态转换到复杂的嵌套状态、并行状态、历史状态、超时处理等各种状态机模式，同时保持了良好的可扩展性和可维护性。
 
-## 2. 基本语法结构
+## 2. 1基本语法结构
 
 ```dsl
 state_machine "order_state_machine" {
@@ -1388,7 +1388,7 @@ state_machine "order_state_machine" {
 }
 ```
 
-## 3. 关键元素
+## 3. 1关键元素
 
 - state_machine：状态机声明
 - description：描述信息
@@ -1401,9 +1401,9 @@ state_machine "order_state_machine" {
 - error_handling：错误处理
 - monitoring：监控配置
 
-## 4. 高级用法
+## 4. 1高级用法
 
-### 4.1 嵌套状态
+### 4.1 1嵌套状态
 
 ```dsl
 state_machine "complex_order_state_machine" {
@@ -1492,7 +1492,7 @@ state_machine "complex_order_state_machine" {
 }
 ```
 
-### 4.2 并行状态
+### 4.2 1并行状态
 
 ```dsl
 state_machine "parallel_order_state_machine" {
@@ -1573,7 +1573,7 @@ state_machine "parallel_order_state_machine" {
 }
 ```
 
-### 4.3 历史状态
+### 4.3 1历史状态
 
 ```dsl
 state_machine "history_state_machine" {
@@ -1639,7 +1639,7 @@ state_machine "history_state_machine" {
 }
 ```
 
-### 4.4 超时处理
+### 4.4 1超时处理
 
 ```dsl
 state_machine "timeout_state_machine" {
@@ -1698,9 +1698,9 @@ state_machine "timeout_state_machine" {
 }
 ```
 
-## 5. 代码生成模板
+## 5. 1代码生成模板
 
-### 5.1 Java状态机生成
+### 5.1 1Java状态机生成
 
 ```java
 // OrderStateMachine.java
@@ -1830,7 +1830,7 @@ public class OrderStateMachine {
 }
 ```
 
-### 5.2 Python状态机生成
+### 5.2 1Python状态机生成
 
 ```python
 # order_state_machine.py
@@ -1948,7 +1948,7 @@ class OrderStateMachine:
         pass
 ```
 
-### 5.3 JavaScript状态机生成
+### 5.3 1JavaScript状态机生成
 
 ```javascript
 // orderStateMachine.js
@@ -2074,9 +2074,9 @@ class OrderStateMachine {
 }
 ```
 
-## 6. 验证规则
+## 6. 1验证规则
 
-### 6.1 语法验证规则
+### 6.1 1语法验证规则
 
 ```yaml
 validation:
@@ -2109,7 +2109,7 @@ validation:
     - rule: "transition source and target states must exist"
 ```
 
-### 6.2 状态机验证规则
+### 6.2 1状态机验证规则
 
 ```yaml
 state_machine_validation:
@@ -2129,9 +2129,9 @@ state_machine_validation:
     - rule: "timeout mechanisms must be defined for long-running states"
 ```
 
-## 7. 最佳实践
+## 7. 1最佳实践
 
-### 7.1 状态机设计模式
+### 7.1 1状态机设计模式
 
 ```dsl
 # 简单状态机模式
@@ -2226,7 +2226,7 @@ state_machine "complex_state_machine" {
 }
 ```
 
-### 7.2 状态机命名规范
+### 7.2 1状态机命名规范
 
 ```dsl
 # 推荐命名模式
@@ -2243,7 +2243,7 @@ state_machine "workflow_state_machine" {
 }
 ```
 
-## 8. 与主流标准的映射
+## 8. 1与主流标准的映射
 
 | DSL元素 | UML State Machine | Spring Statemachine | XState | AWS Step Functions |
 |---------|-------------------|---------------------|--------|-------------------|
@@ -2254,7 +2254,7 @@ state_machine "workflow_state_machine" {
 | conditions | guards | guards | guards | conditions |
 | actions | actions | actions | actions | actions |
 
-## 9. 工程实践示例
+## 9. 1工程实践示例
 
 ```dsl
 # 电商订单状态机示例
