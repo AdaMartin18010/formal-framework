@@ -1,1029 +1,1186 @@
-# 日志异常检测建模DSL草案
+# 日志异常检测建模DSL设计
 
-## 1. 设计目标
+## 设计目标
 
-- 用声明式语法描述异常类型、检测方法、阈值、训练、告警等流程
-- 支持多类型、多算法异常检测统一建模
-- 便于自动生成检测与告警配置
-- 支持机器学习、统计分析、模式识别等高级特性
+日志异常检测建模DSL旨在提供声明式语言定义复杂的日志异常检测规则和算法，支持多种异常类型检测、自适应阈值调整、机器学习模型集成，并与主流监控平台无缝集成。
 
-## 2. 基本语法结构
+## 基本语法
+
+### 核心结构
 
 ```dsl
-log_anomaly "error_spike_detection" {
-  description: "错误日志异常检测"
+anomaly_detection "web_service_anomaly" {
+  description: "Web服务日志异常检测"
   version: "1.0.0"
-  author: "system"
   
-  type: "frequency_anomaly"
-  target: "error_logs"
-  
-  detection: {
-    method: "statistical"
-    algorithm: "z_score"
-    window: "1h"
-    baseline: "7d"
-    threshold: 3.0
-    sensitivity: "high"
-  }
-  
-  data_source: {
+  source: {
     type: "elasticsearch"
-    index: "web-service-logs-*"
-    query: {
-      filter: {
-        field: "level"
-        operator: "equals"
-        value: "ERROR"
-      }
-    }
+    endpoint: "http://elasticsearch:9200"
+    index: "web-service-logs"
+    query: "service:web-service"
+    time_window: "5m"
   }
   
-  training: {
-    enabled: true
-    data_period: "30d"
-    update_frequency: "daily"
-    model_type: "adaptive"
-    validation: {
-      enabled: true
-      method: "cross_validation"
-      folds: 5
+  detection_rules: [
+    {
+      name: "error_spike_detection"
+      type: "frequency_anomaly"
+      algorithm: "z_score"
+      threshold: 3.0
+      window: "1h"
     }
-  }
+  ]
   
   alerting: {
-    enabled: true
-    severity: "warning"
-    channels: [
-      {
-        type: "email"
-        recipients: ["admin@example.com"]
-        template: "error_spike_alert"
-      },
-      {
-        type: "slack"
-        channel: "#alerts"
-        template: "error_spike_alert"
-      }
-    ]
-    suppression: {
-      enabled: true
-      duration: "30m"
-      max_alerts: 5
-    }
-  }
-  
-  monitoring: {
-    enabled: true
-    metrics: [
-      "detection_accuracy",
-      "false_positive_rate",
-      "true_positive_rate",
-      "model_performance"
-    ]
+    severity: "critical"
+    channels: ["slack", "email", "pagerduty"]
   }
 }
 ```
 
-## 3. 关键元素
-
-- log_anomaly：异常检测声明
-- description：描述信息
-- version：版本号
-- author：作者
-- type：异常类型
-- target：检测目标
-- detection：检测配置
-- data_source：数据源配置
-- training：训练配置
-- alerting：告警配置
-- monitoring：监控配置
-
-## 4. 高级用法
-
-### 4.1 多算法异常检测
+### 频率异常检测
 
 ```dsl
-log_anomaly "comprehensive_anomaly_detection" {
-  description: "综合异常检测"
-  version: "1.0.0"
-  author: "system"
+frequency_anomaly "error_rate_anomaly" {
+  description: "错误率异常检测"
   
-  type: "multi_anomaly"
-  target: "all_logs"
+  metric: {
+    name: "error_count"
+    aggregation: "count"
+    filter: "level:ERROR"
+    group_by: ["service", "endpoint"]
+  }
   
-  algorithms: [
-    {
-      name: "statistical_detection"
-      method: "statistical"
-      algorithm: "z_score"
-      window: "1h"
+  algorithm: {
+    type: "z_score"
+    parameters: {
+      window_size: "1h"
+      baseline_period: "7d"
       threshold: 3.0
-      weight: 0.3
+    }
+  }
+  
+  baseline: {
+    calculation: "rolling_mean"
+    window: "24h"
+    min_data_points: 100
+  }
+  
+  detection: {
+    sensitivity: "medium"
+    min_anomaly_duration: "2m"
+    max_anomaly_duration: "1h"
+  }
+  
+  alerting: {
+    severity: "warning"
+    message: "错误率异常：{service} 服务在 {endpoint} 端点的错误率异常升高"
+  }
+}
+```
+
+### 模式异常检测
+
+```dsl
+pattern_anomaly "log_pattern_anomaly" {
+  description: "日志模式异常检测"
+  
+  algorithm: {
+    type: "isolation_forest"
+    parameters: {
+      contamination: 0.1
+      n_estimators: 100
+      max_samples: "auto"
+    }
+  }
+  
+  features: [
+    {
+      name: "message_length"
+      type: "numeric"
+      normalization: "standard"
     },
     {
-      name: "ml_detection"
-      method: "machine_learning"
-      algorithm: "isolation_forest"
-      window: "1h"
-      contamination: 0.1
+      name: "error_type"
+      type: "categorical"
+      encoding: "one_hot"
+    },
+    {
+      name: "service_name"
+      type: "categorical"
+      encoding: "label"
+    }
+  ]
+  
+  training: {
+    data_source: "historical_logs"
+    period: "30d"
+    update_frequency: "1d"
+    validation_split: 0.2
+  }
+  
+  detection: {
+    confidence_threshold: 0.8
+    min_anomaly_score: 0.7
+    batch_size: 1000
+  }
+}
+```
+
+### 时间序列异常检测
+
+```dsl
+timeseries_anomaly "response_time_anomaly" {
+  description: "响应时间时间序列异常检测"
+  
+  metric: {
+    name: "response_time"
+    aggregation: "percentile"
+    percentile: 95
+    unit: "ms"
+  }
+  
+  algorithm: {
+    type: "prophet"
+    parameters: {
+      changepoint_prior_scale: 0.05
+      seasonality_prior_scale: 10.0
+      holidays_prior_scale: 10.0
+      seasonality_mode: "multiplicative"
+    }
+  }
+  
+  seasonality: {
+    yearly: true
+    weekly: true
+    daily: true
+    custom_seasonalities: [
+      {
+        name: "hourly"
+        period: 24
+        fourier_order: 5
+      }
+    ]
+  }
+  
+  forecasting: {
+    horizon: "1h"
+    confidence_interval: 0.95
+    update_frequency: "5m"
+  }
+  
+  detection: {
+    method: "confidence_interval"
+    threshold: 2.0
+    min_anomaly_duration: "5m"
+  }
+}
+```
+
+### 相关性异常检测
+
+```dsl
+correlation_anomaly "service_correlation_anomaly" {
+  description: "服务间相关性异常检测"
+  
+  services: ["web-service", "database-service", "cache-service"]
+  
+  correlation_analysis: {
+    method: "pearson"
+    window_size: "15m"
+    min_correlation: 0.7
+  }
+  
+  metrics: [
+    {
+      name: "error_rate"
+      service: "web-service"
+      aggregation: "rate"
+    },
+    {
+      name: "connection_count"
+      service: "database-service"
+      aggregation: "max"
+    },
+    {
+      name: "cache_hit_rate"
+      service: "cache-service"
+      aggregation: "mean"
+    }
+  ]
+  
+  algorithm: {
+    type: "correlation_change"
+    parameters: {
+      baseline_period: "7d"
+      change_threshold: 0.3
+      significance_level: 0.05
+    }
+  }
+  
+  detection: {
+    trigger: "correlation_breakdown"
+    min_breakdown_duration: "5m"
+    severity: "high"
+  }
+}
+```
+
+## 高级用法
+
+### 复合异常检测
+
+```dsl
+composite_anomaly "comprehensive_anomaly_detection" {
+  description: "综合异常检测"
+  
+  detectors: [
+    {
+      name: "error_rate_detector"
+      type: "frequency_anomaly"
       weight: 0.4
     },
     {
-      name: "pattern_detection"
-      method: "pattern_matching"
-      algorithm: "regex_pattern"
-      patterns: [
-        ".*ERROR.*database.*connection.*",
-        ".*FATAL.*out of memory.*",
-        ".*CRITICAL.*service.*unavailable.*"
-      ]
+      name: "response_time_detector"
+      type: "timeseries_anomaly"
+      weight: 0.3
+    },
+    {
+      name: "pattern_detector"
+      type: "pattern_anomaly"
       weight: 0.3
     }
   ]
   
-  ensemble: {
-    enabled: true
-    method: "weighted_voting"
+  aggregation: {
+    method: "weighted_average"
     threshold: 0.6
     consensus_required: 2
   }
   
-  data_source: {
-    type: "elasticsearch"
-    index: "production-logs-*"
-    query: {
-      filter: {
-        conditions: [
-          {
-            field: "level"
-            operator: "in"
-            value: ["ERROR", "FATAL", "CRITICAL"]
-          },
-          {
-            field: "timestamp"
-            operator: "range"
-            value: {
-              gte: "now-1h"
-              lte: "now"
-            }
-          }
-        ]
-      }
-    }
-  }
-  
-  training: {
-    enabled: true
-    data_period: "30d"
-    update_frequency: "daily"
-    model_type: "ensemble"
-    hyperparameter_tuning: {
-      enabled: true
-      method: "grid_search"
-      parameters: {
-        z_score_threshold: [2.0, 2.5, 3.0, 3.5]
-        isolation_forest_contamination: [0.05, 0.1, 0.15, 0.2]
-        ensemble_threshold: [0.5, 0.6, 0.7, 0.8]
-      }
-    }
-    validation: {
-      enabled: true
-      method: "time_series_split"
-      test_size: 0.2
-      validation_size: 0.2
-    }
-  }
-  
   alerting: {
-    enabled: true
-    severity: "critical"
-    channels: [
-      {
-        type: "email"
-        recipients: ["admin@example.com", "oncall@example.com"]
-        template: "comprehensive_anomaly_alert"
-        priority: "high"
-      },
-      {
-        type: "slack"
-        channel: "#critical-alerts"
-        template: "comprehensive_anomaly_alert"
-        priority: "high"
-      },
-      {
-        type: "pagerduty"
-        service: "production-alerts"
-        template: "comprehensive_anomaly_alert"
-        priority: "high"
-      }
-    ]
-    escalation: {
-      enabled: true
-      levels: [
-        {
-          level: 1
-          delay: "5m"
-          channels: ["slack"]
-        },
-        {
-          level: 2
-          delay: "15m"
-          channels: ["email", "slack"]
-        },
-        {
-          level: 3
-          delay: "30m"
-          channels: ["pagerduty", "email", "slack"]
-        }
-      ]
+    severity_mapping: {
+      low: { score: [0.6, 0.8], actions: ["notify"] },
+      medium: { score: [0.8, 0.9], actions: ["notify", "escalate"] },
+      high: { score: [0.9, 1.0], actions: ["notify", "escalate", "page"] }
     }
-    suppression: {
-      enabled: true
-      duration: "1h"
-      max_alerts: 10
-      group_by: ["service", "environment"]
-    }
-  }
-  
-  monitoring: {
-    enabled: true
-    metrics: [
-      "detection_accuracy",
-      "false_positive_rate",
-      "true_positive_rate",
-      "model_performance",
-      "ensemble_confidence",
-      "alert_volume"
-    ]
-    alerts: [
-      {
-        name: "high_false_positive_rate"
-        condition: "false_positive_rate > 0.1"
-        duration: "1h"
-        severity: "warning"
-      },
-      {
-        name: "low_detection_accuracy"
-        condition: "detection_accuracy < 0.8"
-        duration: "1h"
-        severity: "warning"
-      }
-    ]
-    dashboards: [
-      "https://grafana.example.com/d/anomaly-detection"
-    ]
   }
 }
 ```
 
-### 4.2 实时异常检测
+### 自适应阈值
 
 ```dsl
-log_anomaly "real_time_anomaly_detection" {
-  description: "实时异常检测"
-  version: "1.0.0"
-  author: "system"
+adaptive_threshold "dynamic_threshold" {
+  description: "动态阈值调整"
   
-  type: "streaming_anomaly"
-  target: "real_time_logs"
-  
-  detection: {
-    method: "streaming"
-    algorithm: "online_learning"
-    window: "5m"
-    sliding_interval: "1m"
-    threshold: 2.5
-    adaptation_rate: 0.1
+  learning: {
+    algorithm: "exponential_smoothing"
+    alpha: 0.1
+    beta: 0.05
+    gamma: 0.01
   }
   
-  data_source: {
-    type: "kafka"
-    topic: "log-stream"
-    consumer_group: "anomaly-detector"
-    batch_size: 1000
-    batch_timeout: "30s"
+  baseline: {
+    calculation: "adaptive_mean"
+    window: "24h"
+    seasonality: "daily"
+    trend_adjustment: true
   }
   
-  processing: {
-    enabled: true
-    pipeline: [
-      {
-        name: "feature_extraction"
-        type: "feature_extractor"
-        features: [
-          "log_frequency",
-          "error_rate",
-          "response_time_avg",
-          "unique_services"
-        ]
-      },
-      {
-        name: "normalization"
-        type: "normalizer"
-        method: "z_score"
-        window: "1h"
-      },
-      {
-        name: "anomaly_detection"
-        type: "anomaly_detector"
-        algorithm: "isolation_forest"
-        contamination: 0.05
-      }
-    ]
+  adjustment: {
+    sensitivity: "adaptive"
+    min_threshold: 2.0
+    max_threshold: 5.0
+    adjustment_rate: 0.1
+  }
+  
+  feedback: {
+    false_positive_penalty: 0.1
+    false_negative_penalty: 0.3
+    learning_rate: 0.05
+  }
+}
+```
+
+### 机器学习集成
+
+```dsl
+ml_anomaly "ml_based_anomaly" {
+  description: "机器学习异常检测"
+  
+  model: {
+    type: "autoencoder"
+    architecture: {
+      encoder: [64, 32, 16]
+      decoder: [16, 32, 64]
+      activation: "relu"
+      dropout: 0.2
+    }
   }
   
   training: {
-    enabled: true
-    method: "online"
-    update_frequency: "continuous"
-    model_type: "adaptive"
-    drift_detection: {
-      enabled: true
-      method: "statistical"
-      threshold: 0.1
-      action: "retrain"
-    }
+    data_source: "normal_logs"
+    period: "30d"
+    batch_size: 32
+    epochs: 100
+    validation_split: 0.2
+    early_stopping: true
   }
   
-  alerting: {
-    enabled: true
-    severity: "warning"
-    channels: [
-      {
-        type: "webhook"
-        url: "https://api.example.com/alerts"
-        method: "POST"
-        headers: {
-          "Content-Type": "application/json"
-          "Authorization": "Bearer ${API_TOKEN}"
-        }
-        template: "real_time_anomaly_alert"
-      }
-    ]
-    throttling: {
-      enabled: true
-      max_alerts_per_minute: 10
-      max_alerts_per_hour: 100
+  features: [
+    {
+      name: "log_volume"
+      type: "numeric"
+      window: "5m"
+      aggregation: "count"
+    },
+    {
+      name: "error_distribution"
+      type: "categorical"
+      encoding: "frequency"
+    },
+    {
+      name: "temporal_features"
+      type: "temporal"
+      include: ["hour", "day_of_week", "is_weekend"]
     }
+  ]
+  
+  detection: {
+    method: "reconstruction_error"
+    threshold: "adaptive"
+    min_error_threshold: 0.1
   }
   
-  monitoring: {
+  online_learning: {
     enabled: true
-    metrics: [
-      "stream_processing_latency",
-      "detection_accuracy",
-      "model_drift_score",
-      "alert_rate"
-    ]
-    alerts: [
-      {
-        name: "high_processing_latency"
-        condition: "stream_processing_latency > 10s"
-        duration: "5m"
-        severity: "warning"
-      },
-      {
-        name: "model_drift_detected"
-        condition: "model_drift_score > 0.1"
-        duration: "10m"
-        severity: "warning"
-      }
-    ]
+    update_frequency: "1h"
+    batch_size: 100
+    learning_rate: 0.001
   }
 }
 ```
 
-## 5. 代码生成模板
+## 代码生成模板
 
-### 5.1 Elasticsearch Watcher配置生成
-
-```json
-{
-  "trigger": {
-    "schedule": {
-      "interval": "1m"
-    }
-  },
-  "input": {
-    "search": {
-      "request": {
-        "search_type": "query_then_fetch",
-        "indices": ["web-service-logs-*"],
-        "body": {
-          "query": {
-            "bool": {
-              "must": [
-                {
-                  "term": {
-                    "level": "ERROR"
-                  }
-                },
-                {
-                  "range": {
-                    "timestamp": {
-                      "gte": "now-1h",
-                      "lte": "now"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "aggs": {
-            "error_count": {
-              "value_count": {
-                "field": "level"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "condition": {
-    "compare": {
-      "ctx.payload.aggregations.error_count.value": {
-        "gt": 100
-      }
-    }
-  },
-  "actions": {
-    "send_email": {
-      "email": {
-        "to": ["admin@example.com"],
-        "subject": "Error Spike Detected",
-        "body": "Error count exceeded threshold: {{ctx.payload.aggregations.error_count.value}}"
-      }
-    }
-  }
-}
-```
-
-### 5.2 Prometheus告警规则生成
-
-```yaml
-groups:
-- name: log_anomaly_alerts
-  rules:
-  - alert: ErrorSpikeDetected
-    expr: rate(log_entries_total{level="ERROR"}[5m]) > 10
-    for: 2m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Error spike detected"
-      description: "Error rate is {{ $value }} errors per second"
-  
-  - alert: HighLatencyAnomaly
-    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
-    for: 1m
-    labels:
-      severity: warning
-    annotations:
-      summary: "High latency anomaly detected"
-      description: "95th percentile latency is {{ $value }} seconds"
-```
-
-### 5.3 Python机器学习代码生成
+### Python实现
 
 ```python
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
-import logging
+from prophet import Prophet
+import elasticsearch
 
 class LogAnomalyDetector:
     def __init__(self, config):
         self.config = config
-        self.model = IsolationForest(
-            contamination=config['contamination'],
-            random_state=42
-        )
-        self.scaler = StandardScaler()
-        self.logger = logging.getLogger(__name__)
+        self.es_client = elasticsearch.Elasticsearch(config['source']['endpoint'])
     
-    def extract_features(self, logs):
-        """提取日志特征"""
-        features = []
-        for log in logs:
-            feature_vector = [
-                log.get('frequency', 0),
-                log.get('error_rate', 0),
-                log.get('response_time_avg', 0),
-                log.get('unique_services', 0)
-            ]
-            features.append(feature_vector)
-        return np.array(features)
-    
-    def train(self, training_data):
-        """训练模型"""
-        features = self.extract_features(training_data)
-        features_scaled = self.scaler.fit_transform(features)
-        self.model.fit(features_scaled)
-        self.logger.info("Model trained successfully")
-    
-    def detect_anomalies(self, logs):
-        """检测异常"""
-        features = self.extract_features(logs)
-        features_scaled = self.scaler.transform(features)
-        predictions = self.model.predict(features_scaled)
+    def collect_logs(self):
+        query = {
+            "query": {
+                "bool": {
+                    "must": [{"match": {"service": "web-service"}}],
+                    "filter": {
+                        "range": {
+                            "@timestamp": {
+                                "gte": f"now-{self.config['source']['time_window']}",
+                                "lte": "now"
+                            }
+                        }
+                    }
+                }
+            },
+            "aggs": {
+                "error_count": {
+                    "date_histogram": {
+                        "field": "@timestamp",
+                        "interval": "1m"
+                    },
+                    "aggs": {
+                        "error_count": {
+                            "filter": {"term": {"level": "ERROR"}}
+                        }
+                    }
+                }
+            }
+        }
         
+        response = self.es_client.search(
+            index=self.config['source']['index'],
+            body=query,
+            size=0
+        )
+        
+        return response['aggregations']['error_count']['buckets']
+    
+    def frequency_anomaly_detection(self, data):
+        error_counts = [bucket['error_count']['doc_count'] for bucket in data]
+        
+        if len(error_counts) < 10:
+            return []
+        
+        # 计算Z-score
+        mean = np.mean(error_counts)
+        std = np.std(error_counts)
+        
+        if std == 0:
+            return []
+        
+        z_scores = [(count - mean) / std for count in error_counts]
+        
+        # 检测异常
         anomalies = []
-        for i, prediction in enumerate(predictions):
-            if prediction == -1:  # 异常
+        threshold = self.config['detection_rules'][0]['threshold']
+        
+        for i, z_score in enumerate(z_scores):
+            if abs(z_score) > threshold:
                 anomalies.append({
-                    'log': logs[i],
-                    'anomaly_score': self.model.score_samples([features_scaled[i]])[0],
-                    'timestamp': logs[i].get('timestamp')
+                    'timestamp': data[i]['key_as_string'],
+                    'value': error_counts[i],
+                    'z_score': z_score,
+                    'severity': 'high' if abs(z_score) > threshold * 1.5 else 'medium'
                 })
         
         return anomalies
     
-    def update_model(self, new_data):
-        """更新模型"""
-        features = self.extract_features(new_data)
-        features_scaled = self.scaler.transform(features)
-        self.model.partial_fit(features_scaled)
-        self.logger.info("Model updated with new data")
+    def pattern_anomaly_detection(self, data):
+        # 特征提取
+        features = []
+        for bucket in data:
+            feature_vector = [
+                bucket['error_count']['doc_count'],
+                len(bucket.get('key_as_string', '')),
+                hash(bucket.get('key_as_string', '')) % 1000
+            ]
+            features.append(feature_vector)
+        
+        if len(features) < 10:
+            return []
+        
+        # 标准化
+        scaler = StandardScaler()
+        features_scaled = scaler.fit_transform(features)
+        
+        # 异常检测
+        model = IsolationForest(
+            contamination=0.1,
+            n_estimators=100,
+            random_state=42
+        )
+        
+        anomaly_scores = model.fit_predict(features_scaled)
+        
+        anomalies = []
+        for i, score in enumerate(anomaly_scores):
+            if score == -1:
+                anomalies.append({
+                    'timestamp': data[i]['key_as_string'],
+                    'anomaly_score': model.decision_function([features_scaled[i]])[0],
+                    'severity': 'high'
+                })
+        
+        return anomalies
+    
+    def run_detection(self):
+        logs = self.collect_logs()
+        all_anomalies = []
+        
+        for rule in self.config['detection_rules']:
+            if rule['type'] == 'frequency_anomaly':
+                anomalies = self.frequency_anomaly_detection(logs)
+            elif rule['type'] == 'pattern_anomaly':
+                anomalies = self.pattern_anomaly_detection(logs)
+            else:
+                continue
+            
+            all_anomalies.extend(anomalies)
+        
+        # 发送告警
+        if all_anomalies:
+            self.send_alerts(all_anomalies)
+        
+        return all_anomalies
+    
+    def send_alerts(self, anomalies):
+        for anomaly in anomalies:
+            alert = {
+                'severity': anomaly.get('severity', 'medium'),
+                'message': f"检测到日志异常：{anomaly}",
+                'timestamp': anomaly.get('timestamp', datetime.now().isoformat()),
+                'channels': self.config['alerting']['channels']
+            }
+            
+            # 发送到各个告警渠道
+            for channel in alert['channels']:
+                if channel == 'slack':
+                    self.send_slack_alert(alert)
+                elif channel == 'email':
+                    self.send_email_alert(alert)
+                elif channel == 'pagerduty':
+                    self.send_pagerduty_alert(alert)
 
 # 使用示例
 config = {
-    'contamination': 0.1,
-    'window_size': 3600,  # 1小时
-    'update_frequency': 86400  # 1天
+    "source": {
+        "type": "elasticsearch",
+        "endpoint": "http://elasticsearch:9200",
+        "index": "web-service-logs",
+        "time_window": "5m"
+    },
+    "detection_rules": [
+        {
+            "name": "error_spike_detection",
+            "type": "frequency_anomaly",
+            "algorithm": "z_score",
+            "threshold": 3.0,
+            "window": "1h"
+        }
+    ],
+    "alerting": {
+        "severity": "critical",
+        "channels": ["slack", "email", "pagerduty"]
+    }
 }
 
 detector = LogAnomalyDetector(config)
+anomalies = detector.run_detection()
 ```
 
-## 6. 验证规则
-
-### 6.1 语法验证规则
+### Prometheus告警规则
 
 ```yaml
-validation:
-  required_fields:
-    - log_anomaly.name
-    - log_anomaly.description
-    - log_anomaly.version
-    - log_anomaly.type
-    - log_anomaly.detection
-  
-  type_constraints:
-    - field: "log_anomaly.name"
-      type: "string"
-      pattern: "^[a-zA-Z_][a-zA-Z0-9_]*$"
-    - field: "log_anomaly.version"
-      type: "string"
-      pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    - field: "log_anomaly.type"
-      type: "string"
-      enum: ["frequency_anomaly", "pattern_anomaly", "statistical_anomaly", "ml_anomaly", "multi_anomaly"]
+# 生成的Prometheus告警规则
+groups:
+  - name: log_anomaly_detection
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          (
+            rate(log_entries_total{level="ERROR", service="web-service"}[5m]) -
+            avg_over_time(rate(log_entries_total{level="ERROR", service="web-service"}[5m])[1h])
+          ) / stddev_over_time(rate(log_entries_total{level="ERROR", service="web-service"}[5m])[1h]) > 3
+        for: 2m
+        labels:
+          severity: warning
+          service: web-service
+        annotations:
+          summary: "High error rate anomaly detected"
+          description: "Error rate for {{ $labels.service }} is {{ $value }} standard deviations above normal"
+      
+      - alert: ResponseTimeAnomaly
+        expr: |
+          histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{service="web-service"}[5m])) >
+          avg_over_time(histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{service="web-service"}[5m]))[1h]) * 2
+        for: 5m
+        labels:
+          severity: critical
+          service: web-service
+        annotations:
+          summary: "Response time anomaly detected"
+          description: "95th percentile response time for {{ $labels.service }} is {{ $value }}s"
+      
+      - alert: LogVolumeAnomaly
+        expr: |
+          rate(log_entries_total{service="web-service"}[5m]) >
+          avg_over_time(rate(log_entries_total{service="web-service"}[5m])[1h]) * 3
+        for: 1m
+        labels:
+          severity: warning
+          service: web-service
+        annotations:
+          summary: "Log volume anomaly detected"
+          description: "Log volume for {{ $labels.service }} is {{ $value }} logs/sec"
 ```
 
-### 6.2 异常检测验证规则
+### Elasticsearch查询
 
-```yaml
-anomaly_validation:
-  detection_consistency:
-    - rule: "detection method must be supported"
-    - rule: "detection algorithm must be valid"
-    - rule: "detection threshold must be positive"
-  
-  training_validation:
-    - rule: "training data period must be sufficient"
-    - rule: "training model type must be supported"
-    - rule: "training validation method must be valid"
-  
-  alerting_validation:
-    - rule: "alerting channels must be configured"
-    - rule: "alerting severity must be valid"
-    - rule: "alerting templates must exist"
-```
-
-## 7. 最佳实践
-
-### 7.1 异常检测设计模式
-
-```dsl
-# 基础异常检测模式
-log_anomaly "basic_anomaly" {
-  description: "基础异常检测"
-  version: "1.0.0"
-  
-  type: "statistical_anomaly"
-  target: "error_logs"
-  
-  detection: {
-    method: "statistical"
-    algorithm: "z_score"
-    window: "1h"
-    threshold: 3.0
-  }
-  
-  alerting: {
-    enabled: true
-    severity: "warning"
-    channels: [
-      {
-        type: "email"
-        recipients: ["admin@example.com"]
-      }
-    ]
-  }
-}
-
-# 机器学习异常检测模式
-log_anomaly "ml_anomaly" {
-  description: "机器学习异常检测"
-  version: "1.0.0"
-  
-  type: "ml_anomaly"
-  target: "all_logs"
-  
-  detection: {
-    method: "machine_learning"
-    algorithm: "isolation_forest"
-    window: "1h"
-    contamination: 0.1
-  }
-  
-  training: {
-    enabled: true
-    data_period: "30d"
-    update_frequency: "daily"
-  }
-  
-  alerting: {
-    enabled: true
-    severity: "warning"
-    channels: [
-      {
-        type: "slack"
-        channel: "#alerts"
-      }
-    ]
-  }
-}
-```
-
-### 7.2 异常检测命名规范
-
-```dsl
-# 推荐命名模式
-log_anomaly "service_metric_anomaly" {
-  # 服务_指标_异常
-}
-
-log_anomaly "time_pattern_anomaly" {
-  # 时间_模式_异常
-}
-
-log_anomaly "behavior_anomaly" {
-  # 行为_异常
-}
-```
-
-## 8. 与主流标准的映射
-
-| DSL元素 | Elasticsearch | Splunk | Prometheus | OpenTelemetry |
-|---------|---------------|--------|------------|---------------|
-| log_anomaly | watcher | anomaly | alert | processor |
-| detection | condition | search | expr | filter |
-| training | ML plugin | train | n/a | trainer |
-| alerting | action | alert | alert | exporter |
-
-## 9. 工程实践示例
-
-```dsl
-# 生产环境异常检测配置示例
-log_anomaly "production_anomaly_detection" {
-  description: "生产环境异常检测"
-  version: "1.0.0"
-  author: "system"
-  
-  type: "multi_anomaly"
-  target: "production_logs"
-  
-  algorithms: [
-    {
-      name: "error_rate_anomaly"
-      method: "statistical"
-      algorithm: "z_score"
-      window: "5m"
-      threshold: 2.5
-      weight: 0.3
-      data_source: {
-        type: "elasticsearch"
-        index: "production-logs-*"
-        query: {
-          filter: {
-            field: "level"
-            operator: "equals"
-            value: "ERROR"
-          }
-        }
-      }
-    },
-    {
-      name: "response_time_anomaly"
-      method: "statistical"
-      algorithm: "iqr"
-      window: "5m"
-      threshold: 1.5
-      weight: 0.3
-      data_source: {
-        type: "elasticsearch"
-        index: "production-logs-*"
-        query: {
-          filter: {
-            field: "response_time"
-            operator: "exists"
-            value: true
-          }
-        }
-      }
-    },
-    {
-      name: "pattern_anomaly"
-      method: "pattern_matching"
-      algorithm: "regex_pattern"
-      patterns: [
-        ".*ERROR.*database.*connection.*failed.*",
-        ".*FATAL.*out of memory.*",
-        ".*CRITICAL.*service.*unavailable.*",
-        ".*ERROR.*timeout.*",
-        ".*ERROR.*rate limit.*exceeded.*"
+```json
+// 生成的Elasticsearch异常检测查询
+{
+  "query": {
+    "bool": {
+      "must": [
+        {"match": {"service": "web-service"}},
+        {"range": {"@timestamp": {"gte": "now-1h", "lte": "now"}}}
       ]
-      weight: 0.4
-      data_source: {
-        type: "elasticsearch"
-        index: "production-logs-*"
-        query: {
-          filter: {
-            field: "level"
-            operator: "in"
-            value: ["ERROR", "FATAL", "CRITICAL"]
+    }
+  },
+  "aggs": {
+    "error_rate_anomaly": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "interval": "1m"
+      },
+      "aggs": {
+        "error_count": {
+          "filter": {"term": {"level": "ERROR"}}
+        },
+        "total_count": {
+          "value_count": {"field": "level"}
+        },
+        "error_rate": {
+          "bucket_script": {
+            "buckets_path": {
+              "errors": "error_count",
+              "total": "total_count"
+            },
+            "script": "params.errors / params.total"
+          }
+        },
+        "z_score": {
+          "bucket_script": {
+            "buckets_path": {
+              "current": "error_rate"
+            },
+            "script": "(params.current - 0.05) / 0.02"
           }
         }
+      }
+    },
+    "response_time_anomaly": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "interval": "1m"
+      },
+      "aggs": {
+        "response_time_p95": {
+          "percentiles": {
+            "field": "response_time",
+            "percents": [95]
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## 验证规则
+
+### 语法验证
+
+```dsl
+validation_rules "anomaly_detection_validation" {
+  syntax: [
+    {
+      rule: "required_fields"
+      fields: ["description", "version", "source", "detection_rules"]
+      message: "必须包含描述、版本、数据源和检测规则"
+    },
+    {
+      rule: "valid_algorithm"
+      allowed_algorithms: ["z_score", "isolation_forest", "prophet", "autoencoder"]
+      message: "算法类型必须是支持的类型"
+    },
+    {
+      rule: "valid_threshold"
+      condition: "threshold > 0"
+      message: "阈值必须大于0"
+    }
+  ]
+  
+  semantic: [
+    {
+      rule: "time_window_validity"
+      condition: "source.time_window > 0"
+      message: "时间窗口必须大于0"
+    },
+    {
+      rule: "threshold_range"
+      condition: "threshold >= 1.0 AND threshold <= 10.0"
+      message: "阈值应在1.0到10.0之间"
+    }
+  ]
+}
+```
+
+### 性能验证
+
+```dsl
+performance_validation "anomaly_detection_performance" {
+  constraints: [
+    {
+      metric: "detection_latency"
+      threshold: "30s"
+      action: "warn"
+    },
+    {
+      metric: "false_positive_rate"
+      threshold: 0.1
+      action: "error"
+    },
+    {
+      metric: "false_negative_rate"
+      threshold: 0.05
+      action: "error"
+    }
+  ]
+  
+  optimization: [
+    {
+      strategy: "model_optimization"
+      enabled: true
+      target_accuracy: 0.95
+    },
+    {
+      strategy: "feature_selection"
+      enabled: true
+      max_features: 50
+    }
+  ]
+}
+```
+
+## 最佳实践
+
+### 设计模式
+
+```dsl
+best_practices "anomaly_detection_patterns" {
+  patterns: [
+    {
+      name: "ensemble_detection"
+      description: "集成检测模式"
+      implementation: {
+        strategy: "multiple_algorithms"
+        aggregation: "voting"
+        consensus_threshold: 0.6
+      }
+    },
+    {
+      name: "adaptive_detection"
+      description: "自适应检测模式"
+      implementation: {
+        strategy: "online_learning"
+        update_frequency: "1h"
+        feedback_loop: true
+      }
+    },
+    {
+      name: "hierarchical_detection"
+      description: "分层检测模式"
+      implementation: {
+        strategy: "coarse_to_fine"
+        levels: ["service", "endpoint", "method"]
+        cascade: true
       }
     }
   ]
   
-  ensemble: {
-    enabled: true
-    method: "weighted_voting"
-    threshold: 0.6
-    consensus_required: 2
-    voting_window: "2m"
-  }
+  anti_patterns: [
+    {
+      name: "over_detection"
+      description: "过度检测"
+      symptoms: ["high_false_positive_rate", "alert_fatigue"]
+      solution: "adjust_thresholds"
+    },
+    {
+      name: "under_detection"
+      description: "检测不足"
+      symptoms: ["high_false_negative_rate", "missed_incidents"]
+      solution: "lower_thresholds"
+    }
+  ]
+}
+```
+
+### 监控和告警
+
+```dsl
+monitoring "anomaly_detection_monitoring" {
+  metrics: [
+    {
+      name: "anomaly_detection_accuracy"
+      type: "gauge"
+      labels: ["algorithm", "service"]
+      range: [0, 1]
+    },
+    {
+      name: "anomaly_detection_latency"
+      type: "histogram"
+      labels: ["algorithm", "service"]
+      buckets: [0.1, 0.5, 1, 5, 10, 30]
+    },
+    {
+      name: "anomaly_count"
+      type: "counter"
+      labels: ["severity", "service", "algorithm"]
+    }
+  ]
   
-  training: {
-    enabled: true
-    data_period: "30d"
-    update_frequency: "daily"
-    model_type: "ensemble"
-    hyperparameter_tuning: {
-      enabled: true
-      method: "bayesian_optimization"
-      parameters: {
-        z_score_threshold: {
-          min: 2.0,
-          max: 4.0,
-          type: "float"
-        }
-        iqr_threshold: {
-          min: 1.0,
-          max: 2.0,
-          type: "float"
-        }
-        ensemble_threshold: {
-          min: 0.5,
-          max: 0.8,
-          type: "float"
-        }
-      }
-      optimization_metric: "f1_score"
-      max_iterations: 50
+  alerts: [
+    {
+      name: "detection_accuracy_degraded"
+      condition: "anomaly_detection_accuracy < 0.9"
+      severity: "warning"
+      action: "retrain_model"
+    },
+    {
+      name: "detection_latency_high"
+      condition: "anomaly_detection_latency > 30"
+      severity: "critical"
+      action: "optimize_algorithm"
     }
-    validation: {
-      enabled: true
-      method: "time_series_split"
-      test_size: 0.2
-      validation_size: 0.2
-      metrics: ["precision", "recall", "f1_score", "auc"]
+  ]
+}
+```
+
+## 主流标准映射
+
+### Prometheus集成
+
+```dsl
+prometheus_integration "prometheus_anomaly" {
+  metrics: [
+    {
+      name: "log_anomaly_detection_duration_seconds"
+      type: "histogram"
+      help: "Log anomaly detection execution time"
+      labels: ["algorithm", "service", "status"]
+    },
+    {
+      name: "log_anomaly_detection_accuracy"
+      type: "gauge"
+      help: "Anomaly detection accuracy"
+      labels: ["algorithm", "service"]
+    },
+    {
+      name: "log_anomaly_detection_results_total"
+      type: "counter"
+      help: "Total number of anomaly detection results"
+      labels: ["algorithm", "service", "result_type"]
     }
-    drift_detection: {
-      enabled: true
-      method: "statistical"
-      threshold: 0.1
-      action: "retrain"
-      monitoring_window: "7d"
-    }
-  }
+  ]
   
-  alerting: {
-    enabled: true
-    severity: "critical"
-    channels: [
+  rules: [
+    {
+      name: "high_error_rate_anomaly"
+      expr: "rate(log_entries_total{level=\"ERROR\"}[5m]) > 0.1"
+      for: "2m"
+      labels: { severity: warning }
+      annotations: { summary: "High error rate anomaly detected" }
+    },
+    {
+      name: "response_time_anomaly"
+      expr: "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1"
+      for: "5m"
+      labels: { severity: critical }
+      annotations: { summary: "Response time anomaly detected" }
+    }
+  ]
+  
+  alertmanager: {
+    receivers: [
       {
-        type: "email"
-        recipients: ["admin@example.com", "oncall@example.com", "sre@example.com"]
-        template: "production_anomaly_alert"
-        priority: "high"
-        subject: "Production Anomaly Detected - {{service}}"
-      },
-      {
-        type: "slack"
-        channel: "#critical-alerts"
-        template: "production_anomaly_alert"
-        priority: "high"
-        color: "danger"
-      },
-      {
-        type: "pagerduty"
-        service: "production-alerts"
-        template: "production_anomaly_alert"
-        priority: "high"
-        urgency: "high"
-      },
-      {
-        type: "webhook"
-        url: "https://api.example.com/alerts"
-        method: "POST"
-        headers: {
-          "Content-Type": "application/json"
-          "Authorization": "Bearer ${API_TOKEN}"
-        }
-        template: "production_anomaly_alert"
-        timeout: "30s"
-        retry: {
-          enabled: true
-          max_attempts: 3
-          backoff: "exponential"
-        }
+        name: "slack"
+        slack_configs: [
+          {
+            channel: "#alerts"
+            title: "Log Anomaly Alert"
+            text: "{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
+          }
+        ]
       }
     ]
-    escalation: {
+  }
+}
+```
+
+### ELK Stack集成
+
+```dsl
+elk_integration "elk_anomaly" {
+  elasticsearch: {
+    index_pattern: "logstash-*"
+    anomaly_detection: {
       enabled: true
-      levels: [
-        {
-          level: 1
-          delay: "2m"
-          channels: ["slack"]
-          message: "Initial alert - monitoring situation"
-        },
-        {
-          level: 2
-          delay: "5m"
-          channels: ["email", "slack"]
-          message: "Escalation - no response received"
-        },
-        {
-          level: 3
-          delay: "10m"
-          channels: ["pagerduty", "email", "slack"]
-          message: "Critical escalation - immediate attention required"
-        }
-      ]
+      algorithms: ["isolation_forest", "dbscan"]
     }
-    suppression: {
-      enabled: true
-      duration: "30m"
-      max_alerts: 5
-      group_by: ["service", "environment", "anomaly_type"]
-      conditions: [
-        {
-          field: "anomaly_score"
-          operator: "lt"
-          value: 0.3
-        }
-      ]
+  }
+  
+  logstash: {
+    input: {
+      type: "elasticsearch"
+      query: "service:web-service"
     }
-    correlation: {
-      enabled: true
+    filter: [
+      {
+        type: "grok"
+        pattern: "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:level} %{GREEDYDATA:message}"
+      },
+      {
+        type: "anomaly_detection"
+        algorithm: "isolation_forest"
+        features: ["message_length", "error_count"]
+        threshold: 0.8
+      }
+    ]
+    output: {
+      type: "elasticsearch"
+      index: "anomaly-results"
+    }
+  }
+  
+  kibana: {
+    visualization: {
+      type: "line"
+      index_pattern: "anomaly-results"
+      time_field: "@timestamp"
+    }
+    dashboard: {
+      title: "Anomaly Detection Dashboard"
+      panels: ["error_rate_anomaly", "response_time_anomaly", "pattern_anomaly"]
+    }
+    alerting: {
       rules: [
         {
-          name: "related_anomalies"
-          condition: "same_service AND time_window < 5m"
-          action: "group"
-          group_key: "service"
-        },
-        {
-          name: "cascading_failures"
-          condition: "database_error AND service_error"
-          action: "escalate"
-          severity: "critical"
+          name: "High Anomaly Score"
+          condition: "anomaly_score > 0.8"
+          actions: ["slack", "email"]
         }
       ]
-    }
-  }
-  
-  monitoring: {
-    enabled: true
-    metrics: [
-      "detection_accuracy",
-      "false_positive_rate",
-      "true_positive_rate",
-      "model_performance",
-      "ensemble_confidence",
-      "alert_volume",
-      "response_time",
-      "drift_score"
-    ]
-    alerts: [
-      {
-        name: "high_false_positive_rate"
-        condition: "false_positive_rate > 0.1"
-        duration: "1h"
-        severity: "warning"
-        action: "notify_admin"
-      },
-      {
-        name: "low_detection_accuracy"
-        condition: "detection_accuracy < 0.8"
-        duration: "1h"
-        severity: "warning"
-        action: "retrain_model"
-      },
-      {
-        name: "model_drift_detected"
-        condition: "drift_score > 0.1"
-        duration: "10m"
-        severity: "warning"
-        action: "retrain_model"
-      },
-      {
-        name: "high_alert_volume"
-        condition: "alert_volume > 100"
-        duration: "5m"
-        severity: "warning"
-        action: "adjust_thresholds"
-      }
-    ]
-    dashboards: [
-      "https://grafana.example.com/d/anomaly-detection"
-    ]
-    thresholds: {
-      false_positive_rate_warning: 0.1
-      false_positive_rate_critical: 0.2
-      detection_accuracy_warning: 0.8
-      detection_accuracy_critical: 0.7
-      drift_score_warning: 0.1
-      drift_score_critical: 0.2
-    }
-  }
-  
-  security: {
-    enabled: true
-    authentication: {
-      enabled: true
-      type: "service_account"
-      service_account: "anomaly-detector"
-      namespace: "monitoring"
-    }
-    authorization: {
-      enabled: true
-      rbac: {
-        enabled: true
-        service_account: "anomaly-detector"
-        namespace: "monitoring"
-        cluster_role: "anomaly-detector"
-      }
-    }
-    audit: {
-      enabled: true
-      log_detections: true
-      log_alerts: true
-      retention_period: "90d"
-    }
-  }
-  
-  performance: {
-    timeout: "30s"
-    max_memory: "2GB"
-    parallel_processing: {
-      enabled: true
-      workers: 8
-      queue_size: 10000
-    }
-    caching: {
-      enabled: true
-      ttl: "5m"
-      max_size: "500MB"
-      strategy: "lru"
-    }
-    optimization: {
-      enabled: true
-      batch_processing: true
-      batch_size: 1000
-      batch_timeout: "30s"
-      precompute_features: true
     }
   }
 }
 ```
 
-这个DSL设计为日志异常检测建模提供了完整的配置语言，支持基础检测、机器学习检测、多算法检测等多种模式，同时保持了良好的可扩展性和可维护性。
+### Grafana集成
+
+```dsl
+grafana_integration "grafana_anomaly" {
+  datasources: [
+    {
+      name: "elasticsearch"
+      type: "elasticsearch"
+      url: "http://elasticsearch:9200"
+    },
+    {
+      name: "prometheus"
+      type: "prometheus"
+      url: "http://prometheus:9090"
+    }
+  ]
+  
+  dashboards: [
+    {
+      title: "Anomaly Detection Overview"
+      panels: [
+        {
+          title: "Anomaly Detection Results"
+          type: "graph"
+          datasource: "elasticsearch"
+          query: {
+            index: "anomaly-results"
+            query: "anomaly_score:*"
+            aggregation: "date_histogram"
+            field: "@timestamp"
+            interval: "5m"
+          }
+        },
+        {
+          title: "Detection Accuracy"
+          type: "stat"
+          datasource: "prometheus"
+          query: "log_anomaly_detection_accuracy"
+        },
+        {
+          title: "False Positive Rate"
+          type: "graph"
+          datasource: "prometheus"
+          query: "rate(log_anomaly_detection_results_total{result_type=\"false_positive\"}[5m])"
+        }
+      ]
+    }
+  ]
+  
+  alerts: [
+    {
+      name: "High False Positive Rate"
+      condition: "false_positive_rate > 0.1"
+      frequency: "5m"
+      notifications: ["slack", "email"]
+    },
+    {
+      name: "Detection Accuracy Degraded"
+      condition: "detection_accuracy < 0.9"
+      frequency: "10m"
+      notifications: ["slack", "pagerduty"]
+    }
+  ]
+}
+```
+
+## 工程实践示例
+
+### 微服务异常检测
+
+```dsl
+microservice_anomaly "order_service_anomaly" {
+  description: "订单服务异常检测"
+  
+  services: [
+    {
+      name: "order-service"
+      metrics: [
+        {
+          name: "order_creation_rate"
+          type: "counter"
+          aggregation: "rate"
+          window: "5m"
+        },
+        {
+          name: "order_processing_time"
+          type: "histogram"
+          aggregation: "percentile"
+          percentile: 95
+        },
+        {
+          name: "order_failure_rate"
+          type: "ratio"
+          numerator: "failed_orders"
+          denominator: "total_orders"
+        }
+      ]
+    },
+    {
+      name: "payment-service"
+      metrics: [
+        {
+          name: "payment_success_rate"
+          type: "ratio"
+          numerator: "successful_payments"
+          denominator: "total_payments"
+        },
+        {
+          name: "payment_processing_time"
+          type: "histogram"
+          aggregation: "percentile"
+          percentile: 95
+        }
+      ]
+    }
+  ]
+  
+  correlation: {
+    services: ["order-service", "payment-service"]
+    correlation_threshold: 0.7
+    time_window: "15m"
+  }
+  
+  detection: [
+    {
+      name: "order_flow_anomaly"
+      type: "workflow_anomaly"
+      steps: ["order_created", "payment_processed", "order_completed"]
+      metrics: ["success_rate", "average_duration"]
+      threshold: 0.95
+    },
+    {
+      name: "service_dependency_anomaly"
+      type: "correlation_anomaly"
+      method: "granger_causality"
+      significance_level: 0.05
+    }
+  ]
+  
+  alerting: {
+    rules: [
+      {
+        name: "Order Flow Failure"
+        condition: "order_flow_success_rate < 0.95"
+        severity: "critical"
+        notification: "pagerduty"
+        escalation: {
+          levels: ["immediate", "5m", "15m"]
+          actions: ["page_oncall", "notify_manager", "create_incident"]
+        }
+      }
+    ]
+  }
+}
+```
+
+### 实时流异常检测
+
+```dsl
+stream_anomaly "real_time_anomaly_detection" {
+  description: "实时流异常检测"
+  
+  stream_processing: {
+    engine: "kafka_streams"
+    input_topic: "log-stream"
+    output_topic: "anomaly-alerts"
+    
+    processing: {
+      window_size: "5m"
+      slide_interval: "1m"
+      state_store: "anomaly_state"
+    }
+  }
+  
+  real_time_detection: [
+    {
+      name: "error_rate_monitoring"
+      type: "sliding_window"
+      window: "5m"
+      metric: "error_rate"
+      algorithm: "z_score"
+      threshold: 3.0
+      action: "alert"
+    },
+    {
+      name: "pattern_anomaly"
+      type: "online_learning"
+      algorithm: "isolation_forest"
+      update_frequency: "1m"
+      batch_size: 100
+      sensitivity: "adaptive"
+    },
+    {
+      name: "trend_anomaly"
+      type: "exponential_smoothing"
+      alpha: 0.3
+      forecast_horizon: "10m"
+      confidence_interval: 0.95
+    }
+  ]
+  
+  performance: {
+    latency: { p95: "100ms", p99: "500ms" }
+    throughput: { events_per_second: 10000 }
+    scalability: {
+      auto_scaling: true
+      min_instances: 2
+      max_instances: 10
+      scale_up_threshold: 0.8
+      scale_down_threshold: 0.3
+    }
+  }
+  
+  monitoring: {
+    metrics: [
+      "detection_latency",
+      "throughput",
+      "accuracy",
+      "false_positive_rate",
+      "false_negative_rate"
+    ]
+    health_checks: [
+      "kafka_connectivity",
+      "state_store_health",
+      "model_health"
+    ]
+    alerting: {
+      on_accuracy_degradation: true
+      on_high_latency: true
+      on_model_drift: true
+    }
+  }
+}
+```
+
+这个DSL设计提供了完整的日志异常检测建模能力，支持多种异常检测算法、自适应阈值调整、机器学习集成，并能够与主流监控平台无缝集成。
