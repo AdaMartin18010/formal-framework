@@ -2,7 +2,7 @@
 
 ## 设计目标
 
-日志异常检测建模DSL旨在提供声明式语言定义复杂的日志异常检测规则和算法，支持多种异常类型检测、自适应阈值调整、机器学习模型集成，并与主流监控平台无缝集成。
+日志异常检测建模DSL旨在提供声明式语言定义复杂的日志异常检测规则和算法，支持多种异常类型检测、自适应阈值调整、机器学习模型集成。
 
 ## 基本语法
 
@@ -177,55 +177,6 @@ timeseries_anomaly "response_time_anomaly" {
 }
 ```
 
-### 相关性异常检测
-
-```dsl
-correlation_anomaly "service_correlation_anomaly" {
-  description: "服务间相关性异常检测"
-  
-  services: ["web-service", "database-service", "cache-service"]
-  
-  correlation_analysis: {
-    method: "pearson"
-    window_size: "15m"
-    min_correlation: 0.7
-  }
-  
-  metrics: [
-    {
-      name: "error_rate"
-      service: "web-service"
-      aggregation: "rate"
-    },
-    {
-      name: "connection_count"
-      service: "database-service"
-      aggregation: "max"
-    },
-    {
-      name: "cache_hit_rate"
-      service: "cache-service"
-      aggregation: "mean"
-    }
-  ]
-  
-  algorithm: {
-    type: "correlation_change"
-    parameters: {
-      baseline_period: "7d"
-      change_threshold: 0.3
-      significance_level: 0.05
-    }
-  }
-  
-  detection: {
-    trigger: "correlation_breakdown"
-    min_breakdown_duration: "5m"
-    severity: "high"
-  }
-}
-```
-
 ## 高级用法
 
 ### 复合异常检测
@@ -371,7 +322,6 @@ import pandas as pd
 import numpy as np
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
-from prophet import Prophet
 import elasticsearch
 
 class LogAnomalyDetector:
