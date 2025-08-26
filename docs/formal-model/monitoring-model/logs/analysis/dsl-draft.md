@@ -1,442 +1,340 @@
-# 日志分析DSL草案
+# 日志分析建模DSL设计
 
-## 1. 设计目标
+## 设计目标
 
-- 用声明式语法描述日志分析任务、指标、异常检测、聚类、根因分析等流程
-- 支持多维度、多方法日志统一分析建模
-- 便于自动生成分析与可视化配置
-- 支持实时和批量分析模式
-- 集成机器学习算法和统计分析方法
+日志分析建模DSL旨在提供声明式语言定义复杂日志分析任务，包括统计分析、异常检测、聚类分析、根因分析等，支持自动代码生成和主流平台集成。
 
-## 2. 基本语法结构
+## 基本语法
 
-### 2.1 分析任务定义
+### 核心结构
 
 ```dsl
-log_analysis "error_rate_analysis" {
-  description = "分析系统错误率趋势"
-  version = "1.0"
-  author = "ops-team"
+log_analysis "web_service_analysis" {
+  description: "Web服务日志分析"
+  version: "1.0.0"
   
-  data_source = "elasticsearch://logs-prod"
-  time_range = "last_24h"
-  
-  analysis_type = "statistical"
-  target_field = "level"
-  filter_condition = "level == 'ERROR'"
-  
-  metrics {
-    error_rate = "count(level == 'ERROR') / count(*) * 100"
-    error_count = "count(level == 'ERROR')"
-    total_count = "count(*)"
+  source: {
+    type: "elasticsearch"
+    endpoint: "http://elasticsearch:9200"
+    index: "web-service-logs"
+    query: "service:web-service AND level:ERROR"
+    time_range: { from: "now-1h", to: "now" }
   }
   
-  window_size = "1h"
-  aggregation = "avg"
-  
-  alerting {
-    enabled = true
-    threshold {
-      error_rate > 5.0
+  analysis_tasks: [
+    {
+      name: "error_frequency_analysis"
+      type: "statistical"
+      metrics: ["count", "rate", "trend"]
+      group_by: ["service", "level", "error_type"]
+      time_window: "5m"
     }
-    notification {
-      channels = ["slack", "email"]
-      severity = "warning"
-    }
-  }
+  ]
   
-  visualization {
-    type = "line_chart"
-    title = "Error Rate Trend"
-    x_axis = "timestamp"
-    y_axis = "error_rate"
+  output: {
+    format: "json"
+    destination: "kafka"
+    topic: "log-analysis-results"
   }
 }
 ```
 
-### 2.2 异常检测配置
+### 统计分析
 
 ```dsl
-log_anomaly "error_spike_detection" {
-  description = "检测错误率异常峰值"
-  version = "1.0"
-  author = "ml-team"
+statistical_analysis "performance_metrics" {
+  metrics: [
+    {
+      name: "response_time"
+      aggregation: "percentiles"
+      percentiles: [50, 95, 99]
+      unit: "ms"
+    },
+    {
+      name: "request_rate"
+      aggregation: "rate"
+      window: "1m"
+      unit: "requests/sec"
+    },
+    {
+      name: "error_rate"
+      aggregation: "ratio"
+      numerator: "error_count"
+      denominator: "total_requests"
+      unit: "percentage"
+    }
+  ]
   
-  data_source = "elasticsearch://logs-prod"
-  target_metric = "error_rate"
-  
-  detection_method = "zscore"
-  algorithm {
-    type = "statistical"
-    window_size = "24h"
-    baseline_period = "7d"
-    threshold = 3.0
-    sensitivity = "high"
+  group_by: ["service", "endpoint", "method"]
+  time_series: { interval: "1m", retention: "7d" }
+}
+```
+
+### 异常检测
+
+```dsl
+anomaly_detection "error_anomaly" {
+  algorithm: {
+    type: "isolation_forest"
+    parameters: { contamination: 0.1, n_estimators: 100 }
   }
   
-  training {
-    enabled = true
-    data_period = "30d"
-    update_frequency = "daily"
-    model_type = "adaptive"
-    validation {
-      method = "cross_validation"
-      folds = 5
-    }
+  features: ["error_count", "response_time", "request_rate"]
+  
+  threshold: {
+    sensitivity: "medium"
+    min_anomaly_score: 0.7
   }
   
-  alerting {
-    enabled = true
-    severity = "critical"
-    channels = ["pagerduty", "slack"]
-    escalation {
-      levels = 3
-      timeouts = ["5m", "15m", "30m"]
-    }
-    suppression {
-      enabled = true
-      duration = "1h"
-      max_alerts = 10
-    }
-  }
-  
-  correlation {
-    enabled = true
-    related_metrics = ["cpu_usage", "memory_usage", "response_time"]
-    correlation_threshold = 0.7
+  alerting: {
+    enabled: true
+    severity: "warning"
+    channels: ["slack", "email"]
   }
 }
 ```
 
-### 2.3 聚类分析配置
+### 聚类分析
 
 ```dsl
-log_cluster "error_pattern_clustering" {
-  description = "错误日志模式聚类分析"
-  version = "1.0"
-  author = "data-science-team"
+clustering_analysis "log_pattern_clustering" {
+  algorithm: {
+    type: "kmeans"
+    parameters: { n_clusters: 10, max_iterations: 100 }
+  }
   
-  data_source = "elasticsearch://logs-prod"
-  time_range = "last_7d"
-  
-  clustering_method = "kmeans"
-  algorithm {
-    type = "unsupervised"
-    n_clusters = 5
-    features = ["error_message", "service_name", "endpoint"]
-    preprocessing {
-      text_vectorization = "tfidf"
-      normalization = "standard"
-      dimensionality_reduction = "pca"
-      n_components = 50
+  features: [
+    {
+      name: "message_length"
+      type: "numeric"
+      normalization: "standard"
+    },
+    {
+      name: "error_type"
+      type: "categorical"
+      encoding: "one_hot"
     }
-  }
+  ]
   
-  feature_extraction {
-    text_features = ["error_message", "stack_trace"]
-    categorical_features = ["service_name", "endpoint", "level"]
-    numerical_features = ["response_time", "request_size"]
-    
-    text_processing {
-      tokenization = "word"
-      stop_words = "english"
-      max_features = 1000
-      ngram_range = [1, 3]
-    }
-  }
-  
-  evaluation {
-    metrics = ["silhouette_score", "calinski_harabasz_score"]
-    cross_validation = true
-    n_splits = 5
-  }
-  
-  visualization {
-    type = "scatter_plot"
-    title = "Error Pattern Clusters"
-    x_axis = "component_1"
-    y_axis = "component_2"
-    color_by = "cluster"
-  }
-  
-  output {
-    cluster_labels = true
-    cluster_centers = true
-    cluster_statistics = true
-    export_format = "json"
+  preprocessing: {
+    text_features: ["message"]
+    vectorization: "tfidf"
+    max_features: 1000
   }
 }
 ```
 
-### 2.4 根因分析配置
+### 根因分析
 
 ```dsl
-log_rootcause "error_root_cause_analysis" {
-  description = "错误根因分析"
-  version = "1.0"
-  author = "sre-team"
-  
-  data_source = "elasticsearch://logs-prod"
-  time_range = "last_1h"
-  
-  analysis_method = "dependency_tracing"
-  algorithm {
-    type = "graph_based"
-    trace_field = "trace_id"
-    span_field = "span_id"
-    parent_field = "parent_span_id"
-    
-    correlation {
-      time_window = "5m"
-      similarity_threshold = 0.8
-      max_path_length = 10
-    }
-  }
-  
-  event_correlation {
-    enabled = true
-    event_types = ["error", "warning", "info"]
-    correlation_window = "10m"
-    min_correlation_strength = 0.6
-  }
-  
-  dependency_graph {
-    services = ["web", "api", "database", "cache"]
-    relationships = [
-      "web -> api",
-      "api -> database",
-      "api -> cache"
+root_cause_analysis "error_root_cause" {
+  causal_graph: {
+    nodes: ["database_connection", "external_api", "memory_usage", "error_rate"]
+    edges: [
+      {
+        from: "database_connection"
+        to: "error_rate"
+        relationship: "causes"
+        confidence: 0.8
+      }
     ]
-    
-    health_checks {
-      enabled = true
-      interval = "30s"
-      timeout = "5s"
+  }
+  
+  analysis_method: {
+    type: "granger_causality"
+    lag_order: 5
+    significance_level: 0.05
+  }
+}
+```
+
+## 高级用法
+
+### 复合分析任务
+
+```dsl
+composite_analysis "comprehensive_monitoring" {
+  pipeline: [
+    {
+      step: "data_collection"
+      task: "collect_logs"
+      output: "raw_logs"
+    },
+    {
+      step: "preprocessing"
+      task: "clean_and_transform"
+      input: "raw_logs"
+      output: "processed_logs"
+    },
+    {
+      step: "statistical_analysis"
+      task: "calculate_metrics"
+      input: "processed_logs"
+      output: "metrics"
+    },
+    {
+      step: "anomaly_detection"
+      task: "detect_anomalies"
+      input: "metrics"
+      output: "anomalies"
     }
-  }
+  ]
   
-  anomaly_detection {
-    enabled = true
-    methods = ["isolation_forest", "one_class_svm"]
-    features = ["response_time", "error_rate", "throughput"]
-  }
-  
-  visualization {
-    type = "dependency_graph"
-    title = "Service Dependency Graph"
-    layout = "force_directed"
-    node_size = "error_count"
-    edge_weight = "dependency_strength"
-  }
-  
-  reporting {
-    format = "html"
-    include_graphs = true
-    include_metrics = true
-    include_recommendations = true
+  scheduling: {
+    frequency: "5m"
+    retry_policy: { max_retries: 3, backoff: "exponential" }
   }
 }
 ```
 
-## 3. 高级分析功能
-
-### 3.1 时序分析
+### 机器学习集成
 
 ```dsl
-log_timeseries "trend_analysis" {
-  description = "日志趋势分析"
+ml_analysis "predictive_analysis" {
+  model: {
+    type: "lstm"
+    architecture: { layers: [64, 32, 16], dropout: 0.2 }
+  }
   
-  data_source = "elasticsearch://logs-prod"
-  time_field = "timestamp"
+  training: {
+    data_split: { train: 0.7, validation: 0.2, test: 0.1 }
+    epochs: 100
+    batch_size: 32
+    early_stopping: true
+  }
   
-  analysis {
-    decomposition = "seasonal"
-    seasonality = "daily"
-    trend_method = "linear"
-    
-    forecasting {
-      enabled = true
-      horizon = "24h"
-      method = "arima"
-      confidence_interval = 0.95
+  features: [
+    {
+      name: "historical_error_rate"
+      window: "24h"
+      aggregation: "mean"
     }
-  }
+  ]
   
-  patterns {
-    seasonality_detection = true
-    trend_detection = true
-    change_point_detection = true
-    outlier_detection = true
-  }
-}
-```
-
-### 3.2 文本分析
-
-```dsl
-log_text_analysis "sentiment_analysis" {
-  description = "日志文本情感分析"
-  
-  data_source = "elasticsearch://logs-prod"
-  text_field = "message"
-  
-  analysis {
-    sentiment = true
-    topic_modeling = true
-    keyword_extraction = true
-    named_entity_recognition = true
-  }
-  
-  nlp_model {
-    type = "bert"
-    language = "english"
-    fine_tuned = true
-    model_path = "/models/log_sentiment_bert"
-  }
-  
-  output {
-    sentiment_scores = true
-    topics = true
-    keywords = true
-    entities = true
+  prediction: {
+    horizon: "1h"
+    confidence_intervals: true
+    update_frequency: "5m"
   }
 }
 ```
 
-### 3.3 性能分析
+## 代码生成模板
 
-```dsl
-log_performance_analysis "latency_analysis" {
-  description = "响应时间性能分析"
-  
-  data_source = "elasticsearch://logs-prod"
-  latency_field = "response_time"
-  
-  analysis {
-    percentile_analysis = true
-    bottleneck_detection = true
-    performance_regression = true
-  }
-  
-  percentiles = [50, 75, 90, 95, 99, 99.9]
-  
-  thresholds {
-    p50_threshold = "100ms"
-    p95_threshold = "500ms"
-    p99_threshold = "1s"
-  }
-  
-  regression_detection {
-    enabled = true
-    baseline_period = "7d"
-    detection_window = "1h"
-    significance_level = 0.05
-  }
-}
-```
-
-## 4. 代码生成模板
-
-### 4.1 Python分析脚本
+### Python实现
 
 ```python
-# 自动生成的Python分析脚本
 import pandas as pd
 import numpy as np
+from sklearn.ensemble import IsolationForest
 from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
-from elasticsearch import Elasticsearch
+import elasticsearch
 
-def analyze_error_rate():
-    # 连接Elasticsearch
-    es = Elasticsearch(['http://localhost:9200'])
+class LogAnalyzer:
+    def __init__(self, config):
+        self.config = config
+        self.es_client = elasticsearch.Elasticsearch(config['source']['endpoint'])
     
-    # 查询数据
-    query = {
-        "query": {
-            "bool": {
-                "must": [
-                    {"range": {"timestamp": {"gte": "now-24h"}}},
-                    {"term": {"level": "ERROR"}}
-                ]
-            }
-        },
-        "aggs": {
-            "error_rate": {
-                "date_histogram": {
-                    "field": "timestamp",
-                    "interval": "1h"
-                },
-                "aggs": {
-                    "error_count": {"value_count": {"field": "level"}},
-                    "total_count": {"value_count": {"field": "_id"}}
+    def collect_logs(self):
+        query = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {"match": {"service": "web-service"}},
+                        {"match": {"level": "ERROR"}}
+                    ]
                 }
             }
         }
-    }
-    
-    response = es.search(index="logs-prod", body=query)
-    
-    # 处理结果
-    buckets = response['aggregations']['error_rate']['buckets']
-    data = []
-    for bucket in buckets:
-        error_count = bucket['error_count']['value']
-        total_count = bucket['total_count']['value']
-        error_rate = (error_count / total_count) * 100 if total_count > 0 else 0
         
-        data.append({
-            'timestamp': bucket['key_as_string'],
-            'error_rate': error_rate,
-            'error_count': error_count,
-            'total_count': total_count
-        })
+        response = self.es_client.search(
+            index=self.config['source']['index'],
+            body=query,
+            size=10000
+        )
+        
+        return pd.DataFrame(response['hits']['hits'])
     
-    return pd.DataFrame(data)
-
-def detect_anomalies(df):
-    # Z-score异常检测
-    mean = df['error_rate'].mean()
-    std = df['error_rate'].std()
-    threshold = 3.0
+    def anomaly_detection(self, data):
+        features = ['error_count', 'response_time', 'request_rate']
+        X = data[features].values
+        
+        model = IsolationForest(
+            contamination=0.1,
+            n_estimators=100,
+            random_state=42
+        )
+        
+        anomalies = model.fit_predict(X)
+        return anomalies == -1
     
-    anomalies = df[abs(df['error_rate'] - mean) > threshold * std]
-    return anomalies
-
-# 执行分析
-df = analyze_error_rate()
-anomalies = detect_anomalies(df)
-print(f"发现 {len(anomalies)} 个异常点")
+    def statistical_analysis(self, data):
+        metrics = {}
+        
+        # 响应时间百分位数
+        metrics['response_time_p50'] = data['response_time'].quantile(0.5)
+        metrics['response_time_p95'] = data['response_time'].quantile(0.95)
+        metrics['response_time_p99'] = data['response_time'].quantile(0.99)
+        
+        # 请求率
+        total_requests = len(data)
+        time_window = 3600
+        metrics['request_rate'] = total_requests / time_window
+        
+        # 错误率
+        error_count = len(data[data['level'] == 'ERROR'])
+        metrics['error_rate'] = error_count / total_requests if total_requests > 0 else 0
+        
+        return metrics
+    
+    def run_analysis(self):
+        logs = self.collect_logs()
+        results = {}
+        
+        for task in self.config['analysis_tasks']:
+            if task['type'] == 'statistical':
+                results[task['name']] = self.statistical_analysis(logs)
+            elif task['type'] == 'anomaly':
+                results[task['name']] = self.anomaly_detection(logs)
+        
+        return results
 ```
 
-### 4.2 Grafana查询
+### Elasticsearch查询
 
 ```json
 {
   "query": {
     "bool": {
       "must": [
-        {"range": {"timestamp": {"gte": "now-24h"}}},
-        {"term": {"level": "ERROR"}}
-      ]
+        {"match": {"service": "web-service"}},
+        {"match": {"level": "ERROR"}}
+      ],
+      "filter": {
+        "range": {
+          "@timestamp": {
+            "gte": "now-1h",
+            "lte": "now"
+          }
+        }
+      }
     }
   },
   "aggs": {
-    "error_rate": {
+    "error_frequency": {
       "date_histogram": {
-        "field": "timestamp",
-        "interval": "1h"
+        "field": "@timestamp",
+        "interval": "5m"
       },
       "aggs": {
-        "error_count": {"value_count": {"field": "level"}},
-        "total_count": {"value_count": {"field": "_id"}},
-        "rate": {
-          "bucket_script": {
-            "buckets_path": {
-              "error_count": "error_count",
-              "total_count": "total_count"
-            },
-            "script": "params.error_count / params.total_count * 100"
+        "error_count": {
+          "value_count": {
+            "field": "level"
+          }
+        },
+        "response_time_stats": {
+          "stats": {
+            "field": "response_time"
           }
         }
       }
@@ -445,277 +343,391 @@ print(f"发现 {len(anomalies)} 个异常点")
 }
 ```
 
-### 4.3 Prometheus告警规则
+### Prometheus查询
 
-```yaml
-groups:
-  - name: log_analysis
-    rules:
-      - alert: HighErrorRate
-        expr: |
-          sum(rate(log_entries_total{level="ERROR"}[5m])) 
-          / 
-          sum(rate(log_entries_total[5m])) * 100 > 5
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "错误率过高: {{ $value }}%"
-          description: "系统错误率超过5%阈值"
-      
-      - alert: ErrorSpikeDetected
-        expr: |
-          abs(
-            sum(rate(log_entries_total{level="ERROR"}[5m])) 
-            - 
-            avg_over_time(sum(rate(log_entries_total{level="ERROR"}[5m]))[1h])
-          ) 
-          / 
-          stddev_over_time(sum(rate(log_entries_total{level="ERROR"}[5m]))[1h]) > 3
-        for: 2m
-        labels:
-          severity: critical
-        annotations:
-          summary: "检测到错误率异常峰值"
-          description: "错误率偏离正常范围超过3个标准差"
+```promql
+# 错误率
+rate(log_entries_total{level="ERROR", service="web-service"}[5m])
+
+# 响应时间95分位数
+histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{service="web-service"}[5m]))
+
+# 请求率
+rate(http_requests_total{service="web-service"}[5m])
+
+# 异常检测（基于Z-score）
+(
+  rate(log_entries_total{level="ERROR", service="web-service"}[5m]) -
+  avg_over_time(rate(log_entries_total{level="ERROR", service="web-service"}[5m])[1h])
+) / stddev_over_time(rate(log_entries_total{level="ERROR", service="web-service"}[5m])[1h])
 ```
 
-## 5. 验证规则
+## 验证规则
 
-### 5.1 语法验证
-
-```yaml
-validation_rules:
-  - rule: "data_source_required"
-    condition: "data_source must be specified"
-    message: "数据源必须指定"
-  
-  - rule: "time_range_valid"
-    condition: "time_range must be valid time expression"
-    message: "时间范围必须是有效的时间表达式"
-  
-  - rule: "metrics_required"
-    condition: "at least one metric must be defined"
-    message: "至少需要定义一个指标"
-  
-  - rule: "window_size_valid"
-    condition: "window_size must be positive duration"
-    message: "窗口大小必须是正数"
-  
-  - rule: "threshold_valid"
-    condition: "threshold must be numeric and positive"
-    message: "阈值必须是正数"
-```
-
-### 5.2 业务逻辑验证
-
-```yaml
-business_rules:
-  - rule: "error_rate_bounds"
-    condition: "error_rate must be between 0 and 100"
-    message: "错误率必须在0-100之间"
-  
-  - rule: "time_window_reasonable"
-    condition: "time_range must not exceed 30 days for real-time analysis"
-    message: "实时分析时间范围不能超过30天"
-  
-  - rule: "cluster_count_reasonable"
-    condition: "n_clusters must be between 2 and 20"
-    message: "聚类数量必须在2-20之间"
-```
-
-## 6. 最佳实践
-
-### 6.1 性能优化
-
-```yaml
-performance_guidelines:
-  - "使用索引字段进行过滤查询"
-  - "合理设置时间窗口大小"
-  - "避免全表扫描"
-  - "使用聚合查询减少数据传输"
-  - "缓存常用分析结果"
-  - "并行处理大量数据"
-```
-
-### 6.2 监控建议
-
-```yaml
-monitoring_recommendations:
-  - "监控分析任务执行时间"
-  - "监控数据源连接状态"
-  - "监控分析结果质量"
-  - "设置分析任务失败告警"
-  - "监控资源使用情况"
-```
-
-## 7. 与主流标准的映射
-
-| DSL元素 | ELK/Kibana | Grafana/Loki | Splunk | Prometheus |
-|---------|------------|--------------|--------|------------|
-| log_analysis | Metric Aggregation | Query | Search | PromQL |
-| log_anomaly | Watcher | Alerting | Anomaly Detection | Alert Rules |
-| log_cluster | ML Plugin | n/a | Clustering | n/a |
-| log_rootcause | n/a | n/a | Root Cause Analysis | n/a |
-| log_timeseries | Time Series | Time Series | Time Series | Time Series |
-| log_text_analysis | Text Analysis | n/a | Text Analysis | n/a |
-
-## 8. 递归扩展建议
-
-### 8.1 多级分析扩展
+### 语法验证
 
 ```dsl
-# 支持嵌套分析
-log_analysis "comprehensive_analysis" {
-  sub_analyses {
-    error_analysis = "error_rate_analysis"
-    performance_analysis = "latency_analysis"
-    security_analysis = "threat_detection"
+validation_rules "log_analysis_validation" {
+  syntax: [
+    {
+      rule: "required_fields"
+      fields: ["description", "version", "source", "analysis_tasks"]
+      message: "必须包含描述、版本、数据源和分析任务"
+    },
+    {
+      rule: "valid_source_type"
+      allowed_types: ["elasticsearch", "prometheus", "loki", "file"]
+      message: "数据源类型必须是支持的类型"
+    }
+  ]
+  
+  semantic: [
+    {
+      rule: "time_range_validity"
+      condition: "source.time_range.from < source.time_range.to"
+      message: "时间范围起始时间必须早于结束时间"
+    }
+  ]
+}
+```
+
+### 性能验证
+
+```dsl
+performance_validation "analysis_performance" {
+  constraints: [
+    {
+      metric: "query_execution_time"
+      threshold: "30s"
+      action: "warn"
+    },
+    {
+      metric: "memory_usage"
+      threshold: "1GB"
+      action: "error"
+    }
+  ]
+  
+  optimization: [
+    {
+      strategy: "query_optimization"
+      enabled: true
+      max_query_time: "10s"
+    },
+    {
+      strategy: "sampling"
+      enabled: true
+      sample_rate: 0.1
+      when: "data_volume > 100GB"
+    }
+  ]
+}
+```
+
+## 最佳实践
+
+### 设计模式
+
+```dsl
+best_practices "log_analysis_patterns" {
+  patterns: [
+    {
+      name: "incremental_analysis"
+      description: "增量分析模式"
+      implementation: {
+        strategy: "delta_processing"
+        checkpoint: "last_analysis_time"
+        recovery: "resume_from_checkpoint"
+      }
+    },
+    {
+      name: "distributed_analysis"
+      description: "分布式分析模式"
+      implementation: {
+        strategy: "map_reduce"
+        partition_key: "service"
+        aggregation: "merge_results"
+      }
+    }
+  ]
+  
+  anti_patterns: [
+    {
+      name: "over_analysis"
+      description: "过度分析"
+      symptoms: ["high_cpu_usage", "slow_response"]
+      solution: "reduce_analysis_frequency"
+    }
+  ]
+}
+```
+
+### 监控和告警
+
+```dsl
+monitoring "analysis_monitoring" {
+  metrics: [
+    {
+      name: "analysis_execution_time"
+      type: "histogram"
+      labels: ["analysis_type", "source_type"]
+      buckets: [1, 5, 10, 30, 60, 300]
+    },
+    {
+      name: "analysis_success_rate"
+      type: "gauge"
+      labels: ["analysis_type"]
+      range: [0, 1]
+    }
+  ]
+  
+  alerts: [
+    {
+      name: "analysis_timeout"
+      condition: "analysis_execution_time > 300"
+      severity: "critical"
+      action: "restart_analysis"
+    },
+    {
+      name: "analysis_failure"
+      condition: "analysis_success_rate < 0.9"
+      severity: "warning"
+      action: "investigate_failure"
+    }
+  ]
+}
+```
+
+## 主流标准映射
+
+### ELK Stack集成
+
+```dsl
+elk_integration "elk_analysis" {
+  elasticsearch: {
+    index_pattern: "logstash-*"
+    query_dsl: true
+    aggregations: true
   }
   
-  correlation {
-    cross_analysis = true
-    correlation_method = "pearson"
+  logstash: {
+    input: {
+      type: "elasticsearch"
+      query: "service:web-service"
+    }
+    filter: [
+      {
+        type: "grok"
+        pattern: "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:level} %{GREEDYDATA:message}"
+      }
+    ]
+    output: {
+      type: "kafka"
+      topic: "log-analysis-input"
+    }
+  }
+  
+  kibana: {
+    visualization: {
+      type: "line"
+      index_pattern: "logstash-*"
+      time_field: "@timestamp"
+    }
+    dashboard: {
+      title: "Log Analysis Dashboard"
+      panels: ["error_rate", "response_time", "anomaly_detection"]
+    }
   }
 }
 ```
 
-### 8.2 AI集成扩展
+### Prometheus集成
 
 ```dsl
-# AI智能分析
-log_ai_analysis "intelligent_insights" {
-  ai_model = "gpt-4"
-  analysis_types = ["anomaly_detection", "root_cause_analysis", "prediction"]
+prometheus_integration "prometheus_analysis" {
+  metrics: [
+    {
+      name: "log_analysis_duration_seconds"
+      type: "histogram"
+      help: "Log analysis execution time"
+      labels: ["analysis_type", "status"]
+    },
+    {
+      name: "log_analysis_results_total"
+      type: "counter"
+      help: "Total number of analysis results"
+      labels: ["analysis_type", "result_type"]
+    }
+  ]
   
-  auto_remediation {
-    enabled = true
-    actions = ["restart_service", "scale_up", "rollback"]
+  rules: [
+    {
+      name: "high_error_rate"
+      expr: "rate(log_entries_total{level=\"ERROR\"}[5m]) > 0.1"
+      for: "2m"
+      labels: { severity: warning }
+      annotations: { summary: "High error rate detected" }
+    }
+  ]
+}
+```
+
+### Grafana集成
+
+```dsl
+grafana_integration "grafana_analysis" {
+  datasources: [
+    {
+      name: "elasticsearch"
+      type: "elasticsearch"
+      url: "http://elasticsearch:9200"
+    },
+    {
+      name: "prometheus"
+      type: "prometheus"
+      url: "http://prometheus:9090"
+    }
+  ]
+  
+  dashboards: [
+    {
+      title: "Log Analysis Overview"
+      panels: [
+        {
+          title: "Error Rate Trend"
+          type: "graph"
+          datasource: "elasticsearch"
+          query: {
+            index: "logstash-*"
+            query: "level:ERROR"
+            aggregation: "date_histogram"
+            field: "@timestamp"
+            interval: "5m"
+          }
+        },
+        {
+          title: "Anomaly Detection"
+          type: "stat"
+          datasource: "prometheus"
+          query: "log_analysis_anomalies_total"
+        }
+      ]
+    }
+  ]
+  
+  alerts: [
+    {
+      name: "High Error Rate"
+      condition: "error_rate > 0.05"
+      frequency: "1m"
+      notifications: ["slack", "email"]
+    }
+  ]
+}
+```
+
+## 工程实践示例
+
+### 微服务日志分析
+
+```dsl
+microservice_analysis "order_service_analysis" {
+  description: "订单服务日志分析"
+  
+  services: [
+    {
+      name: "order-service"
+      logs: {
+        source: "elasticsearch"
+        index: "order-service-logs"
+        fields: ["timestamp", "level", "message", "order_id", "user_id", "amount"]
+      }
+    },
+    {
+      name: "payment-service"
+      logs: {
+        source: "elasticsearch"
+        index: "payment-service-logs"
+        fields: ["timestamp", "level", "message", "order_id", "payment_method", "status"]
+      }
+    }
+  ]
+  
+  correlation: {
+    key: "order_id"
+    time_window: "1h"
+    services: ["order-service", "payment-service"]
+  }
+  
+  analysis: [
+    {
+      name: "order_flow_analysis"
+      type: "workflow"
+      steps: ["order_created", "payment_processed", "order_completed"]
+      metrics: ["success_rate", "average_duration", "failure_points"]
+    }
+  ]
+  
+  alerting: {
+    rules: [
+      {
+        name: "order_flow_failure"
+        condition: "order_flow_success_rate < 0.95"
+        severity: "critical"
+        notification: "pagerduty"
+      }
+    ]
   }
 }
 ```
 
-## 9. 日志分析DSL关键元素表格
+### 实时流分析
 
-| 元素 | 说明 | 典型属性 | 示例值 |
-|------|------|----------|--------|
-| log_analysis | 分析任务定义 | type, target, metric, window | statistical, error_rate, count, 1h |
-| log_anomaly | 异常检测配置 | method, threshold, algorithm | zscore, 3.0, statistical |
-| log_cluster | 聚类分析配置 | method, features, algorithm | kmeans, ["msg", "service"], unsupervised |
-| log_rootcause | 根因分析配置 | method, trace_field, correlation | dependency_tracing, trace_id, event_correlation |
-| log_timeseries | 时序分析配置 | decomposition, forecasting, patterns | seasonal, arima, trend_detection |
-| log_text_analysis | 文本分析配置 | sentiment, topic_modeling, nlp_model | true, true, bert |
-| log_performance_analysis | 性能分析配置 | percentiles, thresholds, regression | [50,95,99], 100ms, true |
-
-## 10. 日志分析DSL语法思维导图（Mermaid）
-
-```mermaid
-mindmap
-  root((日志分析DSL))
-    基础分析
-      统计分析
-        type
-        target
-        metric
-        window
-      异常检测
-        method
-        threshold
-        algorithm
-      聚类分析
-        method
-        features
-        evaluation
-      根因分析
-        method
-        trace_field
-        correlation
-    高级分析
-      时序分析
-        decomposition
-        forecasting
-        patterns
-      文本分析
-        sentiment
-        topic_modeling
-        nlp_model
-      性能分析
-        percentiles
-        thresholds
-        regression
-    配置管理
-      data_source
-      time_range
-      alerting
-      visualization
-    代码生成
-      python_script
-      grafana_query
-      prometheus_rule
-```
-
-## 11. 形式化DSL推理片段
-
-**推论：**  
-若 log_analysis、log_anomaly、log_cluster、log_rootcause 语法均具备完备性，则任意日志分析流程均可通过DSL自动生成配置与推理链路。
-
-**证明思路：**  
-
-1. **语法完备性**：每个分析环节均可形式化为DSL声明
-2. **自动转换**：DSL可自动转化为分析/异常/聚类/根因配置
-3. **组合推理**：组合DSL可推导出完整的日志分析链路
-4. **可扩展性**：支持递归扩展和AI集成
-
-**形式化定义：**
-
-```
-∀ analysis_task ∈ AnalysisTasks:
-  ∃ dsl_config ∈ DSLConfigs:
-    generate_config(analysis_task) = dsl_config ∧
-    execute_analysis(dsl_config) = analysis_result ∧
-    validate_result(analysis_result) = true
-```
-
-**工程实践示例：**
-
-```python
-# 形式化DSL执行引擎
-class LogAnalysisEngine:
-    def __init__(self, dsl_config):
-        self.config = dsl_config
-        self.validators = self._load_validators()
+```dsl
+stream_analysis "real_time_log_analysis" {
+  description: "实时日志流分析"
+  
+  stream_processing: {
+    engine: "kafka_streams"
+    input_topic: "raw-logs"
+    output_topic: "analysis-results"
     
-    def execute(self):
-        # 1. 语法验证
-        if not self._validate_syntax():
-            raise DSLSyntaxError("语法验证失败")
-        
-        # 2. 业务逻辑验证
-        if not self._validate_business_rules():
-            raise BusinessRuleError("业务规则验证失败")
-        
-        # 3. 执行分析
-        results = {}
-        for analysis_type in self.config.analysis_types:
-            results[analysis_type] = self._execute_analysis(analysis_type)
-        
-        # 4. 结果验证
-        if not self._validate_results(results):
-            raise ResultValidationError("结果验证失败")
-        
-        return results
-    
-    def _execute_analysis(self, analysis_type):
-        if analysis_type == "statistical":
-            return self._statistical_analysis()
-        elif analysis_type == "anomaly":
-            return self._anomaly_detection()
-        elif analysis_type == "clustering":
-            return self._clustering_analysis()
-        elif analysis_type == "root_cause":
-            return self._root_cause_analysis()
-        else:
-            raise UnsupportedAnalysisType(f"不支持的分析类型: {analysis_type}")
+    processing: {
+      window_size: "5m"
+      slide_interval: "1m"
+      state_store: "analysis_state"
+    }
+  }
+  
+  real_time_analysis: [
+    {
+      name: "error_rate_monitoring"
+      type: "sliding_window"
+      window: "5m"
+      metric: "error_rate"
+      threshold: 0.05
+      action: "alert"
+    },
+    {
+      name: "anomaly_detection"
+      type: "online_learning"
+      algorithm: "isolation_forest"
+      update_frequency: "1m"
+      sensitivity: "adaptive"
+    }
+  ]
+  
+  performance: {
+    latency: { p95: "100ms", p99: "500ms" }
+    throughput: { events_per_second: 10000 }
+    scalability: { auto_scaling: true, min_instances: 2, max_instances: 10 }
+  }
+  
+  monitoring: {
+    metrics: ["processing_latency", "throughput", "error_rate", "backlog_size"]
+    health_checks: ["kafka_connectivity", "state_store_health", "processing_pipeline_health"]
+  }
+}
 ```
 
-这个形式化框架确保了DSL的可靠性和可预测性，为自动化日志分析提供了坚实的理论基础。
+这个DSL设计提供了完整的日志分析建模能力，支持统计分析、异常检测、聚类分析、根因分析等多种分析模式，并能够与主流日志分析平台无缝集成。
