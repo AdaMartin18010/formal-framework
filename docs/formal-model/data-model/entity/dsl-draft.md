@@ -1,506 +1,1450 @@
-# 实体建模DSL草案（递归扩展版）
+# 实体建模DSL设计
 
-## 1. 设计目标
+## 设计目标
 
-- 用统一DSL描述实体、属性、主键、约束、关系、继承、聚合、数据填充等要素，支持递归组合。
-- 支持自动生成SQL DDL、ORM模型、ER图、数据填充脚本等。
-- 支持权限、安全、审计、AI自动化等高级特性。
+实体建模DSL旨在提供声明式语言定义复杂的数据实体配置，支持多种实体类型、属性定义、行为建模、生命周期管理，并与主流ORM框架无缝集成。
 
-## 2. 基本语法结构
+## 基本语法
 
-```dsl
-entity User {
-  id: int primary key auto_increment
-  name: string not null
-  email: string unique
-  age: int
-  created_at: datetime default now
-}
-
-entity Post {
-  id: int primary key auto_increment
-  title: string not null
-  content: text
-  author_id: int references User(id)
-}
-```
-
-## 3. 关键元素
-
-- entity：实体/表定义
-- 属性：字段名、类型、约束、默认值
-- references：外键/关联
-- unique/primary key：唯一约束、主键
-- extends/implements：继承与接口
-- aggregate/compose：聚合与组合
-- seed_data：数据填充
-- permission/audit：权限与审计
-
-## 4. 高级用法与递归扩展
-
-### 4.1 复杂关系与多对多
+### 核心结构
 
 ```dsl
-entity Student {
-  id: int primary key auto_increment
-  name: string
-  courses: many_to_many Course
-}
-
-entity Course {
-  id: int primary key auto_increment
-  title: string
-  students: many_to_many Student
-}
-```
-
-### 4.2 继承与聚合
-
-```dsl
-entity Person {
-  id: int primary key auto_increment
-  name: string
-}
-
-entity Employee extends Person {
-  employee_no: string unique
-  department: string
-}
-
-entity Department {
-  id: int primary key auto_increment
-  name: string
-  employees: aggregate Employee
-}
-```
-
-### 4.3 数据填充与默认值
-
-```dsl
-entity Product {
-  id: int primary key
-  name: string
-  price: float default 0.0
-}
-
-seed_data Product [
-  { name: "商品A", price: 100 },
-  { name: "商品B", price: 200 }
-]
-```
-
-### 4.4 权限与安全声明
-
-```dsl
-entity User {
-  id: int primary key auto_increment
-  name: string
-  email: string unique
-  ssn: string permission: "security_audit" audit: true
-}
-```
-
-### 4.5 AI自动化与智能实体建模
-
-```dsl
-# 支持AI自动生成实体结构
-ai_entity "为电商系统自动生成订单、商品、用户等实体及关系" {
-  domain: "ecommerce"
-  optimize: true
-}
-```
-
-## 5. 扩展语法特性
-
-### 5.1 索引与性能优化
-
-```dsl
-entity Order {
-  id: int primary key auto_increment
-  user_id: int references User(id) index
-  order_no: string unique index
-  status: string index
-  created_at: datetime default now index
-  total_amount: decimal(10,2)
+entity_model "user_management" {
+  description: "用户管理实体模型"
+  version: "1.0.0"
   
-  # 复合索引
-  index idx_user_status (user_id, status)
-  index idx_created_status (created_at, status)
-}
-```
-
-### 5.2 约束与验证规则
-
-```dsl
-entity Product {
-  id: int primary key auto_increment
-  name: string not null
-  price: decimal(10,2) check (price >= 0)
-  stock: int check (stock >= 0)
-  category: string check (category in ('electronics', 'clothing', 'books'))
-  sku: string unique not null pattern: "^[A-Z]{2}[0-9]{6}$"
-}
-```
-
-### 5.3 触发器与存储过程
-
-```dsl
-entity Inventory {
-  id: int primary key auto_increment
-  product_id: int references Product(id)
-  quantity: int
-  updated_at: datetime default now
-  
-  trigger before_update {
-    action: "SET updated_at = NOW()"
+  namespace: "user"
+  labels: {
+    domain: "user_management"
+    environment: "production"
   }
   
-  trigger after_insert {
-    action: "UPDATE Product SET stock = stock + NEW.quantity WHERE id = NEW.product_id"
-  }
+  entities: [
+    {
+      name: "User"
+      description: "用户实体"
+      table: "users"
+      fields: [
+        {
+          name: "id"
+          type: "uuid"
+          primary_key: true
+        }
+      ]
+    }
+  ]
 }
 ```
 
-### 5.4 视图与物化视图
+### 基础实体
 
 ```dsl
-view UserOrderSummary {
-  select: "u.name, COUNT(o.id) as order_count, SUM(o.total_amount) as total_spent"
-  from: "User u LEFT JOIN Order o ON u.id = o.user_id"
-  group_by: "u.id, u.name"
-}
-
-materialized_view ProductSalesSummary {
-  select: "p.name, SUM(oi.quantity) as total_sold, SUM(oi.quantity * oi.price) as revenue"
-  from: "Product p JOIN OrderItem oi ON p.id = oi.product_id"
-  group_by: "p.id, p.name"
-  refresh: "daily"
-}
-```
-
-### 5.5 分区与分表策略
-
-```dsl
-entity LogEntry {
-  id: int primary key auto_increment
-  level: string
-  message: text
-  created_at: datetime default now
+entity "User" {
+  description: "用户实体"
   
-  partition by: "RANGE (YEAR(created_at))" {
-    partition p2023: "VALUES LESS THAN (2024)"
-    partition p2024: "VALUES LESS THAN (2025)"
-    partition p2025: "VALUES LESS THAN (2026)"
-  }
+  table: "users"
+  
+  fields: [
+    {
+      name: "id"
+      type: "uuid"
+      primary_key: true
+      auto_generate: true
+      description: "用户唯一标识"
+    },
+    {
+      name: "username"
+      type: "string"
+      length: 50
+      unique: true
+      not_null: true
+      description: "用户名"
+    },
+    {
+      name: "email"
+      type: "string"
+      length: 100
+      unique: true
+      not_null: true
+      validation: "email"
+      description: "邮箱地址"
+    },
+    {
+      name: "password_hash"
+      type: "string"
+      length: 255
+      not_null: true
+      description: "密码哈希"
+    },
+    {
+      name: "first_name"
+      type: "string"
+      length: 50
+      description: "名字"
+    },
+    {
+      name: "last_name"
+      type: "string"
+      length: 50
+      description: "姓氏"
+    },
+    {
+      name: "phone"
+      type: "string"
+      length: 20
+      validation: "phone"
+      description: "电话号码"
+    },
+    {
+      name: "status"
+      type: "enum"
+      values: ["active", "inactive", "suspended"]
+      default: "active"
+      description: "用户状态"
+    },
+    {
+      name: "created_at"
+      type: "timestamp"
+      default: "now()"
+      not_null: true
+      description: "创建时间"
+    },
+    {
+      name: "updated_at"
+      type: "timestamp"
+      default: "now()"
+      on_update: "now()"
+      not_null: true
+      description: "更新时间"
+    }
+  ]
+  
+  indexes: [
+    {
+      name: "idx_user_email"
+      fields: ["email"]
+      type: "unique"
+    },
+    {
+      name: "idx_user_username"
+      fields: ["username"]
+      type: "unique"
+    },
+    {
+      name: "idx_user_status"
+      fields: ["status"]
+      type: "btree"
+    }
+  ]
+  
+  validations: [
+    {
+      name: "email_format"
+      field: "email"
+      rule: "email"
+      message: "邮箱格式不正确"
+    },
+    {
+      name: "phone_format"
+      field: "phone"
+      rule: "phone"
+      message: "电话号码格式不正确"
+    },
+    {
+      name: "username_length"
+      field: "username"
+      rule: "min_length:3,max_length:50"
+      message: "用户名长度必须在3-50个字符之间"
+    }
+  ]
+  
+  behaviors: [
+    {
+      name: "password_hashing"
+      type: "before_save"
+      action: "hash_password"
+      condition: "password_changed"
+    },
+    {
+      name: "audit_logging"
+      type: "after_save"
+      action: "log_changes"
+    }
+  ]
 }
 ```
 
-## 6. 代码生成模板
+### 关联实体
 
-### 6.1 SQL DDL生成
-
-```sql
--- 生成的MySQL DDL示例
-CREATE TABLE `User` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) UNIQUE NOT NULL,
-  `age` int DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_email` (`email`),
-  INDEX `idx_created_at` (`created_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `Post` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `content` text,
-  `author_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`author_id`) REFERENCES `User`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```dsl
+entity "Order" {
+  description: "订单实体"
+  
+  table: "orders"
+  
+  fields: [
+    {
+      name: "id"
+      type: "uuid"
+      primary_key: true
+      auto_generate: true
+    },
+    {
+      name: "user_id"
+      type: "uuid"
+      not_null: true
+      foreign_key: "users.id"
+    },
+    {
+      name: "order_number"
+      type: "string"
+      length: 20
+      unique: true
+      not_null: true
+    },
+    {
+      name: "status"
+      type: "enum"
+      values: ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]
+      default: "pending"
+      not_null: true
+    },
+    {
+      name: "total_amount"
+      type: "decimal"
+      precision: 10
+      scale: 2
+      not_null: true
+      default: 0.00
+    },
+    {
+      name: "currency"
+      type: "string"
+      length: 3
+      default: "USD"
+      not_null: true
+    },
+    {
+      name: "created_at"
+      type: "timestamp"
+      default: "now()"
+      not_null: true
+    },
+    {
+      name: "updated_at"
+      type: "timestamp"
+      default: "now()"
+      on_update: "now()"
+      not_null: true
+    }
+  ]
+  
+  relationships: [
+    {
+      name: "user"
+      type: "belongs_to"
+      entity: "User"
+      foreign_key: "user_id"
+    },
+    {
+      name: "items"
+      type: "has_many"
+      entity: "OrderItem"
+      foreign_key: "order_id"
+    }
+  ]
+  
+  indexes: [
+    {
+      name: "idx_order_user_id"
+      fields: ["user_id"]
+      type: "btree"
+    },
+    {
+      name: "idx_order_status"
+      fields: ["status"]
+      type: "btree"
+    },
+    {
+      name: "idx_order_number"
+      fields: ["order_number"]
+      type: "unique"
+    }
+  ]
+  
+  computed_fields: [
+    {
+      name: "item_count"
+      type: "integer"
+      expression: "SELECT COUNT(*) FROM order_items WHERE order_id = id"
+    },
+    {
+      name: "is_paid"
+      type: "boolean"
+      expression: "payment_status = 'paid'"
+    }
+  ]
+  
+  behaviors: [
+    {
+      name: "order_number_generation"
+      type: "before_create"
+      action: "generate_order_number"
+    },
+    {
+      name: "total_calculation"
+      type: "after_save"
+      action: "recalculate_total"
+      condition: "items_changed"
+    }
+  ]
+}
 ```
 
-### 6.2 TypeORM模型生成
+### 继承实体
+
+```dsl
+entity "Person" {
+  description: "人员基类"
+  
+  abstract: true
+  
+  fields: [
+    {
+      name: "id"
+      type: "uuid"
+      primary_key: true
+      auto_generate: true
+    },
+    {
+      name: "first_name"
+      type: "string"
+      length: 50
+      not_null: true
+    },
+    {
+      name: "last_name"
+      type: "string"
+      length: 50
+      not_null: true
+    },
+    {
+      name: "email"
+      type: "string"
+      length: 100
+      unique: true
+      not_null: true
+    },
+    {
+      name: "phone"
+      type: "string"
+      length: 20
+    },
+    {
+      name: "created_at"
+      type: "timestamp"
+      default: "now()"
+      not_null: true
+    }
+  ]
+  
+  computed_fields: [
+    {
+      name: "full_name"
+      type: "string"
+      expression: "CONCAT(first_name, ' ', last_name)"
+    }
+  ]
+}
+
+entity "Customer" {
+  description: "客户实体"
+  
+  extends: "Person"
+  
+  table: "customers"
+  
+  fields: [
+    {
+      name: "customer_number"
+      type: "string"
+      length: 20
+      unique: true
+      not_null: true
+    },
+    {
+      name: "membership_level"
+      type: "enum"
+      values: ["bronze", "silver", "gold", "platinum"]
+      default: "bronze"
+    },
+    {
+      name: "total_spent"
+      type: "decimal"
+      precision: 10
+      scale: 2
+      default: 0.00
+    }
+  ]
+  
+  relationships: [
+    {
+      name: "orders"
+      type: "has_many"
+      entity: "Order"
+      foreign_key: "customer_id"
+    }
+  ]
+  
+  behaviors: [
+    {
+      name: "membership_upgrade"
+      type: "after_save"
+      action: "check_membership_upgrade"
+      condition: "total_spent_changed"
+    }
+  ]
+}
+
+entity "Employee" {
+  description: "员工实体"
+  
+  extends: "Person"
+  
+  table: "employees"
+  
+  fields: [
+    {
+      name: "employee_id"
+      type: "string"
+      length: 20
+      unique: true
+      not_null: true
+    },
+    {
+      name: "department"
+      type: "string"
+      length: 50
+      not_null: true
+    },
+    {
+      name: "position"
+      type: "string"
+      length: 50
+      not_null: true
+    },
+    {
+      name: "hire_date"
+      type: "date"
+      not_null: true
+    },
+    {
+      name: "salary"
+      type: "decimal"
+      precision: 10
+      scale: 2
+    }
+  ]
+  
+  behaviors: [
+    {
+      name: "employee_id_generation"
+      type: "before_create"
+      action: "generate_employee_id"
+    }
+  ]
+}
+```
+
+## 高级用法
+
+### 聚合根实体
+
+```dsl
+entity "Order" {
+  description: "订单聚合根"
+  
+  aggregate_root: true
+  
+  fields: [
+    {
+      name: "id"
+      type: "uuid"
+      primary_key: true
+      auto_generate: true
+    },
+    {
+      name: "customer_id"
+      type: "uuid"
+      not_null: true
+    },
+    {
+      name: "order_number"
+      type: "string"
+      length: 20
+      unique: true
+      not_null: true
+    },
+    {
+      name: "status"
+      type: "enum"
+      values: ["draft", "confirmed", "processing", "shipped", "delivered", "cancelled"]
+      default: "draft"
+      not_null: true
+    },
+    {
+      name: "total_amount"
+      type: "decimal"
+      precision: 10
+      scale: 2
+      not_null: true
+      default: 0.00
+    }
+  ]
+  
+  value_objects: [
+    {
+      name: "ShippingAddress"
+      fields: [
+        {
+          name: "street"
+          type: "string"
+          length: 100
+          not_null: true
+        },
+        {
+          name: "city"
+          type: "string"
+          length: 50
+          not_null: true
+        },
+        {
+          name: "state"
+          type: "string"
+          length: 50
+          not_null: true
+        },
+        {
+          name: "zip_code"
+          type: "string"
+          length: 10
+          not_null: true
+        },
+        {
+          name: "country"
+          type: "string"
+          length: 50
+          not_null: true
+        }
+      ]
+    }
+  ]
+  
+  entities: [
+    {
+      name: "OrderItem"
+      fields: [
+        {
+          name: "id"
+          type: "uuid"
+          primary_key: true
+          auto_generate: true
+        },
+        {
+          name: "product_id"
+          type: "uuid"
+          not_null: true
+        },
+        {
+          name: "quantity"
+          type: "integer"
+          not_null: true
+          min: 1
+        },
+        {
+          name: "unit_price"
+          type: "decimal"
+          precision: 10
+          scale: 2
+          not_null: true
+        },
+        {
+          name: "total_price"
+          type: "decimal"
+          precision: 10
+          scale: 2
+          not_null: true
+        }
+      ]
+    }
+  ]
+  
+  business_rules: [
+    {
+      name: "minimum_order_amount"
+      condition: "total_amount >= 10.00"
+      message: "订单金额必须大于等于10元"
+    },
+    {
+      name: "order_status_transition"
+      condition: "valid_status_transition"
+      message: "订单状态转换无效"
+    }
+  ]
+  
+  domain_events: [
+    {
+      name: "OrderCreated"
+      properties: ["order_id", "customer_id", "total_amount"]
+    },
+    {
+      name: "OrderConfirmed"
+      properties: ["order_id", "confirmed_at"]
+    },
+    {
+      name: "OrderShipped"
+      properties: ["order_id", "tracking_number", "shipped_at"]
+    }
+  ]
+}
+```
+
+### 事件溯源实体
+
+```dsl
+entity "Product" {
+  description: "商品实体（事件溯源）"
+  
+  event_sourced: true
+  
+  fields: [
+    {
+      name: "id"
+      type: "uuid"
+      primary_key: true
+    },
+    {
+      name: "name"
+      type: "string"
+      length: 100
+      not_null: true
+    },
+    {
+      name: "description"
+      type: "text"
+    },
+    {
+      name: "price"
+      type: "decimal"
+      precision: 10
+      scale: 2
+      not_null: true
+    },
+    {
+      name: "stock_quantity"
+      type: "integer"
+      not_null: true
+      default: 0
+    },
+    {
+      name: "is_active"
+      type: "boolean"
+      default: true
+      not_null: true
+    }
+  ]
+  
+  events: [
+    {
+      name: "ProductCreated"
+      properties: ["id", "name", "description", "price", "stock_quantity"]
+    },
+    {
+      name: "ProductUpdated"
+      properties: ["id", "name", "description", "price"]
+    },
+    {
+      name: "StockAdjusted"
+      properties: ["id", "quantity_change", "reason"]
+    },
+    {
+      name: "ProductDeactivated"
+      properties: ["id", "deactivated_at"]
+    }
+  ]
+  
+  event_handlers: [
+    {
+      event: "ProductCreated"
+      handler: "apply_product_created"
+    },
+    {
+      event: "ProductUpdated"
+      handler: "apply_product_updated"
+    },
+    {
+      event: "StockAdjusted"
+      handler: "apply_stock_adjusted"
+    },
+    {
+      event: "ProductDeactivated"
+      handler: "apply_product_deactivated"
+    }
+  ]
+  
+  commands: [
+    {
+      name: "CreateProduct"
+      properties: ["name", "description", "price", "stock_quantity"]
+      handler: "handle_create_product"
+    },
+    {
+      name: "UpdateProduct"
+      properties: ["id", "name", "description", "price"]
+      handler: "handle_update_product"
+    },
+    {
+      name: "AdjustStock"
+      properties: ["id", "quantity_change", "reason"]
+      handler: "handle_adjust_stock"
+    },
+    {
+      name: "DeactivateProduct"
+      properties: ["id"]
+      handler: "handle_deactivate_product"
+    }
+  ]
+}
+```
+
+## 代码生成模板
+
+### TypeScript实体类
 
 ```typescript
-// 生成的TypeORM实体示例
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany, ManyToOne } from "typeorm";
+// 生成的TypeScript实体类
+import { Entity, PrimaryKey, Property, Index, Unique, Enum, Validation } from '@mikro-orm/core';
+import { v4 as uuidv4 } from 'uuid';
 
-@Entity()
+@Entity({ tableName: 'users' })
+@Index({ name: 'idx_user_email', properties: ['email'] })
+@Index({ name: 'idx_user_status', properties: ['status'] })
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryKey({ type: 'uuid' })
+  id: string = uuidv4();
 
-  @Column({ type: "varchar", length: 255, nullable: false })
-  name: string;
+  @Property({ type: 'string', length: 50 })
+  @Unique({ name: 'idx_user_username' })
+  @Validation({ rule: 'minLength:3,maxLength:50', message: '用户名长度必须在3-50个字符之间' })
+  username!: string;
 
-  @Column({ type: "varchar", length: 255, unique: true, nullable: false })
-  email: string;
+  @Property({ type: 'string', length: 100 })
+  @Unique({ name: 'idx_user_email' })
+  @Validation({ rule: 'email', message: '邮箱格式不正确' })
+  email!: string;
 
-  @Column({ type: "int", nullable: true })
-  age: number;
+  @Property({ type: 'string', length: 255 })
+  passwordHash!: string;
 
-  @CreateDateColumn()
-  created_at: Date;
+  @Property({ type: 'string', length: 50, nullable: true })
+  firstName?: string;
 
-  @OneToMany(() => Post, post => post.author)
-  posts: Post[];
+  @Property({ type: 'string', length: 50, nullable: true })
+  lastName?: string;
+
+  @Property({ type: 'string', length: 20, nullable: true })
+  @Validation({ rule: 'phone', message: '电话号码格式不正确' })
+  phone?: string;
+
+  @Enum({ items: () => UserStatus })
+  status: UserStatus = UserStatus.ACTIVE;
+
+  @Property({ type: 'datetime' })
+  createdAt: Date = new Date();
+
+  @Property({ type: 'datetime', onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
+
+  // 关联
+  @OneToMany(() => Order, order => order.user)
+  orders = new Collection<Order>(this);
+
+  // 计算属性
+  get fullName(): string {
+    return `${this.firstName || ''} ${this.lastName || ''}`.trim();
+  }
+
+  // 业务方法
+  async hashPassword(password: string): Promise<void> {
+    this.passwordHash = await bcrypt.hash(password, 10);
+  }
+
+  async verifyPassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.passwordHash);
+  }
+
+  isActive(): boolean {
+    return this.status === UserStatus.ACTIVE;
+  }
 }
 
-@Entity()
-export class Post {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: "varchar", length: 255, nullable: false })
-  title: string;
-
-  @Column({ type: "text", nullable: true })
-  content: string;
-
-  @ManyToOne(() => User, user => user.posts, { onDelete: "CASCADE" })
-  author: User;
-}
-```
-
-### 6.3 Prisma Schema生成
-
-```prisma
-// 生成的Prisma Schema示例
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  age       Int?
-  created_at DateTime @default(now())
-  posts     Post[]
-}
-
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  author    User     @relation(fields: [author_id], references: [id], onDelete: Cascade)
-  author_id Int
-}
-```
-
-### 6.4 GraphQL Schema生成
-
-```graphql
-# 生成的GraphQL Schema示例
-type User {
-  id: ID!
-  name: String!
-  email: String!
-  age: Int
-  created_at: DateTime!
-  posts: [Post!]!
-}
-
-type Post {
-  id: ID!
-  title: String!
-  content: String
-  author: User!
-  author_id: ID!
-}
-
-type Query {
-  users: [User!]!
-  user(id: ID!): User
-  posts: [Post!]!
-  post(id: ID!): Post
-}
-
-type Mutation {
-  createUser(input: CreateUserInput!): User!
-  updateUser(id: ID!, input: UpdateUserInput!): User!
-  deleteUser(id: ID!): Boolean!
+export enum UserStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  SUSPENDED = 'suspended'
 }
 ```
 
-## 7. 验证规则与约束
+### Java实体类
 
-### 7.1 语法验证规则
+```java
+// 生成的Java实体类
+import javax.persistence.*;
+import javax.validation.constraints.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
-```yaml
-validation:
-  required_fields:
-    - entity.name
-    - entity.attributes[].name
-    - entity.attributes[].type
-  
-  type_constraints:
-    - field: "entity.attributes[].type"
-      allowed_values: ["int", "string", "float", "datetime", "text", "boolean", "decimal"]
-    - field: "entity.attributes[].constraints[]"
-      allowed_values: ["primary key", "unique", "not null", "auto_increment", "default"]
-  
-  business_rules:
-    - rule: "Primary key must be unique across all entities"
-    - rule: "Foreign key references must exist"
-    - rule: "Unique constraints must have unique field names"
-    - rule: "Default values must match field type"
+@Entity
+@Table(name = "users")
+@Index(name = "idx_user_email", columnList = "email")
+@Index(name = "idx_user_status", columnList = "status")
+public class User {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "uuid")
+    private UUID id;
+    
+    @Column(length = 50, unique = true, nullable = false)
+    @Size(min = 3, max = 50, message = "用户名长度必须在3-50个字符之间")
+    private String username;
+    
+    @Column(length = 100, unique = true, nullable = false)
+    @Email(message = "邮箱格式不正确")
+    private String email;
+    
+    @Column(length = 255, nullable = false)
+    private String passwordHash;
+    
+    @Column(length = 50)
+    private String firstName;
+    
+    @Column(length = 50)
+    private String lastName;
+    
+    @Column(length = 20)
+    @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "电话号码格式不正确")
+    private String phone;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status = UserStatus.ACTIVE;
+    
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(nullable = false)
+    private LocalDateTime updatedAt = LocalDateTime.now();
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Order> orders = new ArrayList<>();
+    
+    // 计算属性
+    public String getFullName() {
+        return String.format("%s %s", 
+            firstName != null ? firstName : "", 
+            lastName != null ? lastName : "").trim();
+    }
+    
+    // 业务方法
+    public void hashPassword(String password) {
+        this.passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+    
+    public boolean verifyPassword(String password) {
+        return BCrypt.checkpw(password, this.passwordHash);
+    }
+    
+    public boolean isActive() {
+        return UserStatus.ACTIVE.equals(this.status);
+    }
+    
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+    
+    // Getters and Setters
+    // ... (省略标准的getter和setter方法)
+}
+
+public enum UserStatus {
+    ACTIVE, INACTIVE, SUSPENDED
+}
 ```
 
-### 7.2 性能约束
+## 验证规则
 
-```yaml
-performance:
-  max_attributes_per_entity: 50
-  max_entities_per_model: 100
-  max_indexes_per_entity: 10
-  max_foreign_keys_per_entity: 20
-  
-  optimization:
-    auto_index_foreign_keys: true
-    auto_index_unique_fields: true
-    suggest_composite_indexes: true
-    analyze_query_patterns: true
-```
-
-## 8. 最佳实践与设计模式
-
-### 8.1 实体设计模式
+### 语法验证
 
 ```dsl
-# 软删除模式
-entity BaseEntity {
-  id: int primary key auto_increment
-  created_at: datetime default now
-  updated_at: datetime default now on update now
-  deleted_at: datetime nullable
-}
-
-entity User extends BaseEntity {
-  name: string not null
-  email: string unique
-}
-
-# 审计模式
-entity AuditableEntity {
-  id: int primary key auto_increment
-  created_by: int references User(id)
-  created_at: datetime default now
-  updated_by: int references User(id)
-  updated_at: datetime default now on update now
-  version: int default 1
-}
-
-# 多租户模式
-entity TenantEntity {
-  id: int primary key auto_increment
-  tenant_id: int references Tenant(id) not null
-  created_at: datetime default now
+validation_rules "entity_validation" {
+  syntax: [
+    {
+      rule: "required_fields"
+      fields: ["description", "table", "fields"]
+      message: "必须包含描述、表名和字段"
+    },
+    {
+      rule: "valid_field_type"
+      allowed_types: ["string", "integer", "decimal", "boolean", "date", "timestamp", "uuid", "json", "enum"]
+      message: "字段类型必须是支持的类型"
+    },
+    {
+      rule: "valid_relationship_type"
+      allowed_types: ["belongs_to", "has_one", "has_many", "many_to_many"]
+      message: "关系类型必须是支持的类型"
+    }
+  ]
+  
+  semantic: [
+    {
+      rule: "entity_uniqueness"
+      condition: "entity names are unique within namespace"
+      message: "实体名称在命名空间内必须唯一"
+    },
+    {
+      rule: "field_uniqueness"
+      condition: "field names are unique within entity"
+      message: "字段名称在实体内必须唯一"
+    },
+    {
+      rule: "relationship_validity"
+      condition: "referenced entities exist"
+      message: "引用的实体必须存在"
+    }
+  ]
 }
 ```
 
-### 8.2 关系设计模式
+### 性能验证
 
 ```dsl
-# 一对多关系
-entity Department {
-  id: int primary key auto_increment
-  name: string
-  employees: one_to_many Employee
-}
-
-entity Employee {
-  id: int primary key auto_increment
-  name: string
-  department_id: int references Department(id)
-}
-
-# 多对多关系
-entity Student {
-  id: int primary key auto_increment
-  name: string
-  enrollments: many_to_many Course through Enrollment
-}
-
-entity Course {
-  id: int primary key auto_increment
-  title: string
-  enrollments: many_to_many Student through Enrollment
-}
-
-entity Enrollment {
-  id: int primary key auto_increment
-  student_id: int references Student(id)
-  course_id: int references Course(id)
-  enrolled_at: datetime default now
-  grade: string nullable
+performance_validation "entity_performance" {
+  constraints: [
+    {
+      metric: "field_count"
+      threshold: 50
+      action: "warn"
+    },
+    {
+      metric: "index_count"
+      threshold: 10
+      action: "error"
+    },
+    {
+      metric: "relationship_depth"
+      threshold: 5
+      action: "warn"
+    }
+  ]
+  
+  optimization: [
+    {
+      strategy: "field_optimization"
+      enabled: true
+      target_efficiency: 0.95
+    },
+    {
+      strategy: "index_optimization"
+      enabled: true
+      target_coverage: 0.9
+    }
+  ]
 }
 ```
 
-## 9. 工具链集成
+## 最佳实践
 
-### 9.1 开发工具
-
-- **DSL编辑器**: 语法高亮、自动补全、错误提示
-- **实体预览**: 实时预览生成的数据库结构
-- **关系图生成**: 自动生成ER图和关系图
-- **代码生成**: 一键生成多平台代码
-
-### 9.2 构建工具
-
-- **编译检查**: 编译时检查实体定义的正确性
-- **代码优化**: 自动优化生成的代码结构
-- **依赖分析**: 分析实体间的依赖关系
-- **变更影响**: 分析实体变更的影响范围
-
-### 9.3 监控工具
-
-- **性能监控**: 监控实体查询性能
-- **关系监控**: 监控实体关系的完整性
-- **变更追踪**: 追踪实体结构的变更历史
-- **使用统计**: 统计实体的使用情况
-
-## 10. 与主流标准的映射
-
-| DSL元素 | SQL | TypeORM | Prisma | GraphQL |
-|---------|-----|---------|--------|---------|
-| entity | CREATE TABLE | @Entity() | model | type |
-| primary key | PRIMARY KEY | @PrimaryGeneratedColumn() | @id | ID! |
-| unique | UNIQUE | @Column({unique: true}) | @unique | unique constraint |
-| foreign key | FOREIGN KEY | @ManyToOne() | @relation | relation field |
-| index | INDEX | @Index() | @@index | index directive |
-
-## 11. 递归扩展建议
-
-- 支持复杂关系、多对多、继承、聚合、组合、数据填充、数据脱敏
-- 支持AI自动生成与优化实体结构
-- 支持多数据库、分布式实体、变更影响分析
-- 支持实体安全、权限、审计、数据脱敏
-- 支持实体性能分析、缓存与自动维护
-
-## 12. 工程实践示例
+### 设计模式
 
 ```dsl
-entity Log {
-  id: int primary key auto_increment
-  level: string
-  message: text
-  user_id: int references User(id)
-  created_at: datetime default now
-}
-
-entity Address {
-  id: int primary key auto_increment
-  user_id: int references User(id)
-  city: string
-  detail: string
-}
-
-entity User {
-  id: int primary key auto_increment
-  name: string
-  email: string unique
-  addresses: one_to_many Address
+best_practices "entity_patterns" {
+  patterns: [
+    {
+      name: "audit_trail"
+      description: "审计追踪模式"
+      implementation: {
+        strategy: "audit_fields"
+        fields: ["created_at", "updated_at", "created_by", "updated_by"]
+        tracking: "automatic"
+      }
+    },
+    {
+      name: "soft_delete"
+      description: "软删除模式"
+      implementation: {
+        strategy: "deleted_at_field"
+        filtering: "automatic"
+        cleanup: "scheduled"
+      }
+    },
+    {
+      name: "versioning"
+      description: "版本控制模式"
+      implementation: {
+        strategy: "version_field"
+        tracking: "major_minor"
+        migration: "automatic"
+      }
+    }
+  ]
+  
+  anti_patterns: [
+    {
+      name: "god_entity"
+      description: "上帝实体"
+      symptoms: ["too_many_fields", "too_many_responsibilities"]
+      solution: "split_entity"
+    },
+    {
+      name: "anemic_entity"
+      description: "贫血实体"
+      symptoms: ["no_business_logic", "data_only"]
+      solution: "add_behavior"
+    }
+  ]
 }
 ```
 
-这个DSL设计为实体建模提供了完整的配置语言，支持从简单的实体定义到复杂的业务模型的各种需求，同时保持了良好的可扩展性和可维护性。
+### 监控和告警
+
+```dsl
+monitoring "entity_monitoring" {
+  metrics: [
+    {
+      name: "entity_instance_count"
+      type: "gauge"
+      labels: ["entity_name", "status"]
+    },
+    {
+      name: "entity_operation_duration"
+      type: "histogram"
+      labels: ["entity_name", "operation"]
+      buckets: [0.1, 0.5, 1, 5, 10, 30]
+    },
+    {
+      name: "entity_validation_errors"
+      type: "counter"
+      labels: ["entity_name", "field_name", "rule"]
+    }
+  ]
+  
+  alerts: [
+    {
+      name: "entity_validation_failure"
+      condition: "entity_validation_errors > 0"
+      severity: "warning"
+      action: "review_validation_rules"
+    },
+    {
+      name: "entity_performance_degradation"
+      condition: "entity_operation_duration > 5s"
+      severity: "warning"
+      action: "optimize_entity"
+    }
+  ]
+}
+```
+
+## 主流标准映射
+
+### ORM集成
+
+```dsl
+orm_integration "typeorm_integration" {
+  framework: "typeorm"
+  version: "0.3.0"
+  
+  decorators: [
+    {
+      name: "Entity"
+      properties: ["tableName"]
+    },
+    {
+      name: "PrimaryKey"
+      properties: ["type", "generationStrategy"]
+    },
+    {
+      name: "Property"
+      properties: ["type", "length", "nullable", "unique"]
+    },
+    {
+      name: "Index"
+      properties: ["name", "properties"]
+    }
+  ]
+  
+  validations: [
+    {
+      name: "IsEmail"
+      message: "邮箱格式不正确"
+    },
+    {
+      name: "Length"
+      properties: ["min", "max"]
+      message: "长度不符合要求"
+    },
+    {
+      name: "IsNotEmpty"
+      message: "字段不能为空"
+    }
+  ]
+  
+  relationships: [
+    {
+      name: "OneToMany"
+      properties: ["target", "mappedBy"]
+    },
+    {
+      name: "ManyToOne"
+      properties: ["target", "inverseSide"]
+    },
+    {
+      name: "OneToOne"
+      properties: ["target", "mappedBy"]
+    }
+  ]
+}
+```
+
+## 工程实践示例
+
+### 电商实体模型
+
+```dsl
+ecommerce_entity_model "complete_ecommerce" {
+  description: "完整电商实体模型"
+  
+  namespace: "ecommerce"
+  
+  entities: [
+    {
+      name: "Customer"
+      description: "客户实体"
+      table: "customers"
+      aggregate_root: true
+      fields: [
+        {
+          name: "id"
+          type: "uuid"
+          primary_key: true
+          auto_generate: true
+        },
+        {
+          name: "customer_number"
+          type: "string"
+          length: 20
+          unique: true
+          not_null: true
+        },
+        {
+          name: "email"
+          type: "string"
+          length: 100
+          unique: true
+          not_null: true
+          validation: "email"
+        },
+        {
+          name: "first_name"
+          type: "string"
+          length: 50
+          not_null: true
+        },
+        {
+          name: "last_name"
+          type: "string"
+          length: 50
+          not_null: true
+        },
+        {
+          name: "membership_level"
+          type: "enum"
+          values: ["bronze", "silver", "gold", "platinum"]
+          default: "bronze"
+        },
+        {
+          name: "total_spent"
+          type: "decimal"
+          precision: 10
+          scale: 2
+          default: 0.00
+        },
+        {
+          name: "status"
+          type: "enum"
+          values: ["active", "inactive", "suspended"]
+          default: "active"
+        },
+        {
+          name: "created_at"
+          type: "timestamp"
+          default: "now()"
+          not_null: true
+        },
+        {
+          name: "updated_at"
+          type: "timestamp"
+          default: "now()"
+          on_update: "now()"
+          not_null: true
+        }
+      ]
+    },
+    {
+      name: "Product"
+      description: "商品实体"
+      table: "products"
+      aggregate_root: true
+      fields: [
+        {
+          name: "id"
+          type: "uuid"
+          primary_key: true
+          auto_generate: true
+        },
+        {
+          name: "sku"
+          type: "string"
+          length: 50
+          unique: true
+          not_null: true
+        },
+        {
+          name: "name"
+          type: "string"
+          length: 100
+          not_null: true
+        },
+        {
+          name: "description"
+          type: "text"
+        },
+        {
+          name: "price"
+          type: "decimal"
+          precision: 10
+          scale: 2
+          not_null: true
+        },
+        {
+          name: "currency"
+          type: "string"
+          length: 3
+          default: "USD"
+          not_null: true
+        },
+        {
+          name: "category_id"
+          type: "uuid"
+          not_null: true
+        },
+        {
+          name: "stock_quantity"
+          type: "integer"
+          not_null: true
+          default: 0
+        },
+        {
+          name: "is_active"
+          type: "boolean"
+          default: true
+          not_null: true
+        },
+        {
+          name: "created_at"
+          type: "timestamp"
+          default: "now()"
+          not_null: true
+        },
+        {
+          name: "updated_at"
+          type: "timestamp"
+          default: "now()"
+          on_update: "now()"
+          not_null: true
+        }
+      ]
+    },
+    {
+      name: "Order"
+      description: "订单实体"
+      table: "orders"
+      aggregate_root: true
+      fields: [
+        {
+          name: "id"
+          type: "uuid"
+          primary_key: true
+          auto_generate: true
+        },
+        {
+          name: "customer_id"
+          type: "uuid"
+          not_null: true
+        },
+        {
+          name: "order_number"
+          type: "string"
+          length: 20
+          unique: true
+          not_null: true
+        },
+        {
+          name: "status"
+          type: "enum"
+          values: ["draft", "confirmed", "processing", "shipped", "delivered", "cancelled"]
+          default: "draft"
+          not_null: true
+        },
+        {
+          name: "total_amount"
+          type: "decimal"
+          precision: 10
+          scale: 2
+          not_null: true
+          default: 0.00
+        },
+        {
+          name: "currency"
+          type: "string"
+          length: 3
+          default: "USD"
+          not_null: true
+        },
+        {
+          name: "shipping_address"
+          type: "json"
+        },
+        {
+          name: "billing_address"
+          type: "json"
+        },
+        {
+          name: "payment_status"
+          type: "enum"
+          values: ["pending", "paid", "failed", "refunded"]
+          default: "pending"
+        },
+        {
+          name: "created_at"
+          type: "timestamp"
+          default: "now()"
+          not_null: true
+        },
+        {
+          name: "updated_at"
+          type: "timestamp"
+          default: "now()"
+          on_update: "now()"
+          not_null: true
+        }
+      ]
+    }
+  ]
+  
+  relationships: [
+    {
+      name: "customer_orders"
+      from: "Customer"
+      to: "Order"
+      type: "one_to_many"
+      foreign_key: "customer_id"
+    },
+    {
+      name: "product_category"
+      from: "Product"
+      to: "Category"
+      type: "many_to_one"
+      foreign_key: "category_id"
+    },
+    {
+      name: "order_items"
+      from: "Order"
+      to: "OrderItem"
+      type: "one_to_many"
+      foreign_key: "order_id"
+    }
+  ]
+  
+  business_rules: [
+    {
+      name: "minimum_order_amount"
+      entity: "Order"
+      condition: "total_amount >= 10.00"
+      message: "订单金额必须大于等于10元"
+    },
+    {
+      name: "stock_availability"
+      entity: "Product"
+      condition: "stock_quantity >= 0"
+      message: "库存不能为负数"
+    },
+    {
+      name: "customer_email_unique"
+      entity: "Customer"
+      condition: "email is unique"
+      message: "邮箱地址必须唯一"
+    }
+  ]
+  
+  domain_events: [
+    {
+      name: "CustomerRegistered"
+      entity: "Customer"
+      properties: ["customer_id", "email", "membership_level"]
+    },
+    {
+      name: "OrderCreated"
+      entity: "Order"
+      properties: ["order_id", "customer_id", "total_amount"]
+    },
+    {
+      name: "ProductStockAdjusted"
+      entity: "Product"
+      properties: ["product_id", "quantity_change", "new_stock"]
+    }
+  ]
+  
+  audit: {
+    enabled: true
+    entities: ["Customer", "Product", "Order"]
+    fields: ["id", "created_at", "updated_at"]
+    retention: "1y"
+  }
+  
+  monitoring: {
+    metrics: [
+      "entity_instance_count",
+      "entity_operation_duration",
+      "business_rule_violations",
+      "domain_event_count"
+    ]
+    alerting: {
+      on_business_rule_violation: {
+        threshold: 1
+        severity: "warning"
+        notification: "slack"
+      }
+      on_entity_performance_degradation: {
+        threshold: "5s"
+        severity: "warning"
+        notification: "pagerduty"
+      }
+    }
+  }
+}
+```
+
+这个DSL设计提供了完整的实体建模能力，支持多种实体类型、属性定义、行为建模、生命周期管理，并能够与主流ORM框架无缝集成。
