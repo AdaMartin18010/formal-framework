@@ -1,587 +1,581 @@
-# 告警建模DSL草案
+# 告警建模DSL设计
 
-## 1. 设计目标
+## 设计目标
 
-- 用声明式语法描述告警规则、分级、抑制、通知、闭环等流程
-- 支持多源多级告警统一建模
-- 便于自动生成告警与通知配置
-- 支持告警聚合、降噪、自愈等高级特性
+告警建模DSL旨在提供声明式语言定义复杂的告警规则配置，支持多种告警条件、通知策略、升级机制、抑制规则，并与主流告警平台无缝集成。
 
-## 2. 基本语法结构
+## 基本语法
+
+### 核心结构
 
 ```dsl
-alert "high_cpu_usage" {
-  description: "CPU使用率过高告警"
+alerting_model "web_service_alerting" {
+  description: "Web服务告警模型"
   version: "1.0.0"
-  author: "system"
   
-  rule: {
-    expression: "cpu_usage > 90"
-    duration: "5m"
-    evaluation_interval: "30s"
-    severity: "critical"
-    priority: 1
-  }
-  
+  namespace: "web_service"
   labels: {
     service: "web-service"
     environment: "production"
     team: "platform"
-    component: "cpu"
   }
   
-  annotations: {
-    summary: "CPU使用率超过90%"
-    description: "服务器 {{ $labels.instance }} 的CPU使用率已达到 {{ $value }}%"
-    runbook_url: "https://runbook.example.com/cpu-high"
-    dashboard_url: "https://grafana.example.com/d/cpu-metrics"
-  }
-  
-  suppression: {
-    enabled: true
-    conditions: [
-      {
-        type: "time_window"
-        condition: "hour >= 0 AND hour < 6"
-        duration: "6h"
-        reason: "维护窗口"
-      },
-      {
-        type: "dependency"
-        condition: "parent_alert_firing"
-        duration: "until_parent_resolved"
-        reason: "依赖告警已触发"
-      }
-    ]
-  }
-  
-  notification: {
-    channels: [
-      {
-        name: "ops-team"
-        type: "email"
-        recipients: ["ops@example.com", "oncall@example.com"]
-        template: "critical_alert"
-        escalation: {
-          enabled: true
-          delay: "10m"
-          next_level: "manager"
-        }
-      },
-      {
-        name: "slack-alerts"
-        type: "slack"
-        channel: "#alerts"
-        template: "slack_alert"
-        mentions: ["@here"]
-      },
-      {
-        name: "pagerduty"
-        type: "pagerduty"
-        service: "platform-service"
-        urgency: "high"
-        auto_resolve: true
-      }
-    ]
-    grouping: {
-      enabled: true
-      group_by: ["service", "environment"]
-      group_wait: "30s"
-      group_interval: "5m"
-      repeat_interval: "4h"
+  rules: [
+    {
+      name: "high_error_rate"
+      condition: "error_rate > 0.05"
+      duration: "2m"
+      severity: "warning"
     }
-  }
+  ]
   
-  escalation: {
-    enabled: true
-    levels: [
-      {
-        level: 1
-        delay: "5m"
-        notification: "ops-team"
-      },
-      {
-        level: 2
-        delay: "15m"
-        notification: "manager"
-        auto_actions: ["scale_up", "restart_service"]
-      },
-      {
-        level: 3
-        delay: "30m"
-        notification: "emergency"
-        auto_actions: ["failover", "page_manager"]
-      }
-    ]
-  }
-  
-  auto_recovery: {
-    enabled: true
-    conditions: [
-      {
-        expression: "cpu_usage < 70"
-        duration: "2m"
-        action: "resolve_alert"
-      }
-    ]
-    actions: [
-      {
-        name: "scale_up"
-        type: "kubernetes"
-        target: "deployment/web-service"
-        action: "scale"
-        parameters: {
-          replicas: "{{ current_replicas + 2 }}"
-        }
-      },
-      {
-        name: "restart_service"
-        type: "kubernetes"
-        target: "deployment/web-service"
-        action: "restart"
-      }
-    ]
-  }
-  
-  correlation: {
-    enabled: true
-    rules: [
-      {
-        name: "cpu_memory_correlation"
-        condition: "cpu_usage > 90 AND memory_usage > 85"
-        action: "escalate_to_level_2"
-        reason: "CPU和内存同时告警"
-      }
-    ]
-  }
-  
-  metrics: {
-    enabled: true
-    collection: [
-      "alert_firing_duration",
-      "notification_sent_count",
-      "escalation_triggered_count",
-      "auto_recovery_success_rate"
-    ]
-  }
+  notifications: [
+    {
+      name: "slack_notification"
+      type: "slack"
+      channel: "#alerts"
+    }
+  ]
 }
 ```
 
-## 3. 关键元素
-
-- alert：告警声明
-- description：描述信息
-- version：版本号
-- author：作者
-- rule：告警规则
-- labels：标签
-- annotations：注解
-- suppression：抑制规则
-- notification：通知配置
-- escalation：升级策略
-- auto_recovery：自动恢复
-- correlation：关联规则
-- metrics：指标收集
-
-## 4. 高级用法
-
-### 4.1 复杂告警规则
+### 告警规则
 
 ```dsl
-alert "service_unavailable" {
-  description: "服务不可用告警"
-  version: "1.0.0"
-  author: "system"
+alert_rule "high_error_rate" {
+  description: "高错误率告警"
   
-  rule: {
-    expression: "up{service=\"web-service\"} == 0 OR http_response_time > 5"
+  condition: {
+    expression: "rate(http_requests_total{status_code=~\"5..\"}[5m]) / rate(http_requests_total[5m]) > 0.05"
     duration: "2m"
-    evaluation_interval: "15s"
-    severity: "critical"
-    priority: 1
+    evaluation_interval: "30s"
   }
+  
+  severity: "warning"
+  priority: 2
   
   labels: {
+    alert_type: "error_rate"
     service: "web-service"
+    team: "platform"
     environment: "production"
-    team: "frontend"
-    component: "api"
   }
   
   annotations: {
-    summary: "服务 {{ $labels.service }} 不可用"
-    description: "服务 {{ $labels.service }} 在 {{ $labels.instance }} 上不可用，响应时间: {{ $value }}s"
-    runbook_url: "https://runbook.example.com/service-unavailable"
-    dashboard_url: "https://grafana.example.com/d/service-health"
+    summary: "High error rate detected"
+    description: "Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
+    runbook_url: "https://runbook.company.com/high-error-rate"
+    dashboard_url: "https://grafana.company.com/d/web-service"
   }
   
-  suppression: {
+  for: "2m"
+  keep_firing_for: "5m"
+  
+  alerting: {
     enabled: true
-    conditions: [
-      {
-        type: "time_window"
-        condition: "hour >= 2 AND hour < 4"
-        duration: "2h"
-        reason: "计划维护"
-      },
-      {
-        type: "dependency"
-        condition: "database_down OR load_balancer_down"
-        duration: "until_dependency_resolved"
-        reason: "依赖服务故障"
-      }
-    ]
+    group_by: ["service", "environment"]
+    group_wait: "30s"
+    group_interval: "5m"
+    repeat_interval: "4h"
+  }
+}
+```
+
+### 通知配置
+
+```dsl
+notification_config "slack_notification" {
+  description: "Slack通知配置"
+  
+  type: "slack"
+  name: "slack_alerts"
+  
+  config: {
+    webhook_url: "https://hooks.slack.com/services/xxx/yyy/zzz"
+    channel: "#alerts"
+    username: "AlertManager"
+    icon_emoji: ":warning:"
+    icon_url: "https://alertmanager.company.com/icon.png"
   }
   
-  notification: {
-    channels: [
-      {
-        name: "emergency-pager"
-        type: "pagerduty"
-        service: "web-service-critical"
-        urgency: "high"
-        auto_resolve: false
-        escalation_policy: "web-service-escalation"
-      },
-      {
-        name: "slack-critical"
-        type: "slack"
-        channel: "#critical-alerts"
-        template: "critical_service_alert"
-        mentions: ["@here", "@oncall"]
-      },
-      {
-        name: "email-notification"
-        type: "email"
-        recipients: ["ops@example.com", "dev@example.com"]
-        template: "service_alert"
-        cc: ["manager@example.com"]
-      }
-    ]
-    grouping: {
-      enabled: true
-      group_by: ["service", "environment"]
-      group_wait: "10s"
-      group_interval: "2m"
-      repeat_interval: "1h"
-    }
-    routing: {
-      enabled: true
-      rules: [
-        {
-          condition: "environment == 'production'"
-          channels: ["emergency-pager", "slack-critical"]
-        },
-        {
-          condition: "environment == 'staging'"
-          channels: ["slack-critical", "email-notification"]
-        }
-      ]
+  templates: {
+    title: "{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
+    text: |
+      {{ range .Alerts }}
+      *Alert:* {{ .Annotations.summary }}
+      *Description:* {{ .Annotations.description }}
+      *Severity:* {{ .Labels.severity }}
+      *Service:* {{ .Labels.service }}
+      *Environment:* {{ .Labels.environment }}
+      *Started:* {{ .StartsAt | since }}
+      {{ if .Annotations.runbook_url }}*Runbook:* {{ .Annotations.runbook_url }}{{ end }}
+      {{ if .Annotations.dashboard_url }}*Dashboard:* {{ .Annotations.dashboard_url }}{{ end }}
+      {{ end }}
+    
+    color: {
+      critical: "#FF0000"
+      warning: "#FFA500"
+      info: "#0000FF"
     }
   }
   
-  escalation: {
-    enabled: true
-    levels: [
-      {
-        level: 1
-        delay: "2m"
-        notification: "emergency-pager"
-        auto_actions: ["check_health", "restart_service"]
-      },
-      {
-        level: 2
-        delay: "5m"
-        notification: "manager"
-        auto_actions: ["scale_up", "failover"]
-      },
-      {
-        level: 3
-        delay: "10m"
-        notification: "cto"
-        auto_actions: ["emergency_deployment", "rollback"]
+  routing: {
+    severity_mapping: {
+      critical: ["#alerts-critical", "#oncall"]
+      warning: ["#alerts"]
+      info: ["#alerts-info"]
+    }
+    
+    time_based: {
+      business_hours: {
+        start: "09:00"
+        end: "18:00"
+        timezone: "UTC"
+        channels: ["#alerts", "#team-platform"]
       }
-    ]
-  }
-  
-  auto_recovery: {
-    enabled: true
-    conditions: [
-      {
-        expression: "up{service=\"web-service\"} == 1 AND http_response_time < 2"
-        duration: "1m"
-        action: "resolve_alert"
+      after_hours: {
+        channels: ["#alerts", "#oncall"]
+        escalation: "pagerduty"
       }
-    ]
-    actions: [
-      {
-        name: "check_health"
-        type: "http"
-        url: "https://{{ $labels.instance }}/health"
-        method: "GET"
-        timeout: "10s"
-        expected_status: 200
-      },
-      {
-        name: "restart_service"
-        type: "kubernetes"
-        target: "deployment/web-service"
-        action: "restart"
-        namespace: "{{ $labels.namespace }}"
-      },
-      {
-        name: "scale_up"
-        type: "kubernetes"
-        target: "deployment/web-service"
-        action: "scale"
-        parameters: {
-          replicas: "{{ current_replicas + 3 }}"
-        }
-      },
-      {
-        name: "failover"
-        type: "load_balancer"
-        action: "disable_backend"
-        target: "{{ $labels.instance }}"
-        duration: "5m"
-      }
-    ]
-  }
-  
-  correlation: {
-    enabled: true
-    rules: [
-      {
-        name: "multiple_services_down"
-        condition: "count(up{service=~\".*\"} == 0) > 3"
-        action: "escalate_to_level_3"
-        reason: "多个服务同时不可用"
-      },
-      {
-        name: "database_connection_issue"
-        condition: "service_unavailable AND database_connection_errors > 10"
-        action: "trigger_database_alert"
-        reason: "数据库连接问题"
-      }
-    ]
-  }
-  
-  metrics: {
-    enabled: true
-    collection: [
-      "alert_firing_duration",
-      "notification_sent_count",
-      "escalation_triggered_count",
-      "auto_recovery_success_rate",
-      "mean_time_to_resolution"
-    ]
-    thresholds: {
-      mttr_warning: "15m"
-      mttr_critical: "30m"
     }
   }
 }
 ```
 
-### 4.2 告警聚合与降噪
+### 升级策略
 
 ```dsl
-alert_group "infrastructure_alerts" {
-  description: "基础设施告警组"
-  version: "1.0.0"
+escalation_policy "service_escalation" {
+  description: "服务告警升级策略"
   
-  members: [
-    "high_cpu_usage",
-    "high_memory_usage",
-    "disk_space_low",
-    "network_high_latency"
+  name: "service_escalation_policy"
+  
+  levels: [
+    {
+      level: 1
+      name: "immediate"
+      delay: "0s"
+      notifications: [
+        {
+          type: "slack"
+          channel: "#alerts"
+          template: "immediate_alert"
+        }
+      ]
+      timeout: "5m"
+    },
+    {
+      level: 2
+      name: "5_minute"
+      delay: "5m"
+      notifications: [
+        {
+          type: "slack"
+          channel: "#oncall"
+          template: "escalation_alert"
+        },
+        {
+          type: "email"
+          recipients: ["oncall@company.com"]
+          template: "escalation_email"
+        }
+      ]
+      timeout: "15m"
+    },
+    {
+      level: 3
+      name: "15_minute"
+      delay: "15m"
+      notifications: [
+        {
+          type: "pagerduty"
+          service_id: "xxx"
+          urgency: "high"
+        },
+        {
+          type: "phone"
+          recipients: ["+1234567890"]
+          template: "phone_alert"
+        }
+      ]
+      timeout: "30m"
+    },
+    {
+      level: 4
+      name: "30_minute"
+      delay: "30m"
+      notifications: [
+        {
+          type: "pagerduty"
+          service_id: "xxx"
+          urgency: "high"
+          escalation_policy: "manager"
+        },
+        {
+          type: "email"
+          recipients: ["manager@company.com", "cto@company.com"]
+          template: "management_alert"
+        }
+      ]
+      timeout: "1h"
+    }
+  ]
+  
+  auto_resolve: {
+    enabled: true
+    condition: "alert resolved for 5m"
+    notification: {
+      type: "slack"
+      channel: "#alerts"
+      template: "resolution_alert"
+    }
+  }
+}
+```
+
+### 抑制规则
+
+```dsl
+inhibition_rule "service_inhibition" {
+  description: "服务告警抑制规则"
+  
+  name: "service_inhibition"
+  
+  source_match: {
+    severity: "critical"
+    service: "web-service"
+  }
+  
+  target_match: {
+    severity: "warning"
+    service: "web-service"
+  }
+  
+  equal: ["service", "environment"]
+  
+  conditions: [
+    {
+      type: "service_down"
+      expression: "up{service=\"web-service\"} == 0"
+      duration: "1m"
+    },
+    {
+      type: "maintenance_window"
+      expression: "maintenance_mode == 1"
+      duration: "0s"
+    }
+  ]
+  
+  exceptions: [
+    {
+      name: "critical_errors"
+      labels: {
+        alert_type: "critical_error"
+        severity: "critical"
+      }
+    }
+  ]
+}
+```
+
+## 高级用法
+
+### 复合告警
+
+```dsl
+composite_alert "service_degradation" {
+  description: "服务降级复合告警"
+  
+  name: "service_degradation"
+  
+  conditions: [
+    {
+      name: "high_error_rate"
+      expression: "error_rate > 0.05"
+      weight: 0.4
+      duration: "2m"
+    },
+    {
+      name: "high_latency"
+      expression: "p95_latency > 2"
+      weight: 0.3
+      duration: "2m"
+    },
+    {
+      name: "low_throughput"
+      expression: "request_rate < 100"
+      weight: 0.3
+      duration: "2m"
+    }
   ]
   
   aggregation: {
-    enabled: true
-    strategy: "count_based"
-    threshold: 3
-    window: "10m"
-    group_by: ["host", "environment"]
+    strategy: "weighted_sum"
+    threshold: 0.7
+    window: "5m"
   }
   
-  noise_reduction: {
-    enabled: true
-    strategies: [
-      {
-        type: "frequency_limit"
-        max_alerts: 5
-        window: "1h"
-      },
-      {
-        type: "similarity_detection"
-        similarity_threshold: 0.8
-        group_similar: true
-      }
-    ]
-  }
-  
-  notification: {
-    channels: [
-      {
-        name: "infra-team"
-        type: "slack"
-        channel: "#infrastructure"
-        template: "infra_alert_group"
-      }
-    ]
-    grouping: {
-      enabled: true
-      group_by: ["environment", "severity"]
-      group_wait: "1m"
-      group_interval: "5m"
-      repeat_interval: "2h"
-    }
-  }
-  
-  escalation: {
-    enabled: true
-    levels: [
-      {
-        level: 1
-        delay: "10m"
-        condition: "alert_count > 5"
-        notification: "infra-team"
-      },
-      {
-        level: 2
-        delay: "30m"
-        condition: "alert_count > 10"
-        notification: "emergency"
-      }
-    ]
-  }
-}
-```
-
-### 4.3 智能告警
-
-```dsl
-alert "anomaly_detection" {
-  description: "异常检测告警"
-  version: "1.0.0"
-  author: "system"
-  
-  rule: {
-    expression: "anomaly_score > 0.8"
-    duration: "5m"
-    evaluation_interval: "1m"
-    severity: "warning"
-    priority: 2
-  }
+  severity: "warning"
+  priority: 3
   
   labels: {
-    service: "all"
-    environment: "production"
-    team: "mlops"
-    component: "anomaly_detection"
+    alert_type: "service_degradation"
+    service: "web-service"
+    team: "platform"
   }
   
   annotations: {
-    summary: "检测到异常行为"
-    description: "服务 {{ $labels.service }} 在 {{ $labels.instance }} 上检测到异常，异常分数: {{ $value }}"
-    runbook_url: "https://runbook.example.com/anomaly-detection"
+    summary: "Service degradation detected"
+    description: "Multiple performance indicators show degradation"
+    runbook_url: "https://runbook.company.com/service-degradation"
   }
+  
+  alerting: {
+    group_by: ["service"]
+    group_wait: "30s"
+    group_interval: "2m"
+    repeat_interval: "1h"
+  }
+}
+```
+
+### 智能告警
+
+```dsl
+intelligent_alert "anomaly_detection" {
+  description: "异常检测智能告警"
+  
+  name: "anomaly_detection"
   
   ml_model: {
-    enabled: true
-    model_type: "isolation_forest"
+    type: "anomaly_detection"
+    algorithm: "isolation_forest"
     features: [
+      "error_rate",
+      "response_time",
       "cpu_usage",
       "memory_usage",
-      "network_traffic",
-      "error_rate",
-      "response_time"
+      "disk_usage"
     ]
-    training_window: "7d"
-    update_frequency: "1h"
+    parameters: {
+      contamination: 0.1
+      n_estimators: 100
+      random_state: 42
+    }
+  }
+  
+  training: {
+    data_source: "historical_metrics"
+    time_window: "30d"
+    update_frequency: "1d"
+    validation_split: 0.2
+  }
+  
+  detection: {
+    window_size: "10m"
+    slide_interval: "1m"
     confidence_threshold: 0.8
+    min_anomaly_duration: "2m"
   }
   
-  notification: {
-    channels: [
-      {
-        name: "mlops-team"
-        type: "slack"
-        channel: "#mlops-alerts"
-        template: "anomaly_alert"
-      }
-    ]
+  severity_mapping: {
+    low: {
+      threshold: 0.6
+      severity: "info"
+      notifications: ["slack"]
+    },
+    medium: {
+      threshold: 0.8
+      severity: "warning"
+      notifications: ["slack", "email"]
+    },
+    high: {
+      threshold: 0.95
+      severity: "critical"
+      notifications: ["slack", "pagerduty"]
+    }
   }
   
-  auto_recovery: {
+  auto_remediation: {
     enabled: true
-    conditions: [
-      {
-        expression: "anomaly_score < 0.3"
-        duration: "10m"
-        action: "resolve_alert"
-      }
-    ]
     actions: [
       {
-        name: "collect_evidence"
-        type: "data_collection"
-        metrics: [
-          "cpu_usage",
-          "memory_usage",
-          "network_traffic",
-          "error_rate"
-        ]
-        duration: "5m"
+        name: "restart_service"
+        condition: "anomaly_score > 0.9 AND service_health < 0.5"
+        action: "kubectl rollout restart deployment/web-service"
+        timeout: "5m"
+      },
+      {
+        name: "scale_up"
+        condition: "anomaly_score > 0.8 AND cpu_usage > 0.8"
+        action: "kubectl scale deployment web-service --replicas=5"
+        timeout: "2m"
       }
     ]
   }
 }
 ```
 
-## 5. 代码生成模板
+### 业务告警
 
-### 5.1 Prometheus Alertmanager生成
-
-```yaml
-# prometheus-rules.yml
-groups:
-  - name: web-service-alerts
-    rules:
-      - alert: HighCPUUsage
-        expr: cpu_usage > 90
-        for: 5m
-        labels:
-          severity: critical
-          service: web-service
-          environment: production
-          team: platform
-          component: cpu
-        annotations:
-          summary: "CPU使用率超过90%"
-          description: "服务器 {{ $labels.instance }} 的CPU使用率已达到 {{ $value }}%"
-          runbook_url: "https://runbook.example.com/cpu-high"
-          dashboard_url: "https://grafana.example.com/d/cpu-metrics"
-
-      - alert: ServiceUnavailable
-        expr: up{service="web-service"} == 0 OR http_response_time > 5
-        for: 2m
-        labels:
-          severity: critical
-          service: web-service
-          environment: production
-          team: frontend
-          component: api
-        annotations:
-          summary: "服务 {{ $labels.service }} 不可用"
-          description: "服务 {{ $labels.service }} 在 {{ $labels.instance }} 上不可用，响应时间: {{ $value }}s"
-          runbook_url: "https://runbook.example.com/service-unavailable"
-          dashboard_url: "https://grafana.example.com/d/service-health"
+```dsl
+business_alert "business_impact" {
+  description: "业务影响告警"
+  
+  name: "business_impact"
+  
+  business_metrics: [
+    {
+      name: "order_success_rate"
+      slo_target: 0.999
+      current_value: "rate(orders_completed_total[5m]) / rate(orders_created_total[5m])"
+      impact: "revenue_loss"
+    },
+    {
+      name: "user_experience_score"
+      slo_target: 0.95
+      current_value: "avg(user_satisfaction_score[1h])"
+      impact: "customer_satisfaction"
+    },
+    {
+      name: "system_availability"
+      slo_target: 0.9999
+      current_value: "avg(up[5m])"
+      impact: "service_availability"
+    }
+  ]
+  
+  impact_assessment: {
+    revenue_impact: {
+      calculation: "estimated_revenue_loss_per_minute * downtime_minutes"
+      thresholds: {
+        low: 100
+        medium: 1000
+        high: 10000
+      }
+    },
+    customer_impact: {
+      calculation: "affected_users * impact_score"
+      thresholds: {
+        low: 100
+        medium: 1000
+        high: 10000
+      }
+    }
+  }
+  
+  severity_mapping: {
+    critical: {
+      condition: "revenue_impact > 10000 OR customer_impact > 10000"
+      notifications: ["pagerduty", "cto_email", "emergency_phone"]
+      escalation: "immediate"
+    },
+    high: {
+      condition: "revenue_impact > 1000 OR customer_impact > 1000"
+      notifications: ["pagerduty", "manager_email"]
+      escalation: "15m"
+    },
+    medium: {
+      condition: "revenue_impact > 100 OR customer_impact > 100"
+      notifications: ["slack", "email"]
+      escalation: "1h"
+    }
+  }
+  
+  business_continuity: {
+    enabled: true
+    actions: [
+      {
+        name: "activate_backup_system"
+        condition: "system_availability < 0.9"
+        action: "switch_to_backup_datacenter"
+        approval_required: false
+      },
+      {
+        name: "notify_customers"
+        condition: "customer_impact > 1000"
+        action: "send_customer_notification"
+        approval_required: true
+      }
+    ]
+  }
+}
 ```
 
+## 代码生成模板
+
+### Prometheus告警规则
+
 ```yaml
-# alertmanager.yml
+# 生成的Prometheus告警规则
+groups:
+  - name: web_service_alerts
+    rules:
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status_code=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          alert_type: error_rate
+          service: web-service
+          team: platform
+          environment: production
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
+          runbook_url: "https://runbook.company.com/high-error-rate"
+          dashboard_url: "https://grafana.company.com/d/web-service"
+
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 2m
+        labels:
+          severity: warning
+          alert_type: latency
+          service: web-service
+          team: platform
+          environment: production
+        annotations:
+          summary: "High latency detected"
+          description: "95th percentile latency is {{ $value }}s for service {{ $labels.service }}"
+          runbook_url: "https://runbook.company.com/high-latency"
+          dashboard_url: "https://grafana.company.com/d/web-service"
+
+      - alert: ServiceDown
+        expr: up{service="web-service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          alert_type: service_down
+          service: web-service
+          team: platform
+          environment: production
+        annotations:
+          summary: "Service is down"
+          description: "Service {{ $labels.service }} is down"
+          runbook_url: "https://runbook.company.com/service-down"
+          dashboard_url: "https://grafana.company.com/d/web-service"
+
+      - alert: HighCPUUsage
+        expr: cpu_usage > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          alert_type: resource_usage
+          service: web-service
+          team: platform
+          environment: production
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value | humanizePercentage }} for service {{ $labels.service }}"
+          runbook_url: "https://runbook.company.com/high-cpu-usage"
+          dashboard_url: "https://grafana.company.com/d/web-service"
+```
+
+### Alertmanager配置
+
+```yaml
+# 生成的Alertmanager配置
 global:
   resolve_timeout: 5m
   slack_api_url: 'https://hooks.slack.com/services/xxx/yyy/zzz'
@@ -591,691 +585,966 @@ route:
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 4h
-  receiver: 'ops-team'
+  receiver: 'slack-notifications'
   routes:
     - match:
-        environment: production
-      receiver: 'emergency-pager'
-      routes:
-        - match:
-            severity: critical
-          receiver: 'emergency-pager'
-          group_wait: 10s
-          group_interval: 2m
-          repeat_interval: 1h
+        severity: critical
+      receiver: 'pagerduty-critical'
+      continue: true
     - match:
-        environment: staging
-      receiver: 'slack-critical'
-      group_wait: 1m
-      group_interval: 5m
-      repeat_interval: 2h
+        severity: warning
+      receiver: 'slack-warnings'
+      continue: true
+    - match:
+        severity: info
+      receiver: 'slack-info'
 
 inhibit_rules:
   - source_match:
-      alertname: 'DatabaseDown'
+      severity: 'critical'
+      service: 'web-service'
     target_match:
-      alertname: 'ServiceUnavailable'
-    equal: ['instance']
+      severity: 'warning'
+      service: 'web-service'
+    equal: ['service', 'environment']
 
 receivers:
-  - name: 'ops-team'
-    email_configs:
-      - to: 'ops@example.com'
-        send_resolved: true
+  - name: 'slack-notifications'
     slack_configs:
       - channel: '#alerts'
-        title: '{{ template "slack.title" . }}'
-        text: '{{ template "slack.text" . }}'
-        send_resolved: true
+        title: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Severity:* {{ .Labels.severity }}
+          *Service:* {{ .Labels.service }}
+          *Environment:* {{ .Labels.environment }}
+          *Started:* {{ .StartsAt | since }}
+          {{ if .Annotations.runbook_url }}*Runbook:* {{ .Annotations.runbook_url }}{{ end }}
+          {{ if .Annotations.dashboard_url }}*Dashboard:* {{ .Annotations.dashboard_url }}{{ end }}
+          {{ end }}
+        color: '{{ if eq .GroupLabels.severity "critical" }}danger{{ else if eq .GroupLabels.severity "warning" }}warning{{ else }}good{{ end }}'
 
-  - name: 'emergency-pager'
+  - name: 'slack-warnings'
+    slack_configs:
+      - channel: '#alerts'
+        title: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        text: |
+          {{ range .Alerts }}
+          *Warning:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Service:* {{ .Labels.service }}
+          {{ end }}
+        color: 'warning'
+
+  - name: 'slack-info'
+    slack_configs:
+      - channel: '#alerts-info'
+        title: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        text: |
+          {{ range .Alerts }}
+          *Info:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Service:* {{ .Labels.service }}
+          {{ end }}
+        color: 'good'
+
+  - name: 'pagerduty-critical'
     pagerduty_configs:
       - service_key: 'xxx'
-        send_resolved: true
-        description: '{{ template "pagerduty.description" . }}'
+        description: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        client: 'AlertManager'
+        client_url: '{{ template "pagerduty.default.clientURL" . }}'
         severity: '{{ if eq .GroupLabels.severity "critical" }}critical{{ else }}warning{{ end }}'
-
-  - name: 'slack-critical'
-    slack_configs:
-      - channel: '#critical-alerts'
-        title: '{{ template "slack.critical.title" . }}'
-        text: '{{ template "slack.critical.text" . }}'
-        send_resolved: true
+        class: '{{ template "pagerduty.default.class" . }}'
+        group: '{{ template "pagerduty.default.group" . }}'
+        details:
+          firing: '{{ template "pagerduty.default.firing" . }}'
+          num_firing: '{{ .Alerts.Firing | len }}'
+          num_resolved: '{{ .Alerts.Resolved | len }}'
+          resolved: '{{ template "pagerduty.default.resolved" . }}'
+          group_labels: '{{ template "pagerduty.default.groupLabels" . }}'
+          common_labels: '{{ template "pagerduty.default.commonLabels" . }}'
+          common_annotations: '{{ template "pagerduty.default.commonAnnotations" . }}'
+          external_url: '{{ template "pagerduty.default.externalURL" . }}'
 
 templates:
   - '/etc/alertmanager/template/*.tmpl'
 ```
 
-### 5.2 Kubernetes Operator生成
-
-```yaml
-# prometheus-rule.yaml
-apiVersion: monitoring.coreos.com/v1
-kind: PrometheusRule
-metadata:
-  name: web-service-alerts
-  namespace: monitoring
-  labels:
-    prometheus: kube-prometheus
-    role: alert-rules
-spec:
-  groups:
-    - name: web-service-alerts
-      rules:
-        - alert: HighCPUUsage
-          expr: cpu_usage > 90
-          for: 5m
-          labels:
-            severity: critical
-            service: web-service
-            environment: production
-            team: platform
-            component: cpu
-          annotations:
-            summary: "CPU使用率超过90%"
-            description: "服务器 {{ $labels.instance }} 的CPU使用率已达到 {{ $value }}%"
-            runbook_url: "https://runbook.example.com/cpu-high"
-            dashboard_url: "https://grafana.example.com/d/cpu-metrics"
-
-        - alert: ServiceUnavailable
-          expr: up{service="web-service"} == 0 OR http_response_time > 5
-          for: 2m
-          labels:
-            severity: critical
-            service: web-service
-            environment: production
-            team: frontend
-            component: api
-          annotations:
-            summary: "服务 {{ $labels.service }} 不可用"
-            description: "服务 {{ $labels.service }} 在 {{ $labels.instance }} 上不可用，响应时间: {{ $value }}s"
-            runbook_url: "https://runbook.example.com/service-unavailable"
-            dashboard_url: "https://grafana.example.com/d/service-health"
-```
-
-### 5.3 自定义告警处理器生成
+### Python实现
 
 ```python
-# alert_processor.py
+import time
 import json
 import requests
-from datetime import datetime, timedelta
 from typing import Dict, List, Any
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 
-class AlertProcessor:
+@dataclass
+class AlertRule:
+    name: str
+    condition: str
+    duration: str
+    severity: str
+    labels: Dict[str, str]
+    annotations: Dict[str, str]
+
+@dataclass
+class Alert:
+    name: str
+    severity: str
+    labels: Dict[str, str]
+    annotations: Dict[str, str]
+    starts_at: datetime
+    ends_at: datetime = None
+    status: str = "firing"
+
+class AlertingEngine:
     def __init__(self, config: Dict[str, Any]):
         self.config = config
-        self.alert_history = {}
-        self.escalation_levels = config.get('escalation', {}).get('levels', [])
-        
-    def process_alert(self, alert: Dict[str, Any]) -> None:
-        """处理告警"""
-        alert_id = alert.get('id')
-        severity = alert.get('severity')
-        service = alert.get('labels', {}).get('service')
-        
-        # 检查抑制条件
-        if self._should_suppress(alert):
-            print(f"Alert {alert_id} suppressed")
-            return
-            
-        # 检查关联规则
-        correlated_alerts = self._check_correlation(alert)
-        if correlated_alerts:
-            self._handle_correlated_alerts(alert, correlated_alerts)
-            
-        # 发送通知
-        self._send_notifications(alert)
-        
-        # 触发自动恢复
-        if self._should_auto_recover(alert):
-            self._trigger_auto_recovery(alert)
-            
-        # 记录告警历史
-        self._record_alert_history(alert)
-        
-    def _should_suppress(self, alert: Dict[str, Any]) -> bool:
-        """检查是否应该抑制告警"""
-        suppression = self.config.get('suppression', {})
-        if not suppression.get('enabled', False):
+        self.rules = self._load_rules()
+        self.notifications = self._load_notifications()
+        self.active_alerts = {}
+    
+    def _load_rules(self) -> List[AlertRule]:
+        """加载告警规则"""
+        rules = []
+        for rule_config in self.config.get('rules', []):
+            rule = AlertRule(
+                name=rule_config['name'],
+                condition=rule_config['condition'],
+                duration=rule_config.get('duration', '0s'),
+                severity=rule_config['severity'],
+                labels=rule_config.get('labels', {}),
+                annotations=rule_config.get('annotations', {})
+            )
+            rules.append(rule)
+        return rules
+    
+    def _load_notifications(self) -> Dict[str, Any]:
+        """加载通知配置"""
+        return self.config.get('notifications', {})
+    
+    def evaluate_condition(self, condition: str, metrics: Dict[str, float]) -> bool:
+        """评估告警条件"""
+        try:
+            # 简单的条件评估逻辑
+            if '>' in condition:
+                metric, threshold = condition.split('>')
+                metric = metric.strip()
+                threshold = float(threshold.strip())
+                return metrics.get(metric, 0) > threshold
+            elif '<' in condition:
+                metric, threshold = condition.split('<')
+                metric = metric.strip()
+                threshold = float(threshold.strip())
+                return metrics.get(metric, 0) < threshold
+            elif '==' in condition:
+                metric, value = condition.split('==')
+                metric = metric.strip()
+                value = value.strip()
+                return metrics.get(metric, 0) == float(value)
             return False
-            
-        for condition in suppression.get('conditions', []):
-            if self._evaluate_condition(condition, alert):
-                return True
-        return False
+        except Exception as e:
+            print(f"Error evaluating condition {condition}: {e}")
+            return False
+    
+    def check_alerts(self, metrics: Dict[str, float]) -> List[Alert]:
+        """检查告警"""
+        new_alerts = []
+        resolved_alerts = []
         
-    def _check_correlation(self, alert: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """检查关联告警"""
-        correlation = self.config.get('correlation', {})
-        if not correlation.get('enabled', False):
-            return []
+        for rule in self.rules:
+            alert_key = f"{rule.name}_{rule.severity}"
             
-        correlated = []
-        for rule in correlation.get('rules', []):
-            if self._evaluate_correlation_rule(rule, alert):
-                correlated.append(rule)
-        return correlated
+            # 评估条件
+            is_firing = self.evaluate_condition(rule.condition, metrics)
+            
+            if is_firing:
+                if alert_key not in self.active_alerts:
+                    # 新告警
+                    alert = Alert(
+                        name=rule.name,
+                        severity=rule.severity,
+                        labels=rule.labels.copy(),
+                        annotations=rule.annotations.copy(),
+                        starts_at=datetime.now(),
+                        status="firing"
+                    )
+                    self.active_alerts[alert_key] = alert
+                    new_alerts.append(alert)
+                else:
+                    # 更新现有告警
+                    self.active_alerts[alert_key].status = "firing"
+            else:
+                if alert_key in self.active_alerts:
+                    # 告警恢复
+                    alert = self.active_alerts[alert_key]
+                    alert.status = "resolved"
+                    alert.ends_at = datetime.now()
+                    resolved_alerts.append(alert)
+                    del self.active_alerts[alert_key]
         
-    def _send_notifications(self, alert: Dict[str, Any]) -> None:
+        return new_alerts, resolved_alerts
+    
+    def send_notification(self, alert: Alert, notification_type: str = "slack"):
         """发送通知"""
-        notification = self.config.get('notification', {})
-        channels = notification.get('channels', [])
+        if notification_type == "slack":
+            self._send_slack_notification(alert)
+        elif notification_type == "email":
+            self._send_email_notification(alert)
+        elif notification_type == "pagerduty":
+            self._send_pagerduty_notification(alert)
+    
+    def _send_slack_notification(self, alert: Alert):
+        """发送Slack通知"""
+        slack_config = self.notifications.get('slack', {})
+        webhook_url = slack_config.get('webhook_url')
         
-        for channel in channels:
-            if self._should_send_to_channel(channel, alert):
-                self._send_to_channel(channel, alert)
-                
-    def _should_auto_recover(self, alert: Dict[str, Any]) -> bool:
-        """检查是否应该自动恢复"""
-        auto_recovery = self.config.get('auto_recovery', {})
-        if not auto_recovery.get('enabled', False):
-            return False
-            
-        for condition in auto_recovery.get('conditions', []):
-            if self._evaluate_condition(condition, alert):
-                return True
-        return False
-        
-    def _trigger_auto_recovery(self, alert: Dict[str, Any]) -> None:
-        """触发自动恢复"""
-        auto_recovery = self.config.get('auto_recovery', {})
-        actions = auto_recovery.get('actions', [])
-        
-        for action in actions:
-            self._execute_action(action, alert)
-            
-    def _execute_action(self, action: Dict[str, Any], alert: Dict[str, Any]) -> None:
-        """执行动作"""
-        action_type = action.get('type')
-        action_name = action.get('name')
-        
-        if action_type == 'kubernetes':
-            self._execute_kubernetes_action(action, alert)
-        elif action_type == 'http':
-            self._execute_http_action(action, alert)
-        elif action_type == 'load_balancer':
-            self._execute_load_balancer_action(action, alert)
-            
-    def _execute_kubernetes_action(self, action: Dict[str, Any], alert: Dict[str, Any]) -> None:
-        """执行Kubernetes动作"""
-        target = action.get('target')
-        action_name = action.get('action')
-        
-        if action_name == 'restart':
-            # 重启服务
-            print(f"Restarting {target}")
-        elif action_name == 'scale':
-            # 扩缩容
-            replicas = action.get('parameters', {}).get('replicas')
-            print(f"Scaling {target} to {replicas} replicas")
-            
-    def _send_to_channel(self, channel: Dict[str, Any], alert: Dict[str, Any]) -> None:
-        """发送到指定通道"""
-        channel_type = channel.get('type')
-        
-        if channel_type == 'slack':
-            self._send_to_slack(channel, alert)
-        elif channel_type == 'email':
-            self._send_to_email(channel, alert)
-        elif channel_type == 'pagerduty':
-            self._send_to_pagerduty(channel, alert)
-            
-    def _send_to_slack(self, channel: Dict[str, Any], alert: Dict[str, Any]) -> None:
-        """发送到Slack"""
-        webhook_url = channel.get('webhook_url')
-        channel_name = channel.get('channel')
+        if not webhook_url:
+            return
         
         message = {
-            "channel": channel_name,
-            "text": f"Alert: {alert.get('summary')}",
+            "channel": slack_config.get('channel', '#alerts'),
+            "username": slack_config.get('username', 'AlertManager'),
+            "icon_emoji": slack_config.get('icon_emoji', ':warning:'),
             "attachments": [
                 {
-                    "color": "danger" if alert.get('severity') == 'critical' else "warning",
+                    "color": self._get_severity_color(alert.severity),
+                    "title": alert.annotations.get('summary', alert.name),
+                    "text": alert.annotations.get('description', ''),
                     "fields": [
                         {
-                            "title": "Service",
-                            "value": alert.get('labels', {}).get('service', 'Unknown'),
+                            "title": "Severity",
+                            "value": alert.severity,
                             "short": True
                         },
                         {
-                            "title": "Severity",
-                            "value": alert.get('severity', 'Unknown'),
+                            "title": "Service",
+                            "value": alert.labels.get('service', 'unknown'),
+                            "short": True
+                        },
+                        {
+                            "title": "Started",
+                            "value": alert.starts_at.strftime('%Y-%m-%d %H:%M:%S'),
                             "short": True
                         }
-                    ]
+                    ],
+                    "footer": "AlertManager",
+                    "ts": int(alert.starts_at.timestamp())
                 }
             ]
         }
         
-        requests.post(webhook_url, json=message)
-```
+        try:
+            response = requests.post(webhook_url, json=message)
+            response.raise_for_status()
+            print(f"Slack notification sent for alert {alert.name}")
+        except Exception as e:
+            print(f"Failed to send Slack notification: {e}")
+    
+    def _send_email_notification(self, alert: Alert):
+        """发送邮件通知"""
+        # 实现邮件发送逻辑
+        pass
+    
+    def _send_pagerduty_notification(self, alert: Alert):
+        """发送PagerDuty通知"""
+        # 实现PagerDuty通知逻辑
+        pass
+    
+    def _get_severity_color(self, severity: str) -> str:
+        """获取严重程度对应的颜色"""
+        colors = {
+            'critical': '#FF0000',
+            'warning': '#FFA500',
+            'info': '#0000FF'
+        }
+        return colors.get(severity, '#808080')
 
-## 6. 验证规则
-
-### 6.1 语法验证规则
-
-```yaml
-validation:
-  required_fields:
-    - alert.name
-    - alert.description
-    - alert.version
-    - alert.rule
-  
-  type_constraints:
-    - field: "alert.name"
-      type: "string"
-      pattern: "^[a-zA-Z_][a-zA-Z0-9_]*$"
-    - field: "alert.version"
-      type: "string"
-      pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    - field: "alert.rule.severity"
-      type: "string"
-      enum: ["info", "warning", "critical", "emergency"]
-```
-
-### 6.2 告警验证规则
-
-```yaml
-alert_validation:
-  rule_consistency:
-    - rule: "expression must be valid PromQL"
-    - rule: "duration must be positive"
-    - rule: "severity must be valid"
-  
-  notification_validation:
-    - rule: "all notification channels must be configured"
-    - rule: "escalation levels must be sequential"
-    - rule: "auto recovery conditions must be valid"
-```
-
-## 7. 最佳实践
-
-### 7.1 告警设计模式
-
-```dsl
-# 基础告警模式
-alert "basic_alert" {
-  description: "基础告警"
-  version: "1.0.0"
-  
-  rule: {
-    expression: "metric > threshold"
-    duration: "5m"
-    severity: "warning"
-  }
-  
-  labels: {
-    service: "service-name"
-    environment: "environment"
-  }
-  
-  notification: {
-    channels: [
-      {
-        name: "team-notification"
-        type: "slack"
-        channel: "#alerts"
-      }
-    ]
-  }
-}
-
-# 智能告警模式
-alert "smart_alert" {
-  description: "智能告警"
-  version: "1.0.0"
-  
-  rule: {
-    expression: "anomaly_score > threshold"
-    duration: "5m"
-    severity: "warning"
-  }
-  
-  ml_model: {
-    enabled: true
-    model_type: "isolation_forest"
-    features: ["metric1", "metric2", "metric3"]
-  }
-  
-  auto_recovery: {
-    enabled: true
-    conditions: [
-      {
-        expression: "metric < threshold"
-        duration: "2m"
-        action: "resolve_alert"
-      }
-    ]
-  }
-}
-```
-
-### 7.2 告警命名规范
-
-```dsl
-# 推荐命名模式
-alert "service_component_condition" {
-  # 服务_组件_条件
-}
-
-alert "environment_severity_metric" {
-  # 环境_严重程度_指标
-}
-
-alert "team_domain_alert" {
-  # 团队_领域_告警
-}
-```
-
-## 8. 与主流标准的映射
-
-| DSL元素 | Prometheus Alertmanager | PagerDuty | Zabbix Trigger | Nagios |
-|---------|------------------------|-----------|----------------|--------|
-| alert | group/rule | service | trigger | service |
-| suppression | inhibit/silence | schedule | maintenance | downtime |
-| notification | receiver | escalation | action | contact |
-| escalation | route | escalation | escalation | escalation |
-| auto_recovery | n/a | auto-resolve | recovery | recovery |
-
-## 9. 工程实践示例
-
-```dsl
-# 生产环境告警配置示例
-alert "production_web_service_critical" {
-  description: "生产环境Web服务严重告警"
-  version: "1.0.0"
-  author: "system"
-  
-  rule: {
-    expression: "up{service=\"web-service\", environment=\"production\"} == 0 OR http_response_time{service=\"web-service\", environment=\"production\"} > 5"
-    duration: "2m"
-    evaluation_interval: "15s"
-    severity: "critical"
-    priority: 1
-  }
-  
-  labels: {
-    service: "web-service"
-    environment: "production"
-    team: "frontend"
-    component: "api"
-    datacenter: "us-east-1"
-  }
-  
-  annotations: {
-    summary: "生产环境Web服务不可用"
-    description: "服务 {{ $labels.service }} 在 {{ $labels.instance }} 上不可用，响应时间: {{ $value }}s"
-    runbook_url: "https://runbook.example.com/production-service-unavailable"
-    dashboard_url: "https://grafana.example.com/d/production-service-health"
-    jira_ticket: "OPS-{{ $labels.service }}-{{ $labels.instance }}"
-  }
-  
-  suppression: {
-    enabled: true
-    conditions: [
-      {
-        type: "time_window"
-        condition: "hour >= 2 AND hour < 4"
-        duration: "2h"
-        reason: "计划维护窗口"
-        approved_by: "ops-manager"
-      },
-      {
-        type: "dependency"
-        condition: "database_down OR load_balancer_down OR network_issue"
-        duration: "until_dependency_resolved"
-        reason: "依赖服务故障"
-      },
-      {
-        type: "maintenance"
-        condition: "maintenance_mode == true"
-        duration: "until_maintenance_complete"
-        reason: "维护模式"
-      }
-    ]
-  }
-  
-  notification: {
-    channels: [
-      {
-        name: "emergency-pager"
-        type: "pagerduty"
-        service: "web-service-production"
-        urgency: "high"
-        auto_resolve: false
-        escalation_policy: "web-service-production-escalation"
-        routing_key: "{{ pagerduty_routing_key }}"
-      },
-      {
-        name: "slack-critical"
-        type: "slack"
-        channel: "#critical-alerts"
-        template: "critical_production_alert"
-        mentions: ["@here", "@oncall", "@ops-team"]
-        webhook_url: "{{ slack_webhook_url }}"
-      },
-      {
-        name: "email-notification"
-        type: "email"
-        recipients: ["ops@example.com", "dev@example.com", "manager@example.com"]
-        template: "production_service_alert"
-        cc: ["cto@example.com"]
-        smtp_server: "{{ smtp_server }}"
-      },
-      {
-        name: "sms-notification"
-        type: "sms"
-        recipients: ["+1234567890", "+0987654321"]
-        template: "critical_alert_sms"
-        provider: "twilio"
-      }
-    ]
-    grouping: {
-      enabled: true
-      group_by: ["service", "environment", "datacenter"]
-      group_wait: "10s"
-      group_interval: "2m"
-      repeat_interval: "1h"
-      max_repeat_count: 5
-    }
-    routing: {
-      enabled: true
-      rules: [
+# 使用示例
+config = {
+    "rules": [
         {
-          condition: "environment == 'production' AND severity == 'critical'"
-          channels: ["emergency-pager", "slack-critical", "sms-notification"]
-          priority: 1
+            "name": "high_error_rate",
+            "condition": "error_rate > 0.05",
+            "duration": "2m",
+            "severity": "warning",
+            "labels": {
+                "service": "web-service",
+                "team": "platform"
+            },
+            "annotations": {
+                "summary": "High error rate detected",
+                "description": "Error rate is above 5%"
+            }
         },
         {
-          condition: "environment == 'production' AND severity == 'warning'"
-          channels: ["slack-critical", "email-notification"]
-          priority: 2
+            "name": "service_down",
+            "condition": "up == 0",
+            "duration": "1m",
+            "severity": "critical",
+            "labels": {
+                "service": "web-service",
+                "team": "platform"
+            },
+            "annotations": {
+                "summary": "Service is down",
+                "description": "Service is not responding"
+            }
+        }
+    ],
+    "notifications": {
+        "slack": {
+            "webhook_url": "https://hooks.slack.com/services/xxx/yyy/zzz",
+            "channel": "#alerts",
+            "username": "AlertManager"
+        }
+    }
+}
+
+# 创建告警引擎
+alerting_engine = AlertingEngine(config)
+
+# 模拟指标数据
+metrics = {
+    "error_rate": 0.08,
+    "up": 1,
+    "response_time": 1.5
+}
+
+# 检查告警
+new_alerts, resolved_alerts = alerting_engine.check_alerts(metrics)
+
+# 发送通知
+for alert in new_alerts:
+    alerting_engine.send_notification(alert, "slack")
+
+print(f"New alerts: {len(new_alerts)}")
+print(f"Resolved alerts: {len(resolved_alerts)}")
+```
+
+## 验证规则
+
+### 语法验证
+
+```dsl
+validation_rules "alerting_validation" {
+  syntax: [
+    {
+      rule: "required_fields"
+      fields: ["description", "version", "namespace", "rules"]
+      message: "必须包含描述、版本、命名空间和告警规则"
+    },
+    {
+      rule: "valid_severity"
+      allowed_values: ["critical", "warning", "info"]
+      message: "严重程度必须是支持的值"
+    },
+    {
+      rule: "valid_condition"
+      condition: "condition expression is valid"
+      message: "告警条件表达式必须有效"
+    }
+  ]
+  
+  semantic: [
+    {
+      rule: "rule_uniqueness"
+      condition: "rule names are unique within namespace"
+      message: "告警规则名称在命名空间内必须唯一"
+    },
+    {
+      rule: "notification_configuration"
+      condition: "all referenced notifications are configured"
+      message: "所有引用的通知配置必须存在"
+    }
+  ]
+}
+```
+
+### 性能验证
+
+```dsl
+performance_validation "alerting_performance" {
+  constraints: [
+    {
+      metric: "evaluation_latency"
+      threshold: "100ms"
+      action: "warn"
+    },
+    {
+      metric: "notification_delay"
+      threshold: "30s"
+      action: "error"
+    },
+    {
+      metric: "false_positive_rate"
+      threshold: "0.1"
+      action: "warn"
+    }
+  ]
+  
+  optimization: [
+    {
+      strategy: "condition_optimization"
+      enabled: true
+      target_efficiency: 0.95
+    },
+    {
+      strategy: "notification_batching"
+      enabled: true
+      batch_size: 10
+      batch_interval: "30s"
+    }
+  ]
+}
+```
+
+## 最佳实践
+
+### 设计模式
+
+```dsl
+best_practices "alerting_patterns" {
+  patterns: [
+    {
+      name: "slo_based_alerting"
+      description: "基于SLO的告警模式"
+      implementation: {
+        strategy: "slo_breach_detection"
+        burn_rate: "calculated"
+        error_budget: "tracked"
+        alerting: "progressive"
+      }
+    },
+    {
+      name: "anomaly_based_alerting"
+      description: "基于异常的告警模式"
+      implementation: {
+        strategy: "ml_anomaly_detection"
+        training: "continuous"
+        confidence: "adaptive"
+        alerting: "intelligent"
+      }
+    },
+    {
+      name: "progressive_alerting"
+      description: "渐进式告警模式"
+      implementation: {
+        strategy: "escalation_based"
+        levels: ["immediate", "delayed", "escalated"]
+        notifications: "progressive"
+      }
+    }
+  ]
+  
+  anti_patterns: [
+    {
+      name: "alert_storm"
+      description: "告警风暴"
+      symptoms: ["too_many_alerts", "notification_flood"]
+      solution: "implement_suppression"
+    },
+    {
+      name: "alert_fatigue"
+      description: "告警疲劳"
+      symptoms: ["ignored_alerts", "low_response_rate"]
+      solution: "reduce_noise"
+    }
+  ]
+}
+```
+
+### 监控和告警
+
+```dsl
+monitoring "alerting_monitoring" {
+  metrics: [
+    {
+      name: "alert_evaluation_rate"
+      type: "counter"
+      labels: ["rule_name", "status"]
+      unit: "evaluations/sec"
+    },
+    {
+      name: "alert_firing_duration"
+      type: "histogram"
+      labels: ["rule_name", "severity"]
+      buckets: [1, 5, 15, 30, 60, 300, 600]
+    },
+    {
+      name: "notification_success_rate"
+      type: "gauge"
+      labels: ["notification_type"]
+      range: [0, 1]
+    }
+  ]
+  
+  alerts: [
+    {
+      name: "alert_evaluation_failure"
+      condition: "alert_evaluation_errors > 0"
+      severity: "critical"
+      action: "restart_evaluator"
+    },
+    {
+      name: "notification_failure"
+      condition: "notification_success_rate < 0.9"
+      severity: "warning"
+      action: "investigate_notifications"
+    }
+  ]
+}
+```
+
+## 主流标准映射
+
+### Prometheus集成
+
+```dsl
+prometheus_integration "prometheus_alerting" {
+  metrics: [
+    {
+      name: "alert_evaluation_duration_seconds"
+      type: "histogram"
+      help: "Alert evaluation execution time"
+      labels: ["rule_name", "status"]
+    },
+    {
+      name: "alert_firing_total"
+      type: "counter"
+      help: "Total number of alert firings"
+      labels: ["rule_name", "severity"]
+    },
+    {
+      name: "notification_sent_total"
+      type: "counter"
+      help: "Total number of notifications sent"
+      labels: ["notification_type", "status"]
+    }
+  ]
+  
+  rules: [
+    {
+      name: "Alert Evaluation Failure"
+      expr: "rate(alert_evaluation_errors_total[5m]) > 0"
+      for: "1m"
+      labels: { severity: critical }
+      annotations: { summary: "Alert evaluation is failing" }
+    },
+    {
+      name: "High Notification Failure Rate"
+      expr: "rate(notification_failures_total[5m]) / rate(notification_sent_total[5m]) > 0.1"
+      for: "2m"
+      labels: { severity: warning }
+      annotations: { summary: "High notification failure rate" }
+    }
+  ]
+  
+  alertmanager: {
+    receivers: [
+      {
+        name: "slack"
+        slack_configs: [
+          {
+            channel: "#alerts"
+            title: "Alerting System Alert"
+            text: "{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## 工程实践示例
+
+### 微服务告警
+
+```dsl
+microservice_alerting "order_service_alerting" {
+  description: "订单服务告警"
+  
+  namespace: "order_service"
+  
+  services: [
+    {
+      name: "order-service"
+      instances: 3
+      rules: [
+        {
+          name: "order_service_down"
+          condition: "up{service=\"order-service\"} == 0"
+          duration: "1m"
+          severity: "critical"
+          notifications: ["pagerduty", "slack"]
+        },
+        {
+          name: "high_order_error_rate"
+          condition: "rate(order_requests_total{status=\"error\"}[5m]) / rate(order_requests_total[5m]) > 0.05"
+          duration: "2m"
+          severity: "warning"
+          notifications: ["slack", "email"]
+        },
+        {
+          name: "slow_order_processing"
+          condition: "histogram_quantile(0.95, rate(order_processing_duration_seconds_bucket[5m])) > 30"
+          duration: "2m"
+          severity: "warning"
+          notifications: ["slack"]
+        }
+      ]
+    },
+    {
+      name: "payment-service"
+      instances: 2
+      rules: [
+        {
+          name: "payment_service_down"
+          condition: "up{service=\"payment-service\"} == 0"
+          duration: "1m"
+          severity: "critical"
+          notifications: ["pagerduty", "slack"]
+        },
+        {
+          name: "low_payment_success_rate"
+          condition: "rate(payment_requests_total{status=\"success\"}[5m]) / rate(payment_requests_total[5m]) < 0.95"
+          duration: "2m"
+          severity: "critical"
+          notifications: ["pagerduty", "slack", "email"]
+        }
+      ]
+    },
+    {
+      name: "inventory-service"
+      instances: 2
+      rules: [
+        {
+          name: "inventory_service_down"
+          condition: "up{service=\"inventory-service\"} == 0"
+          duration: "1m"
+          severity: "critical"
+          notifications: ["pagerduty", "slack"]
+        },
+        {
+          name: "low_inventory_level"
+          condition: "inventory_level < 10"
+          duration: "5m"
+          severity: "warning"
+          notifications: ["slack", "email"]
         }
       ]
     }
-  }
+  ]
+  
+  business_rules: [
+    {
+      name: "order_workflow_failure"
+      condition: "order_success_rate < 0.95 OR payment_success_rate < 0.95"
+      duration: "5m"
+      severity: "critical"
+      notifications: ["pagerduty", "cto_email"]
+      business_impact: "revenue_loss"
+    },
+    {
+      name: "customer_experience_degradation"
+      condition: "avg_response_time > 2 OR error_rate > 0.1"
+      duration: "2m"
+      severity: "warning"
+      notifications: ["slack", "manager_email"]
+      business_impact: "customer_satisfaction"
+    }
+  ]
   
   escalation: {
-    enabled: true
     levels: [
       {
         level: 1
-        delay: "2m"
-        notification: "emergency-pager"
-        auto_actions: ["check_health", "restart_service", "scale_up"]
-        on_call_rotation: "primary"
+        delay: "0s"
+        notifications: ["slack"]
+        timeout: "5m"
       },
       {
         level: 2
         delay: "5m"
-        notification: "manager"
-        auto_actions: ["failover", "rollback_deployment"]
-        on_call_rotation: "secondary"
+        notifications: ["pagerduty"]
+        timeout: "15m"
       },
       {
         level: 3
-        delay: "10m"
-        notification: "cto"
-        auto_actions: ["emergency_deployment", "activate_disaster_recovery"]
-        on_call_rotation: "emergency"
+        delay: "15m"
+        notifications: ["pagerduty", "phone"]
+        timeout: "30m"
       }
     ]
-    auto_escalation: {
-      enabled: true
-      conditions: [
-        {
-          expression: "alert_firing_duration > 15m"
-          action: "escalate_to_next_level"
-        },
-        {
-          expression: "notification_failure_count > 3"
-          action: "escalate_to_emergency"
-        }
-      ]
-    }
   }
   
-  auto_recovery: {
-    enabled: true
-    conditions: [
-      {
-        expression: "up{service=\"web-service\", environment=\"production\"} == 1 AND http_response_time{service=\"web-service\", environment=\"production\"} < 2"
-        duration: "1m"
-        action: "resolve_alert"
-        confidence: 0.9
-      }
-    ]
-    actions: [
-      {
-        name: "check_health"
-        type: "http"
-        url: "https://{{ $labels.instance }}/health"
-        method: "GET"
-        timeout: "10s"
-        expected_status: 200
-        retry_count: 3
-        retry_interval: "5s"
-      },
-      {
-        name: "restart_service"
-        type: "kubernetes"
-        target: "deployment/web-service"
-        action: "restart"
-        namespace: "{{ $labels.namespace }}"
-        timeout: "5m"
-        rollback_on_failure: true
-      },
-      {
-        name: "scale_up"
-        type: "kubernetes"
-        target: "deployment/web-service"
-        action: "scale"
-        parameters: {
-          replicas: "{{ current_replicas + 3 }}"
-          max_replicas: 20
-        }
-        timeout: "3m"
-      },
-      {
-        name: "failover"
-        type: "load_balancer"
-        action: "disable_backend"
-        target: "{{ $labels.instance }}"
-        duration: "5m"
-        health_check_interval: "30s"
-      },
-      {
-        name: "rollback_deployment"
-        type: "kubernetes"
-        target: "deployment/web-service"
-        action: "rollback"
-        to_revision: "previous"
-        timeout: "10m"
-      }
-    ]
-    success_criteria: {
-      health_check_passed: true
-      response_time_improved: true
-      error_rate_reduced: true
+  suppression: [
+    {
+      name: "maintenance_window"
+      condition: "maintenance_mode == 1"
+      duration: "0s"
+      rules: ["*"]
+    },
+    {
+      name: "service_cascade"
+      source: "service_down"
+      target: "high_error_rate"
+      equal: ["service"]
     }
-  }
+  ]
   
-  correlation: {
-    enabled: true
-    rules: [
-      {
-        name: "multiple_services_down"
-        condition: "count(up{service=~\".*\", environment=\"production\"} == 0) > 3"
-        action: "escalate_to_level_3"
-        reason: "多个生产服务同时不可用"
-        severity: "emergency"
-      },
-      {
-        name: "database_connection_issue"
-        condition: "service_unavailable AND database_connection_errors > 10"
-        action: "trigger_database_alert"
-        reason: "数据库连接问题"
+  monitoring: {
+    metrics: [
+      "alert_firing_rate",
+      "notification_success_rate",
+      "escalation_rate",
+      "suppression_rate"
+    ]
+    alerting: {
+      on_high_false_positive: {
+        threshold: 0.1
+        severity: "warning"
+        notification: "slack"
+      }
+      on_notification_failure: {
+        threshold: 0.05
         severity: "critical"
-      },
-      {
-        name: "network_issue"
-        condition: "service_unavailable AND network_latency > 1000"
-        action: "trigger_network_alert"
-        reason: "网络延迟问题"
-        severity: "critical"
+        notification: "pagerduty"
       }
-    ]
-    deduplication: {
-      enabled: true
-      strategy: "similarity_based"
-      similarity_threshold: 0.8
-      time_window: "5m"
-    }
-  }
-  
-  metrics: {
-    enabled: true
-    collection: [
-      "alert_firing_duration",
-      "notification_sent_count",
-      "escalation_triggered_count",
-      "auto_recovery_success_rate",
-      "mean_time_to_resolution",
-      "false_positive_rate",
-      "alert_noise_level"
-    ]
-    thresholds: {
-      mttr_warning: "15m"
-      mttr_critical: "30m"
-      false_positive_warning: 0.1
-      false_positive_critical: 0.2
-    }
-    dashboards: [
-      "https://grafana.example.com/d/alert-metrics"
-    ]
-  }
-  
-  compliance: {
-    enabled: true
-    sla: {
-      response_time: "5m"
-      resolution_time: "30m"
-      availability: 0.999
-    }
-    audit: {
-      enabled: true
-      log_all_actions: true
-      retention_period: "1y"
-    }
-    reporting: {
-      enabled: true
-      frequency: "weekly"
-      recipients: ["ops-manager@example.com", "cto@example.com"]
     }
   }
 }
 ```
 
-这个DSL设计为告警建模提供了完整的配置语言，支持基础告警、智能告警、告警聚合等多种模式，同时保持了良好的可扩展性和可维护性。
+### 实时流告警
+
+```dsl
+stream_alerting "real_time_alerting" {
+  description: "实时流告警"
+  
+  streaming: {
+    engine: "kafka_streams"
+    mode: "real_time"
+    parallelism: 8
+  }
+  
+  sources: [
+    {
+      name: "metrics_stream"
+      type: "kafka"
+      topic: "metrics-stream"
+      consumer_group: "alert-processor"
+      auto_offset_reset: "latest"
+    },
+    {
+      name: "log_stream"
+      type: "kafka"
+      topic: "log-stream"
+      consumer_group: "alert-processor"
+      auto_offset_reset: "latest"
+    }
+  ]
+  
+  processing: [
+    {
+      name: "metric_alert_evaluation"
+      type: "stream_processor"
+      input: "metrics_stream"
+      output: "metric_alerts"
+      operations: [
+        {
+          type: "window"
+          size: "5m"
+          slide: "30s"
+        },
+        {
+          type: "alert_evaluation"
+          rules: [
+            {
+              name: "high_error_rate"
+              condition: "error_rate > 0.05"
+              severity: "warning"
+            },
+            {
+              name: "high_latency"
+              condition: "p95_latency > 2"
+              severity: "warning"
+            },
+            {
+              name: "service_down"
+              condition: "up == 0"
+              severity: "critical"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: "log_alert_evaluation"
+      type: "stream_processor"
+      input: "log_stream"
+      output: "log_alerts"
+      operations: [
+        {
+          type: "pattern_detection"
+          patterns: [
+            {
+              name: "error_spike"
+              pattern: "level:ERROR"
+              threshold: 10
+              window: "1m"
+              severity: "warning"
+            },
+            {
+              name: "exception_pattern"
+              pattern: "Exception|Error|Failed"
+              threshold: 5
+              window: "5m"
+              severity: "critical"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: "alert_correlation"
+      type: "stream_processor"
+      input: ["metric_alerts", "log_alerts"]
+      output: "correlated_alerts"
+      operations: [
+        {
+          type: "correlation"
+          strategy: "temporal"
+          window: "5m"
+          correlation_key: "service"
+        },
+        {
+          type: "deduplication"
+          strategy: "time_based"
+          window: "1m"
+        }
+      ]
+    },
+    {
+      name: "intelligent_routing"
+      type: "stream_processor"
+      input: "correlated_alerts"
+      output: "routed_alerts"
+      operations: [
+        {
+          type: "routing"
+          rules: [
+            {
+              condition: "severity == 'critical'"
+              notifications: ["pagerduty", "slack"]
+              escalation: "immediate"
+            },
+            {
+              condition: "severity == 'warning'"
+              notifications: ["slack"]
+              escalation: "delayed"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+  
+  outputs: [
+    {
+      name: "notification_sink"
+      type: "multiple"
+      outputs: [
+        {
+          type: "slack"
+          webhook_url: "https://hooks.slack.com/services/xxx"
+          channel: "#alerts"
+        },
+        {
+          type: "pagerduty"
+          api_key: "xxx"
+          service_id: "xxx"
+        },
+        {
+          type: "email"
+          smtp_server: "smtp.company.com"
+          from: "alerts@company.com"
+          to: ["oncall@company.com"]
+        }
+      ]
+    },
+    {
+      name: "alert_store"
+      type: "elasticsearch"
+      topic: "routed_alerts"
+      endpoint: "http://elasticsearch:9200"
+      index: "alerts"
+      batch_size: 100
+      flush_interval: "10s"
+    }
+  ]
+  
+  performance: {
+    latency: {
+      p95: "100ms"
+      p99: "500ms"
+    }
+    throughput: {
+      events_per_second: 50000
+      max_lag: "1m"
+    }
+    scalability: {
+      auto_scaling: true
+      min_instances: 2
+      max_instances: 20
+      scale_up_threshold: 0.8
+      scale_down_threshold: 0.3
+      scale_up_cooldown: "5m"
+      scale_down_cooldown: "10m"
+    }
+  }
+  
+  monitoring: {
+    metrics: [
+      "alert_evaluation_latency",
+      "alert_correlation_rate",
+      "notification_success_rate",
+      "false_positive_rate",
+      "alert_volume",
+      "processing_lag"
+    ]
+    health_checks: [
+      "kafka_connectivity",
+      "elasticsearch_connectivity",
+      "notification_connectivity",
+      "processing_pipeline_health"
+    ]
+    alerting: {
+      on_high_latency: {
+        threshold: "100ms"
+        severity: "warning"
+      }
+      on_high_false_positive: {
+        threshold: 0.1
+        severity: "warning"
+      }
+      on_notification_failure: {
+        threshold: 0.05
+        severity: "critical"
+      }
+      on_pipeline_failure: {
+        severity: "critical"
+        notification: "pagerduty"
+      }
+    }
+  }
+}
+```
+
+这个DSL设计提供了完整的告警建模能力，支持多种告警条件、通知策略、升级机制、抑制规则，并能够与主流告警平台无缝集成。

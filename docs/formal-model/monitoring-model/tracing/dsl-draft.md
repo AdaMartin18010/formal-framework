@@ -1,1000 +1,1587 @@
-# 追踪建模DSL草案
+# 追踪建模DSL设计
 
-## 1. 设计目标
+## 设计目标
 
-- 用统一DSL描述分布式追踪、链路追踪、性能分析等追踪要素
-- 支持自动生成Jaeger、Zipkin、OpenTelemetry等主流追踪配置
-- 支持追踪采样、过滤、聚合、分析等高级特性
+追踪建模DSL旨在提供声明式语言定义复杂的分布式追踪配置，支持多种追踪策略、采样规则、上下文传播、性能分析，并与主流追踪平台无缝集成。
 
-## 2. 基本语法结构
+## 基本语法
+
+### 核心结构
 
 ```dsl
-trace "web_request_trace" {
-  description: "Web请求追踪"
+tracing_model "web_service_tracing" {
+  description: "Web服务分布式追踪"
   version: "1.0.0"
-  author: "system"
   
-  service: "web-service"
-  operation: "handle_request"
+  namespace: "web_service"
+  labels: {
+    service: "web-service"
+    environment: "production"
+    version: "1.0.0"
+  }
   
   sampling: {
-    type: "probabilistic"
     rate: 0.1
-    max_traces_per_second: 100
+    strategy: "probabilistic"
   }
   
   propagation: {
-    type: "w3c"
-    headers: [
-      "traceparent",
-      "tracestate"
-    ]
-  }
-  
-  spans: [
-    {
-      name: "http_request"
-      type: "http"
-      attributes: {
-        method: "GET"
-        url: "/api/users"
-        status_code: 200
-      }
-    },
-    {
-      name: "database_query"
-      type: "database"
-      attributes: {
-        db_system: "postgresql"
-        db_statement: "SELECT * FROM users"
-        db_operation: "SELECT"
-      }
-    },
-    {
-      name: "cache_lookup"
-      type: "cache"
-      attributes: {
-        cache_system: "redis"
-        cache_operation: "GET"
-        cache_key: "user:123"
-      }
-    }
-  ]
-  
-  attributes: {
-    environment: "production"
-    version: "1.0.0"
-    team: "frontend"
-  }
-  
-  error_handling: {
-    enabled: true
-    capture_exceptions: true
-    log_errors: true
-  }
-  
-  performance: {
-    enabled: true
-    metrics: [
-      "duration",
-      "throughput",
-      "error_rate"
-    ]
-    thresholds: {
-      slow_query: "1s"
-      error_threshold: 0.05
-    }
+    type: "w3c_tracecontext"
+    headers: ["traceparent", "tracestate"]
   }
 }
 ```
 
-## 3. 关键元素
-
-- trace：追踪声明
-- description：描述信息
-- version：版本号
-- author：作者
-- service：服务名称
-- operation：操作名称
-- sampling：采样配置
-- propagation：传播配置
-- spans：跨度定义
-- attributes：属性配置
-- error_handling：错误处理
-- performance：性能配置
-
-## 4. 高级用法
-
-### 4.1 分布式追踪
+### 追踪源配置
 
 ```dsl
-trace "distributed_order_processing" {
-  description: "分布式订单处理追踪"
-  version: "1.0.0"
-  author: "system"
+trace_source "web_service_source" {
+  description: "Web服务追踪源"
   
-  service: "order-service"
-  operation: "process_order"
-  
-  sampling: {
-    type: "adaptive"
-    rate: 0.2
-    max_traces_per_second: 200
-    adaptive_config: {
-      target_traces_per_second: 100
-      adjustment_interval: "1m"
-    }
+  service: {
+    name: "web-service"
+    version: "1.0.0"
+    environment: "production"
   }
   
-  propagation: {
-    type: "b3"
-    headers: [
-      "X-B3-TraceId",
-      "X-B3-SpanId",
-      "X-B3-ParentSpanId",
-      "X-B3-Sampled"
-    ]
+  instrumentation: {
+    framework: "opentelemetry"
+    language: "python"
+    version: "1.20.0"
   }
   
-  spans: [
+  endpoints: [
     {
-      name: "order_validation"
-      type: "business_logic"
-      attributes: {
-        order_id: "{{ order_id }}"
-        validation_rules: ["stock_check", "payment_validation"]
-      }
-      children: [
-        {
-          name: "stock_check"
-          type: "database"
-          attributes: {
-            db_system: "postgresql"
-            db_operation: "SELECT"
-            table: "inventory"
-          }
-        },
-        {
-          name: "payment_validation"
-          type: "http"
-          attributes: {
-            method: "POST"
-            url: "/api/payments/validate"
-            service: "payment-service"
-          }
-        }
-      ]
-    },
-    {
-      name: "order_creation"
-      type: "database"
-      attributes: {
-        db_system: "postgresql"
-        db_operation: "INSERT"
-        table: "orders"
+      name: "user_api"
+      path: "/api/users/*"
+      method: ["GET", "POST", "PUT", "DELETE"]
+      tracing: {
+        enabled: true
+        span_name: "user_api_request"
+        attributes: [
+          "http.method",
+          "http.url",
+          "http.status_code",
+          "user.id"
+        ]
       }
     },
     {
-      name: "notification_send"
-      type: "messaging"
-      attributes: {
-        messaging_system: "kafka"
-        topic: "order.created"
-        message_type: "event"
+      name: "order_api"
+      path: "/api/orders/*"
+      method: ["GET", "POST", "PUT", "DELETE"]
+      tracing: {
+        enabled: true
+        span_name: "order_api_request"
+        attributes: [
+          "http.method",
+          "http.url",
+          "http.status_code",
+          "order.id"
+        ]
       }
     }
   ]
   
-  attributes: {
-    environment: "production"
-    version: "1.0.0"
-    team: "backend"
-    business_domain: "ecommerce"
-  }
-  
-  error_handling: {
+  database: {
     enabled: true
-    capture_exceptions: true
-    log_errors: true
-    error_attributes: [
-      "error_type",
-      "error_message",
-      "stack_trace"
-    ]
-  }
-  
-  performance: {
-    enabled: true
-    metrics: [
-      "duration",
-      "throughput",
-      "error_rate",
-      "latency_p95",
-      "latency_p99"
-    ]
-    thresholds: {
-      slow_operation: "2s"
-      error_threshold: 0.02
-      high_latency_p95: "1s"
-    }
-    alerts: [
+    spans: [
       {
-        name: "high_latency"
-        condition: "latency_p95 > 1s"
-        duration: "5m"
+        name: "database_query"
+        attributes: [
+          "db.system",
+          "db.name",
+          "db.statement",
+          "db.operation"
+        ]
+      }
+    ]
+  }
+  
+  messaging: {
+    enabled: true
+    spans: [
+      {
+        name: "message_publish"
+        attributes: [
+          "messaging.system",
+          "messaging.destination",
+          "messaging.operation"
+        ]
       },
       {
-        name: "high_error_rate"
-        condition: "error_rate > 0.02"
-        duration: "5m"
+        name: "message_consume"
+        attributes: [
+          "messaging.system",
+          "messaging.destination",
+          "messaging.operation"
+        ]
       }
+    ]
+  }
+}
+```
+
+### 采样策略
+
+```dsl
+sampling_strategy "adaptive_sampling" {
+  description: "自适应采样策略"
+  
+  type: "adaptive"
+  
+  rules: [
+    {
+      name: "error_sampling"
+      condition: "http.status_code >= 400"
+      rate: 1.0
+      priority: 1
+    },
+    {
+      name: "slow_request_sampling"
+      condition: "duration > 1s"
+      rate: 1.0
+      priority: 2
+    },
+    {
+      name: "critical_path_sampling"
+      condition: "service.name in ['payment-service', 'order-service']"
+      rate: 0.5
+      priority: 3
+    },
+    {
+      name: "default_sampling"
+      condition: "*"
+      rate: 0.1
+      priority: 4
+    }
+  ]
+  
+  adaptive: {
+    enabled: true
+    target_rate: 0.1
+    adjustment_interval: "5m"
+    min_rate: 0.01
+    max_rate: 1.0
+  }
+  
+  head_sampling: {
+    enabled: true
+    rate: 0.1
+    max_qps: 1000
+  }
+  
+  tail_sampling: {
+    enabled: true
+    policies: [
+      {
+        name: "error_traces"
+        condition: "status == ERROR"
+        rate: 1.0
+      },
+      {
+        name: "slow_traces"
+        condition: "duration > 5s"
+        rate: 1.0
+      },
+      {
+        name: "rare_traces"
+        condition: "service.name not in common_services"
+        rate: 0.5
+      }
+    ]
+  }
+}
+```
+
+### 上下文传播
+
+```dsl
+context_propagation "w3c_propagation" {
+  description: "W3C TraceContext传播"
+  
+  type: "w3c_tracecontext"
+  
+  headers: [
+    {
+      name: "traceparent"
+      format: "00-{trace_id}-{span_id}-{trace_flags}"
+      required: true
+    },
+    {
+      name: "tracestate"
+      format: "key=value"
+      required: false
+    }
+  ]
+  
+  baggage: {
+    enabled: true
+    max_entries: 20
+    max_value_length: 4096
+    allowed_keys: [
+      "user.id",
+      "session.id",
+      "request.id",
+      "correlation.id"
     ]
   }
   
   correlation: {
     enabled: true
-    correlation_ids: [
-      "order_id",
-      "user_id",
-      "session_id"
-    ]
-    baggage: [
-      "user_type",
-      "region",
-      "device_type"
+    correlation_id_header: "X-Correlation-ID"
+    request_id_header: "X-Request-ID"
+    session_id_header: "X-Session-ID"
+  }
+  
+  injection: {
+    http_headers: true
+    grpc_metadata: true
+    messaging_headers: true
+    database_queries: false
+  }
+  
+  extraction: {
+    http_headers: true
+    grpc_metadata: true
+    messaging_headers: true
+    database_queries: false
+  }
+}
+```
+
+### 追踪存储
+
+```dsl
+trace_store "jaeger_store" {
+  description: "Jaeger追踪存储"
+  
+  type: "jaeger"
+  version: "1.42.0"
+  
+  storage: {
+    type: "elasticsearch"
+    endpoint: "http://elasticsearch:9200"
+    index_prefix: "jaeger"
+    username: "${ES_USERNAME}"
+    password: "${ES_PASSWORD}"
+  }
+  
+  retention: {
+    hot_data: "7d"
+    warm_data: "30d"
+    cold_data: "90d"
+    archive_data: "1y"
+  }
+  
+  indexing: {
+    enabled: true
+    index_span: true
+    index_service: true
+    index_operation: true
+  }
+  
+  search: {
+    max_search_depth: 20
+    max_span_count: 10000
+    max_trace_duration: "24h"
+  }
+  
+  sampling: {
+    default_strategy: {
+      type: "probabilistic"
+      param: 0.001
+    }
+    per_operation_strategies: [
+      {
+        operation: "user_api_request"
+        strategy: {
+          type: "probabilistic"
+          param: 0.1
+        }
+      },
+      {
+        operation: "order_api_request"
+        strategy: {
+          type: "probabilistic"
+          param: 0.5
+        }
+      }
     ]
   }
 }
 ```
 
-### 4.2 链路追踪
+## 高级用法
+
+### 分布式追踪
 
 ```dsl
-trace "api_gateway_trace" {
-  description: "API网关链路追踪"
-  version: "1.0.0"
-  author: "system"
+distributed_tracing "microservice_tracing" {
+  description: "微服务分布式追踪"
   
-  service: "api-gateway"
-  operation: "route_request"
-  
-  sampling: {
-    type: "rate_limiting"
-    rate: 0.3
-    max_traces_per_second: 500
-  }
-  
-  propagation: {
-    type: "jaeger"
-    headers: [
-      "uber-trace-id"
-    ]
-  }
-  
-  spans: [
+  services: [
     {
-      name: "request_received"
-      type: "http"
-      attributes: {
-        method: "{{ request.method }}"
-        url: "{{ request.url }}"
-        user_agent: "{{ request.user_agent }}"
-        client_ip: "{{ request.client_ip }}"
+      name: "api-gateway"
+      version: "1.0.0"
+      tracing: {
+        enabled: true
+        sampling_rate: 0.1
+        attributes: [
+          "http.method",
+          "http.url",
+          "http.status_code",
+          "user.id",
+          "request.id"
+        ]
       }
     },
     {
-      name: "authentication"
-      type: "auth"
-      attributes: {
-        auth_type: "jwt"
-        user_id: "{{ user.id }}"
-        permissions: "{{ user.permissions }}"
+      name: "user-service"
+      version: "1.0.0"
+      tracing: {
+        enabled: true
+        sampling_rate: 0.2
+        attributes: [
+          "http.method",
+          "http.url",
+          "http.status_code",
+          "user.id",
+          "db.operation"
+        ]
       }
     },
     {
-      name: "rate_limiting"
-      type: "rate_limit"
-      attributes: {
-        limit: "{{ rate_limit.limit }}"
-        remaining: "{{ rate_limit.remaining }}"
-        reset_time: "{{ rate_limit.reset_time }}"
+      name: "order-service"
+      version: "1.0.0"
+      tracing: {
+        enabled: true
+        sampling_rate: 0.5
+        attributes: [
+          "http.method",
+          "http.url",
+          "http.status_code",
+          "order.id",
+          "db.operation",
+          "payment.status"
+        ]
       }
     },
     {
-      name: "service_routing"
-      type: "routing"
-      attributes: {
-        target_service: "{{ route.target_service }}"
-        route_path: "{{ route.path }}"
-        load_balancer: "{{ route.load_balancer }}"
-      }
-    },
-    {
-      name: "response_sent"
-      type: "http"
-      attributes: {
-        status_code: "{{ response.status_code }}"
-        content_length: "{{ response.content_length }}"
-        response_time: "{{ response.time }}"
+      name: "payment-service"
+      version: "1.0.0"
+      tracing: {
+        enabled: true
+        sampling_rate: 1.0
+        attributes: [
+          "http.method",
+          "http.url",
+          "http.status_code",
+          "payment.id",
+          "payment.method",
+          "payment.amount"
+        ]
       }
     }
   ]
   
-  attributes: {
-    environment: "production"
-    version: "1.0.0"
-    team: "platform"
-    component: "gateway"
-  }
-  
-  error_handling: {
-    enabled: true
-    capture_exceptions: true
-    log_errors: true
-    error_attributes: [
-      "error_type",
-      "error_message",
-      "http_status_code"
-    ]
-  }
-  
-  performance: {
-    enabled: true
-    metrics: [
-      "request_duration",
-      "requests_per_second",
-      "error_rate",
-      "upstream_latency"
-    ]
-    thresholds: {
-      slow_request: "500ms"
-      error_threshold: 0.01
-      upstream_timeout: "10s"
+  propagation: {
+    type: "w3c_tracecontext"
+    headers: ["traceparent", "tracestate"]
+    baggage: {
+      enabled: true
+      keys: ["user.id", "request.id", "correlation.id"]
     }
   }
   
-  security: {
+  correlation: {
     enabled: true
-    sensitive_attributes: [
-      "password",
-      "token",
-      "credit_card"
-    ]
-    redaction_rules: [
+    correlation_key: "request_id"
+    services: ["api-gateway", "user-service", "order-service", "payment-service"]
+    time_window: "5m"
+  }
+  
+  analysis: [
+    {
+      name: "service_dependency_analysis"
+      type: "dependency_graph"
+      services: ["api-gateway", "user-service", "order-service", "payment-service"]
+      metrics: ["latency", "error_rate", "throughput"]
+    },
+    {
+      name: "bottleneck_detection"
+      type: "performance_analysis"
+      threshold: "p95_latency > 2s"
+      services: ["*"]
+    },
+    {
+      name: "error_propagation_analysis"
+      type: "error_analysis"
+      services: ["*"]
+      correlation: true
+    }
+  ]
+}
+```
+
+### 性能分析
+
+```dsl
+performance_analysis "trace_performance" {
+  description: "追踪性能分析"
+  
+  analysis_types: [
+    {
+      name: "latency_analysis"
+      type: "latency"
+      metrics: [
+        {
+          name: "p50_latency"
+          percentile: 0.5
+          threshold: "500ms"
+        },
+        {
+          name: "p95_latency"
+          percentile: 0.95
+          threshold: "2s"
+        },
+        {
+          name: "p99_latency"
+          percentile: 0.99
+          threshold: "5s"
+        }
+      ]
+    },
+    {
+      name: "throughput_analysis"
+      type: "throughput"
+      metrics: [
+        {
+          name: "requests_per_second"
+          threshold: 1000
+        },
+        {
+          name: "concurrent_requests"
+          threshold: 100
+        }
+      ]
+    },
+    {
+      name: "error_analysis"
+      type: "error"
+      metrics: [
+        {
+          name: "error_rate"
+          threshold: 0.05
+        },
+        {
+          name: "error_count"
+          threshold: 10
+        }
+      ]
+    }
+  ]
+  
+  bottleneck_detection: {
+    enabled: true
+    algorithms: [
       {
-        pattern: "password=.*"
-        replacement: "password=***"
+        name: "critical_path_analysis"
+        type: "critical_path"
+        threshold: "path_latency > 80%_of_total"
       },
       {
-        pattern: "token=.*"
-        replacement: "token=***"
+        name: "hotspot_detection"
+        type: "hotspot"
+        threshold: "span_latency > 2s"
+      },
+      {
+        name: "resource_contention"
+        type: "contention"
+        resources: ["cpu", "memory", "database", "network"]
+      }
+    ]
+  }
+  
+  optimization_suggestions: {
+    enabled: true
+    suggestions: [
+      {
+        type: "database_optimization"
+        condition: "db_query_latency > 1s"
+        suggestions: [
+          "Add database indexes",
+          "Optimize query statements",
+          "Use connection pooling"
+        ]
+      },
+      {
+        type: "caching_optimization"
+        condition: "cache_miss_rate > 0.5"
+        suggestions: [
+          "Implement caching strategy",
+          "Increase cache size",
+          "Optimize cache keys"
+        ]
+      },
+      {
+        type: "service_optimization"
+        condition: "service_latency > 2s"
+        suggestions: [
+          "Optimize service logic",
+          "Use async processing",
+          "Implement circuit breaker"
+        ]
       }
     ]
   }
 }
 ```
 
-## 5. 代码生成模板
+### 实时追踪
 
-### 5.1 OpenTelemetry生成
-
-```python
-# tracing_config.py
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
-
-def setup_tracing():
-    # 设置追踪提供者
-    trace.set_tracer_provider(TracerProvider())
-    
-    # 配置Jaeger导出器
-    jaeger_exporter = JaegerExporter(
-        agent_host_name="localhost",
-        agent_port=6831,
-    )
-    
-    # 设置批处理处理器
-    span_processor = BatchSpanProcessor(jaeger_exporter)
-    trace.get_tracer_provider().add_span_processor(span_processor)
-    
-    # 获取追踪器
-    tracer = trace.get_tracer(__name__)
-    
-    return tracer
-
-# 使用示例
-tracer = setup_tracing()
-
-def process_order(order_id: str):
-    with tracer.start_as_current_span("process_order") as span:
-        span.set_attribute("order_id", order_id)
-        span.set_attribute("service", "order-service")
-        span.set_attribute("operation", "process_order")
-        
-        # 验证订单
-        with tracer.start_as_current_span("order_validation") as validation_span:
-            validation_span.set_attribute("validation_type", "business_logic")
-            # 验证逻辑...
-            
-            # 库存检查
-            with tracer.start_as_current_span("stock_check") as stock_span:
-                stock_span.set_attribute("db_system", "postgresql")
-                stock_span.set_attribute("db_operation", "SELECT")
-                stock_span.set_attribute("table", "inventory")
-                # 库存检查逻辑...
-                
-            # 支付验证
-            with tracer.start_as_current_span("payment_validation") as payment_span:
-                payment_span.set_attribute("method", "POST")
-                payment_span.set_attribute("url", "/api/payments/validate")
-                payment_span.set_attribute("service", "payment-service")
-                # 支付验证逻辑...
-        
-        # 创建订单
-        with tracer.start_as_current_span("order_creation") as creation_span:
-            creation_span.set_attribute("db_system", "postgresql")
-            creation_span.set_attribute("db_operation", "INSERT")
-            creation_span.set_attribute("table", "orders")
-            # 订单创建逻辑...
-        
-        # 发送通知
-        with tracer.start_as_current_span("notification_send") as notification_span:
-            notification_span.set_attribute("messaging_system", "kafka")
-            notification_span.set_attribute("topic", "order.created")
-            notification_span.set_attribute("message_type", "event")
-            # 通知发送逻辑...
+```dsl
+real_time_tracing "stream_tracing" {
+  description: "实时流追踪"
+  
+  streaming: {
+    engine: "kafka_streams"
+    mode: "real_time"
+    parallelism: 8
+  }
+  
+  sources: [
+    {
+      name: "trace_stream"
+      type: "kafka"
+      topic: "trace-stream"
+      consumer_group: "trace-processor"
+      auto_offset_reset: "latest"
+    }
+  ]
+  
+  processing: [
+    {
+      name: "trace_enrichment"
+      type: "stream_processor"
+      input: "trace_stream"
+      output: "enriched_traces"
+      operations: [
+        {
+          type: "enrichment"
+          fields: [
+            "service_metadata",
+            "user_context",
+            "business_context"
+          ]
+        },
+        {
+          type: "normalization"
+          fields: [
+            "timestamp",
+            "duration",
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      name: "anomaly_detection"
+      type: "stream_processor"
+      input: "enriched_traces"
+      output: "anomaly_alerts"
+      operations: [
+        {
+          type: "anomaly_detection"
+          algorithm: "z_score"
+          fields: ["duration", "error_rate"]
+          threshold: 3.0
+        },
+        {
+          type: "pattern_detection"
+          patterns: [
+            {
+              name: "error_cascade"
+              pattern: "error_propagation"
+              threshold: 5
+              window: "5m"
+            },
+            {
+              name: "performance_degradation"
+              pattern: "latency_increase"
+              threshold: 2
+              window: "10m"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: "service_graph_generation"
+      type: "stream_processor"
+      input: "enriched_traces"
+      output: "service_graph"
+      operations: [
+        {
+          type: "graph_building"
+          nodes: ["service", "operation"]
+          edges: ["calls", "depends_on"]
+          window: "1h"
+        },
+        {
+          type: "metrics_aggregation"
+          metrics: [
+            "latency",
+            "throughput",
+            "error_rate"
+          ]
+        }
+      ]
+    }
+  ]
+  
+  outputs: [
+    {
+      name: "trace_store"
+      type: "elasticsearch"
+      topic: "enriched_traces"
+      endpoint: "http://elasticsearch:9200"
+      index: "traces"
+      batch_size: 1000
+      flush_interval: "10s"
+    },
+    {
+      name: "alert_sink"
+      type: "kafka"
+      topic: "trace-alerts"
+      endpoint: "kafka:9092"
+      acks: "all"
+      compression: "snappy"
+    },
+    {
+      name: "graph_sink"
+      type: "graph_db"
+      topic: "service_graph"
+      endpoint: "http://neo4j:7474"
+      batch_size: 100
+      flush_interval: "30s"
+    }
+  ]
+  
+  performance: {
+    latency: {
+      p95: "100ms"
+      p99: "500ms"
+    }
+    throughput: {
+      traces_per_second: 10000
+      max_lag: "1m"
+    }
+    scalability: {
+      auto_scaling: true
+      min_instances: 2
+      max_instances: 20
+      scale_up_threshold: 0.8
+      scale_down_threshold: 0.3
+      scale_up_cooldown: "5m"
+      scale_down_cooldown: "10m"
+    }
+  }
+  
+  monitoring: {
+    metrics: [
+      "trace_processing_latency",
+      "trace_throughput",
+      "anomaly_detection_accuracy",
+      "service_graph_freshness",
+      "storage_usage",
+      "processing_lag"
+    ]
+    health_checks: [
+      "kafka_connectivity",
+      "elasticsearch_connectivity",
+      "processing_pipeline_health"
+    ]
+    alerting: {
+      on_high_latency: {
+        threshold: "100ms"
+        severity: "warning"
+      }
+      on_high_error_rate: {
+        threshold: 0.01
+        severity: "critical"
+      }
+      on_storage_full: {
+        threshold: 0.9
+        severity: "critical"
+      }
+    }
+  }
+}
 ```
 
-### 5.2 Jaeger配置生成
+## 代码生成模板
+
+### OpenTelemetry配置
 
 ```yaml
-# jaeger-config.yaml
-apiVersion: jaegertracing.io/v1
-kind: Jaeger
-metadata:
-  name: jaeger
-  namespace: monitoring
-spec:
-  strategy: production
-  storage:
-    type: elasticsearch
-    options:
-      es:
-        server-urls: http://elasticsearch:9200
-        index-prefix: jaeger
-  ingress:
-    enabled: true
-    hosts:
-      - jaeger.example.com
-    tls:
-      - secretName: jaeger-tls
-  agent:
-    strategy: DaemonSet
-    options:
-      log-level: info
-  collector:
-    options:
-      log-level: info
-      sampling:
-        default_strategy:
-          type: probabilistic
-          param: 0.1
-        default_sampling_probability: 0.1
-        default_lower_bound_traces_per_second: 0.1
-  query:
-    options:
-      log-level: info
-      query:
-        base-path: /jaeger
-```
-
-### 5.3 Zipkin配置生成
-
-```yaml
-# zipkin-config.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: zipkin-config
-  namespace: monitoring
-data:
-  zipkin.yml: |
-    server:
-      port: 9411
-      admin:
-        port: 9900
-    
-    storage:
-      type: elasticsearch
-      elasticsearch:
-        hosts: http://elasticsearch:9200
-        index: zipkin
-        index-shards: 5
-        index-replicas: 1
-    
-    sampling:
-      probability: 0.1
-    
-    query:
-      lookback: 86400000  # 1 day in milliseconds
-      default-lookback: 900000  # 15 minutes in milliseconds
-      max-queries: 10
-    
-    collector:
-      sample-rate: 0.1
+# 生成的OpenTelemetry配置
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
       http:
-        enabled: true
-        port: 9411
-      kafka:
-        enabled: false
-      scribe:
-        enabled: false
+        endpoint: 0.0.0.0:4318
 
----
+processors:
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+  
+  attributes:
+    actions:
+      - key: db.statement
+        action: delete
+      - key: credit_card.number
+        action: delete
+      - key: password
+        action: delete
+  
+  probabilistic_sampler:
+    hash_seed: 22
+    sampling_percentage: 10
+  
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 50000
+    expected_new_traces_per_sec: 10
+    policies:
+      - name: error-policy
+        type: status_code
+        status_code:
+          status_codes: [ERROR]
+        sampling_percentage: 100
+      - name: slow-policy
+        type: latency
+        latency:
+          threshold_ms: 5000
+        sampling_percentage: 100
+      - name: default-policy
+        type: probabilistic
+        probabilistic:
+          sampling_percentage: 10
+
+exporters:
+  jaeger:
+    endpoint: jaeger:14250
+    tls:
+      insecure: true
+  
+  otlp/elasticsearch:
+    endpoint: elasticsearch:9200
+    tls:
+      insecure: true
+    headers:
+      authorization: "Bearer ${ES_TOKEN}"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch, attributes, probabilistic_sampler, tail_sampling]
+      exporters: [jaeger, otlp/elasticsearch]
+```
+
+### Jaeger配置
+
+```yaml
+# 生成的Jaeger配置
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zipkin
-  namespace: monitoring
+  name: jaeger
+  namespace: tracing
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: zipkin
+      app: jaeger
   template:
     metadata:
       labels:
-        app: zipkin
+        app: jaeger
     spec:
       containers:
-        - name: zipkin
-          image: openzipkin/zipkin:latest
-          ports:
-            - containerPort: 9411
-          volumeMounts:
-            - name: config
-              mountPath: /config
-          args:
-            - -f
-            - /config/zipkin.yml
-      volumes:
-        - name: config
-          configMap:
-            name: zipkin-config
+      - name: jaeger
+        image: jaegertracing/all-in-one:1.42
+        ports:
+        - containerPort: 16686
+          name: ui
+        - containerPort: 14268
+          name: http
+        - containerPort: 14250
+          name: grpc
+        env:
+        - name: COLLECTOR_OTLP_ENABLED
+          value: "true"
+        - name: STORAGE_TYPE
+          value: "elasticsearch"
+        - name: ES_SERVER_URLS
+          value: "http://elasticsearch:9200"
+        - name: ES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-secret
+              key: username
+        - name: ES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-secret
+              key: password
+        - name: ES_INDEX_PREFIX
+          value: "jaeger"
+        - name: ES_TAGS_AS_FIELDS_ALL
+          value: "true"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger
+  namespace: tracing
+spec:
+  selector:
+    app: jaeger
+  ports:
+  - port: 16686
+    targetPort: 16686
+    name: ui
+  - port: 14268
+    targetPort: 14268
+    name: http
+  - port: 14250
+    targetPort: 14250
+    name: grpc
+  type: ClusterIP
 ```
 
-## 6. 验证规则
+### Python实现
 
-### 6.1 语法验证规则
+```python
+import time
+import random
+from opentelemetry import trace
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from flask import Flask, request, jsonify
 
-```yaml
-validation:
-  required_fields:
-    - trace.name
-    - trace.description
-    - trace.version
-    - trace.service
-    - trace.operation
-  
-  type_constraints:
-    - field: "trace.name"
-      type: "string"
-      pattern: "^[a-zA-Z_][a-zA-Z0-9_]*$"
-    - field: "trace.version"
-      type: "string"
-      pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-    - field: "trace.sampling.type"
-      type: "string"
-      enum: ["probabilistic", "adaptive", "rate_limiting"]
+# 配置OpenTelemetry
+def setup_tracing():
+    """设置分布式追踪"""
+    # 创建TracerProvider
+    resource = Resource.create({
+        "service.name": "web-service",
+        "service.version": "1.0.0",
+        "deployment.environment": "production"
+    })
+    
+    provider = TracerProvider(resource=resource)
+    
+    # 配置Jaeger导出器
+    jaeger_exporter = JaegerExporter(
+        agent_host_name="jaeger",
+        agent_port=6831,
+    )
+    
+    # 添加BatchSpanProcessor
+    processor = BatchSpanProcessor(jaeger_exporter)
+    provider.add_span_processor(processor)
+    
+    # 设置全局TracerProvider
+    trace.set_tracer_provider(provider)
+    
+    return trace.get_tracer(__name__)
+
+# 创建Flask应用
+app = Flask(__name__)
+tracer = setup_tracing()
+
+# 自动检测Flask和Requests
+FlaskInstrumentor().instrument_app(app)
+RequestsInstrumentor().instrument()
+
+@app.route('/api/users/<user_id>')
+def get_user(user_id):
+    """获取用户信息"""
+    with tracer.start_as_current_span("get_user") as span:
+        # 添加属性
+        span.set_attribute("user.id", user_id)
+        span.set_attribute("http.method", request.method)
+        span.set_attribute("http.url", request.url)
+        
+        try:
+            # 模拟数据库查询
+            with tracer.start_as_current_span("database_query") as db_span:
+                db_span.set_attribute("db.system", "mysql")
+                db_span.set_attribute("db.operation", "SELECT")
+                db_span.set_attribute("db.statement", "SELECT * FROM users WHERE id = ?")
+                
+                # 模拟查询延迟
+                time.sleep(random.uniform(0.1, 0.5))
+                
+                # 模拟偶尔的数据库错误
+                if random.random() < 0.1:
+                    raise Exception("Database connection failed")
+                
+                user_data = {
+                    "id": user_id,
+                    "name": f"User {user_id}",
+                    "email": f"user{user_id}@example.com"
+                }
+            
+            # 模拟外部API调用
+            with tracer.start_as_current_span("external_api_call") as api_span:
+                api_span.set_attribute("http.method", "GET")
+                api_span.set_attribute("http.url", "https://api.external.com/user-profile")
+                
+                # 模拟API调用延迟
+                time.sleep(random.uniform(0.2, 1.0))
+                
+                # 模拟偶尔的API错误
+                if random.random() < 0.05:
+                    raise Exception("External API timeout")
+                
+                profile_data = {
+                    "profile": "Premium",
+                    "preferences": {"theme": "dark"}
+                }
+            
+            # 合并数据
+            result = {**user_data, **profile_data}
+            
+            # 设置响应状态
+            span.set_attribute("http.status_code", 200)
+            
+            return jsonify(result)
+            
+        except Exception as e:
+            # 记录错误
+            span.record_exception(e)
+            span.set_attribute("http.status_code", 500)
+            span.set_status(trace.Status(trace.StatusCode.ERROR, str(e)))
+            
+            return jsonify({"error": str(e)}), 500
+
+@app.route('/api/orders/<order_id>')
+def get_order(order_id):
+    """获取订单信息"""
+    with tracer.start_as_current_span("get_order") as span:
+        span.set_attribute("order.id", order_id)
+        span.set_attribute("http.method", request.method)
+        span.set_attribute("http.url", request.url)
+        
+        try:
+            # 模拟订单处理
+            with tracer.start_as_current_span("order_processing") as order_span:
+                order_span.set_attribute("order.status", "processing")
+                
+                # 模拟处理延迟
+                time.sleep(random.uniform(0.5, 2.0))
+                
+                order_data = {
+                    "id": order_id,
+                    "status": "completed",
+                    "total": random.uniform(10.0, 1000.0)
+                }
+            
+            span.set_attribute("http.status_code", 200)
+            return jsonify(order_data)
+            
+        except Exception as e:
+            span.record_exception(e)
+            span.set_attribute("http.status_code", 500)
+            span.set_status(trace.Status(trace.StatusCode.ERROR, str(e)))
+            
+            return jsonify({"error": str(e)}), 500
+
+@app.route('/health')
+def health():
+    """健康检查"""
+    return jsonify({"status": "healthy"})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=False)
 ```
 
-### 6.2 追踪验证规则
+## 验证规则
 
-```yaml
-trace_validation:
-  span_consistency:
-    - rule: "all spans must have valid names"
-    - rule: "span types must be valid"
-    - rule: "span attributes must be properly formatted"
-  
-  sampling_validation:
-    - rule: "sampling rate must be between 0 and 1"
-    - rule: "max traces per second must be positive"
-    - rule: "adaptive config must be valid if enabled"
-```
-
-## 7. 最佳实践
-
-### 7.1 追踪设计模式
+### 语法验证
 
 ```dsl
-# 基础追踪模式
-trace "basic_trace" {
-  description: "基础追踪"
-  version: "1.0.0"
-  
-  service: "service-name"
-  operation: "operation-name"
-  
-  sampling: {
-    type: "probabilistic"
-    rate: 0.1
-  }
-  
-  spans: [
+validation_rules "tracing_validation" {
+  syntax: [
     {
-      name: "operation"
-      type: "http"
-      attributes: {
-        method: "GET"
-        url: "/api/endpoint"
-      }
-    }
-  ]
-}
-
-# 分布式追踪模式
-trace "distributed_trace" {
-  description: "分布式追踪"
-  version: "1.0.0"
-  
-  service: "service-name"
-  operation: "distributed_operation"
-  
-  sampling: {
-    type: "adaptive"
-    rate: 0.2
-  }
-  
-  propagation: {
-    type: "w3c"
-    headers: ["traceparent", "tracestate"]
-  }
-  
-  spans: [
-    {
-      name: "parent_operation"
-      type: "business_logic"
-      children: [
-        {
-          name: "child_operation"
-          type: "database"
-        }
-      ]
-    }
-  ]
-}
-```
-
-### 7.2 追踪命名规范
-
-```dsl
-# 推荐命名模式
-trace "service_operation_trace" {
-  # 服务_操作_追踪
-}
-
-trace "domain_workflow_trace" {
-  # 领域_工作流_追踪
-}
-
-trace "component_function_trace" {
-  # 组件_功能_追踪
-}
-```
-
-## 8. 与主流标准的映射
-
-| DSL元素 | OpenTelemetry | Jaeger | Zipkin | AWS X-Ray |
-|---------|---------------|--------|--------|-----------|
-| trace | trace | trace | trace | trace |
-| span | span | span | span | segment |
-| sampling | sampling | sampling | sampling | sampling |
-| propagation | propagation | propagation | propagation | propagation |
-| attributes | attributes | tags | tags | annotations |
-
-## 9. 工程实践示例
-
-```dsl
-# 生产环境追踪配置示例
-trace "production_api_trace" {
-  description: "生产环境API追踪"
-  version: "1.0.0"
-  author: "system"
-  
-  service: "api-service"
-  operation: "handle_api_request"
-  
-  sampling: {
-    type: "adaptive"
-    rate: 0.15
-    max_traces_per_second: 1000
-    adaptive_config: {
-      target_traces_per_second: 500
-      adjustment_interval: "2m"
-      min_rate: 0.01
-      max_rate: 0.5
-    }
-  }
-  
-  propagation: {
-    type: "w3c"
-    headers: [
-      "traceparent",
-      "tracestate"
-    ]
-    baggage: [
-      "user_id",
-      "session_id",
-      "request_id"
-    ]
-  }
-  
-  spans: [
-    {
-      name: "request_received"
-      type: "http"
-      attributes: {
-        method: "{{ request.method }}"
-        url: "{{ request.url }}"
-        user_agent: "{{ request.user_agent }}"
-        client_ip: "{{ request.client_ip }}"
-        content_length: "{{ request.content_length }}"
-      }
+      rule: "required_fields"
+      fields: ["description", "version", "namespace"]
+      message: "必须包含描述、版本和命名空间"
     },
     {
-      name: "authentication"
-      type: "auth"
-      attributes: {
-        auth_type: "jwt"
-        user_id: "{{ user.id }}"
-        permissions: "{{ user.permissions }}"
-        token_expiry: "{{ token.expiry }}"
-      }
+      rule: "valid_sampling_rate"
+      condition: "sampling_rate >= 0 AND sampling_rate <= 1"
+      message: "采样率必须在0到1之间"
     },
     {
-      name: "rate_limiting"
-      type: "rate_limit"
-      attributes: {
-        limit: "{{ rate_limit.limit }}"
-        remaining: "{{ rate_limit.remaining }}"
-        reset_time: "{{ rate_limit.reset_time }}"
-        window_size: "{{ rate_limit.window_size }}"
-      }
-    },
-    {
-      name: "request_validation"
-      type: "validation"
-      attributes: {
-        validation_rules: "{{ validation.rules }}"
-        validation_result: "{{ validation.result }}"
-        validation_errors: "{{ validation.errors }}"
-      }
-    },
-    {
-      name: "business_logic"
-      type: "business_logic"
-      attributes: {
-        business_operation: "{{ business.operation }}"
-        business_rules: "{{ business.rules }}"
-        business_result: "{{ business.result }}"
-      }
-      children: [
-        {
-          name: "database_operation"
-          type: "database"
-          attributes: {
-            db_system: "{{ database.system }}"
-            db_operation: "{{ database.operation }}"
-            db_statement: "{{ database.statement }}"
-            db_table: "{{ database.table }}"
-            db_rows_affected: "{{ database.rows_affected }}"
-          }
-        },
-        {
-          name: "cache_operation"
-          type: "cache"
-          attributes: {
-            cache_system: "{{ cache.system }}"
-            cache_operation: "{{ cache.operation }}"
-            cache_key: "{{ cache.key }}"
-            cache_hit: "{{ cache.hit }}"
-          }
-        },
-        {
-          name: "external_api_call"
-          type: "http"
-          attributes: {
-            method: "{{ external.method }}"
-            url: "{{ external.url }}"
-            service: "{{ external.service }}"
-            status_code: "{{ external.status_code }}"
-            response_time: "{{ external.response_time }}"
-          }
-        }
-      ]
-    },
-    {
-      name: "response_preparation"
-      type: "response"
-      attributes: {
-        status_code: "{{ response.status_code }}"
-        content_type: "{{ response.content_type }}"
-        content_length: "{{ response.content_length }}"
-        response_time: "{{ response.time }}"
-      }
-    },
-    {
-      name: "response_sent"
-      type: "http"
-      attributes: {
-        status_code: "{{ response.status_code }}"
-        content_length: "{{ response.content_length }}"
-        response_time: "{{ response.time }}"
-        client_ip: "{{ request.client_ip }}"
-      }
+      rule: "valid_propagation_type"
+      allowed_types: ["w3c_tracecontext", "b3", "jaeger"]
+      message: "传播类型必须是支持的类型"
     }
   ]
   
-  attributes: {
-    environment: "production"
-    version: "1.0.0"
-    team: "backend"
-    component: "api"
-    datacenter: "us-east-1"
-    region: "us-east-1"
-  }
+  semantic: [
+    {
+      rule: "service_uniqueness"
+      condition: "service names are unique within namespace"
+      message: "服务名称在命名空间内必须唯一"
+    },
+    {
+      rule: "sampling_consistency"
+      condition: "sampling rates are consistent across services"
+      message: "采样率在服务间必须一致"
+    }
+  ]
+}
+```
+
+### 性能验证
+
+```dsl
+performance_validation "tracing_performance" {
+  constraints: [
+    {
+      metric: "trace_generation_overhead"
+      threshold: "1ms"
+      action: "warn"
+    },
+    {
+      metric: "storage_usage"
+      threshold: "10GB"
+      action: "error"
+    },
+    {
+      metric: "query_latency"
+      threshold: "5s"
+      action: "warn"
+    }
+  ]
   
-  error_handling: {
-    enabled: true
-    capture_exceptions: true
-    log_errors: true
-    error_attributes: [
-      "error_type",
-      "error_message",
-      "stack_trace",
-      "error_code",
-      "http_status_code"
-    ]
-    error_sampling: {
+  optimization: [
+    {
+      strategy: "sampling_optimization"
       enabled: true
-      rate: 1.0  # 总是采样错误
+      target_rate: 0.1
+    },
+    {
+      strategy: "storage_optimization"
+      enabled: true
+      compression: "gzip"
     }
-  }
+  ]
+}
+```
+
+## 最佳实践
+
+### 设计模式
+
+```dsl
+best_practices "tracing_patterns" {
+  patterns: [
+    {
+      name: "distributed_context_propagation"
+      description: "分布式上下文传播模式"
+      implementation: {
+        strategy: "w3c_tracecontext"
+        headers: ["traceparent", "tracestate"]
+        baggage: "enabled"
+      }
+    },
+    {
+      name: "adaptive_sampling"
+      description: "自适应采样模式"
+      implementation: {
+        strategy: "performance_based"
+        metrics: ["latency", "error_rate"]
+        adjustment: "automatic"
+      }
+    },
+    {
+      name: "correlation_tracking"
+      description: "关联追踪模式"
+      implementation: {
+        strategy: "business_correlation"
+        keys: ["user_id", "order_id", "request_id"]
+        time_window: "5m"
+      }
+    }
+  ]
   
-  performance: {
-    enabled: true
-    metrics: [
-      "duration",
-      "throughput",
-      "error_rate",
-      "latency_p50",
-      "latency_p95",
-      "latency_p99",
-      "upstream_latency"
-    ]
-    thresholds: {
-      slow_request: "500ms"
-      error_threshold: 0.01
-      upstream_timeout: "10s"
-      high_latency_p95: "1s"
-      high_latency_p99: "2s"
+  anti_patterns: [
+    {
+      name: "over_tracing"
+      description: "过度追踪"
+      symptoms: ["high_overhead", "storage_explosion"]
+      solution: "optimize_sampling"
+    },
+    {
+      name: "under_tracing"
+      description: "追踪不足"
+      symptoms: ["poor_visibility", "difficult_debugging"]
+      solution: "increase_coverage"
     }
-    alerts: [
+  ]
+}
+```
+
+### 监控和告警
+
+```dsl
+monitoring "tracing_monitoring" {
+  metrics: [
+    {
+      name: "trace_generation_rate"
+      type: "counter"
+      labels: ["service", "operation"]
+      unit: "traces/sec"
+    },
+    {
+      name: "trace_storage_usage"
+      type: "gauge"
+      labels: ["service"]
+      unit: "bytes"
+    },
+    {
+      name: "trace_query_latency"
+      type: "histogram"
+      labels: ["query_type"]
+      buckets: [0.1, 0.5, 1, 5, 10, 30]
+    }
+  ]
+  
+  alerts: [
+    {
+      name: "trace_generation_failure"
+      condition: "trace_generation_errors > 0"
+      severity: "critical"
+      action: "restart_tracer"
+    },
+    {
+      name: "high_storage_usage"
+      condition: "trace_storage_usage > 10GB"
+      severity: "warning"
+      action: "cleanup_old_traces"
+    }
+  ]
+}
+```
+
+## 主流标准映射
+
+### OpenTelemetry集成
+
+```dsl
+opentelemetry_integration "otel_tracing" {
+  metrics: [
+    {
+      name: "trace_generation_duration_seconds"
+      type: "histogram"
+      help: "Trace generation execution time"
+      labels: ["service", "operation"]
+    },
+    {
+      name: "trace_export_duration_seconds"
+      type: "histogram"
+      help: "Trace export execution time"
+      labels: ["exporter", "status"]
+    },
+    {
+      name: "trace_sampling_rate"
+      type: "gauge"
+      help: "Current trace sampling rate"
+      labels: ["service"]
+    }
+  ]
+  
+  rules: [
+    {
+      name: "High Trace Generation Overhead"
+      expr: "histogram_quantile(0.95, rate(trace_generation_duration_seconds_bucket[5m])) > 0.001"
+      for: "2m"
+      labels: { severity: warning }
+      annotations: { summary: "High trace generation overhead" }
+    },
+    {
+      name: "Trace Export Failure"
+      expr: "rate(trace_export_failures_total[5m]) > 0"
+      for: "1m"
+      labels: { severity: critical }
+      annotations: { summary: "Trace export is failing" }
+    }
+  ]
+  
+  alertmanager: {
+    receivers: [
       {
-        name: "high_latency"
-        condition: "latency_p95 > 1s"
-        duration: "5m"
-        severity: "warning"
-      },
-      {
-        name: "high_error_rate"
-        condition: "error_rate > 0.01"
-        duration: "5m"
-        severity: "critical"
-      },
-      {
-        name: "upstream_timeout"
-        condition: "upstream_latency > 10s"
-        duration: "2m"
-        severity: "critical"
+        name: "slack"
+        slack_configs: [
+          {
+            channel: "#alerts"
+            title: "Tracing Alert"
+            text: "{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
+          }
+        ]
       }
     ]
+  }
+}
+```
+
+## 工程实践示例
+
+### 微服务追踪
+
+```dsl
+microservice_tracing "order_service_tracing" {
+  description: "订单服务追踪"
+  
+  namespace: "order_service"
+  
+  services: [
+    {
+      name: "api-gateway"
+      version: "1.0.0"
+      tracing: {
+        enabled: true
+        sampling_rate: 0.1
+        attributes: [
+          "http.method",
+          "http.url",
+          "http.status_code",
+          "user.id",
+          "request.id"
+        ]
+      }
+    },
+    {
+      name: "user-service"
+      version: "1.0.0"
+      tracing: {
+        enabled: true
+        sampling_rate: 0.2
+        attributes: [
+          "http.method",
+          "http.url",
+          "http.status_code",
+          "user.id",
+          "db.operation"
+        ]
+      }
+    },
+    {
+      name: "order-service"
+      version: "1.0.0"
+      tracing: {
+        enabled: true
+        sampling_rate: 0.5
+        attributes: [
+          "http.method",
+          "http.url",
+          "http.status_code",
+          "order.id",
+          "db.operation",
+          "payment.status"
+        ]
+      }
+    },
+    {
+      name: "payment-service"
+      version: "1.0.0"
+      tracing: {
+        enabled: true
+        sampling_rate: 1.0
+        attributes: [
+          "http.method",
+          "http.url",
+          "http.status_code",
+          "payment.id",
+          "payment.method",
+          "payment.amount"
+        ]
+      }
+    }
+  ]
+  
+  propagation: {
+    type: "w3c_tracecontext"
+    headers: ["traceparent", "tracestate"]
+    baggage: {
+      enabled: true
+      keys: ["user.id", "request.id", "correlation.id"]
+    }
   }
   
   correlation: {
     enabled: true
-    correlation_ids: [
-      "request_id",
-      "user_id",
-      "session_id",
-      "transaction_id"
-    ]
-    baggage: [
-      "user_type",
-      "region",
-      "device_type",
-      "api_version"
-    ]
-    distributed_context: {
-      enabled: true
-      propagation: "w3c"
-      injection: ["http", "grpc", "kafka"]
-      extraction: ["http", "grpc", "kafka"]
-    }
+    correlation_key: "request_id"
+    services: ["api-gateway", "user-service", "order-service", "payment-service"]
+    time_window: "5m"
   }
   
-  security: {
-    enabled: true
-    sensitive_attributes: [
-      "password",
-      "token",
-      "credit_card",
-      "ssn",
-      "api_key"
-    ]
-    redaction_rules: [
-      {
-        pattern: "password=.*"
-        replacement: "password=***"
-      },
-      {
-        pattern: "token=.*"
-        replacement: "token=***"
-      },
-      {
-        pattern: "api_key=.*"
-        replacement: "api_key=***"
-      }
-    ]
-    pii_detection: {
-      enabled: true
-      patterns: [
-        "\\b\\d{3}-\\d{2}-\\d{4}\\b",  # SSN
-        "\\b\\d{4}-\\d{4}-\\d{4}-\\d{4}\\b"  # Credit card
-      ]
+  analysis: [
+    {
+      name: "service_dependency_analysis"
+      type: "dependency_graph"
+      services: ["api-gateway", "user-service", "order-service", "payment-service"]
+      metrics: ["latency", "error_rate", "throughput"]
+    },
+    {
+      name: "bottleneck_detection"
+      type: "performance_analysis"
+      threshold: "p95_latency > 2s"
+      services: ["*"]
+    },
+    {
+      name: "error_propagation_analysis"
+      type: "error_analysis"
+      services: ["*"]
+      correlation: true
     }
-  }
+  ]
   
   storage: {
-    type: "elasticsearch"
-    retention: "30d"
-    index_pattern: "traces-*"
-    shards: 5
-    replicas: 1
-    compression: true
+    type: "jaeger"
+    endpoint: "http://jaeger:16686"
+    retention: {
+      hot_data: "7d"
+      warm_data: "30d"
+      cold_data: "90d"
+    }
   }
   
-  analysis: {
-    enabled: true
-    anomaly_detection: {
-      enabled: true
-      algorithms: ["isolation_forest", "dbscan"]
-      features: ["duration", "error_rate", "throughput"]
-      training_window: "7d"
-      update_frequency: "1h"
-    }
-    performance_analysis: {
-      enabled: true
-      slow_query_analysis: true
-      bottleneck_detection: true
-      dependency_analysis: true
-    }
-    business_metrics: {
-      enabled: true
-      metrics: [
-        "user_journey_completion",
-        "conversion_rate",
-        "abandonment_rate"
-      ]
+  monitoring: {
+    metrics: [
+      "trace_generation_rate",
+      "trace_storage_usage",
+      "service_dependency_freshness",
+      "correlation_success_rate"
+    ]
+    alerting: {
+      on_trace_generation_failure: {
+        threshold: 0.01
+        severity: "critical"
+        notification: "pagerduty"
+      }
+      on_high_storage_usage: {
+        threshold: 0.9
+        severity: "warning"
+        notification: "slack"
+      }
     }
   }
 }
 ```
 
-这个DSL设计为追踪建模提供了完整的配置语言，支持基础追踪、分布式追踪、链路追踪等多种模式，同时保持了良好的可扩展性和可维护性。
+### 实时流追踪
+
+```dsl
+stream_tracing "real_time_trace_analysis" {
+  description: "实时流追踪分析"
+  
+  streaming: {
+    engine: "kafka_streams"
+    mode: "real_time"
+    parallelism: 8
+  }
+  
+  sources: [
+    {
+      name: "trace_stream"
+      type: "kafka"
+      topic: "trace-stream"
+      consumer_group: "trace-analyzer"
+      auto_offset_reset: "latest"
+    }
+  ]
+  
+  processing: [
+    {
+      name: "trace_enrichment"
+      type: "stream_processor"
+      input: "trace_stream"
+      output: "enriched_traces"
+      operations: [
+        {
+          type: "enrichment"
+          fields: [
+            "service_metadata",
+            "user_context",
+            "business_context"
+          ]
+        },
+        {
+          type: "normalization"
+          fields: [
+            "timestamp",
+            "duration",
+            "status"
+          ]
+        }
+      ]
+    },
+    {
+      name: "anomaly_detection"
+      type: "stream_processor"
+      input: "enriched_traces"
+      output: "anomaly_alerts"
+      operations: [
+        {
+          type: "anomaly_detection"
+          algorithm: "z_score"
+          fields: ["duration", "error_rate"]
+          threshold: 3.0
+        },
+        {
+          type: "pattern_detection"
+          patterns: [
+            {
+              name: "error_cascade"
+              pattern: "error_propagation"
+              threshold: 5
+              window: "5m"
+            },
+            {
+              name: "performance_degradation"
+              pattern: "latency_increase"
+              threshold: 2
+              window: "10m"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: "service_graph_generation"
+      type: "stream_processor"
+      input: "enriched_traces"
+      output: "service_graph"
+      operations: [
+        {
+          type: "graph_building"
+          nodes: ["service", "operation"]
+          edges: ["calls", "depends_on"]
+          window: "1h"
+        },
+        {
+          type: "metrics_aggregation"
+          metrics: [
+            "latency",
+            "throughput",
+            "error_rate"
+          ]
+        }
+      ]
+    }
+  ]
+  
+  outputs: [
+    {
+      name: "trace_store"
+      type: "elasticsearch"
+      topic: "enriched_traces"
+      endpoint: "http://elasticsearch:9200"
+      index: "traces"
+      batch_size: 1000
+      flush_interval: "10s"
+    },
+    {
+      name: "alert_sink"
+      type: "kafka"
+      topic: "trace-alerts"
+      endpoint: "kafka:9092"
+      acks: "all"
+      compression: "snappy"
+    },
+    {
+      name: "graph_sink"
+      type: "graph_db"
+      topic: "service_graph"
+      endpoint: "http://neo4j:7474"
+      batch_size: 100
+      flush_interval: "30s"
+    }
+  ]
+  
+  performance: {
+    latency: {
+      p95: "100ms"
+      p99: "500ms"
+    }
+    throughput: {
+      traces_per_second: 10000
+      max_lag: "1m"
+    }
+    scalability: {
+      auto_scaling: true
+      min_instances: 2
+      max_instances: 20
+      scale_up_threshold: 0.8
+      scale_down_threshold: 0.3
+      scale_up_cooldown: "5m"
+      scale_down_cooldown: "10m"
+    }
+  }
+  
+  monitoring: {
+    metrics: [
+      "trace_processing_latency",
+      "trace_throughput",
+      "anomaly_detection_accuracy",
+      "service_graph_freshness",
+      "storage_usage",
+      "processing_lag"
+    ]
+    health_checks: [
+      "kafka_connectivity",
+      "elasticsearch_connectivity",
+      "processing_pipeline_health"
+    ]
+    alerting: {
+      on_high_latency: {
+        threshold: "100ms"
+        severity: "warning"
+      }
+      on_high_error_rate: {
+        threshold: 0.01
+        severity: "critical"
+      }
+      on_storage_full: {
+        threshold: 0.9
+        severity: "critical"
+      }
+    }
+  }
+}
+```
+
+这个DSL设计提供了完整的追踪建模能力，支持多种追踪策略、采样规则、上下文传播、性能分析，并能够与主流追踪平台无缝集成。
