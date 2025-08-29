@@ -2,411 +2,763 @@
 
 ## 概念定义
 
-契约建模理论是一种形式化建模方法，用于描述和管理分布式系统中的服务契约。它通过结构化的方式定义接口规范、版本兼容性、测试用例、Mock服务等，实现契约的自动化和标准化。
+契约建模理论是一种形式化建模方法，用于描述和管理系统组件间的交互协议和约束条件。它通过前置条件、后置条件、不变量、异常处理等方式，定义组件间的交互契约，确保系统行为的正确性和可靠性。
 
 ### 核心特征
 
-1. **契约规范化**：统一的契约设计和规范标准
-2. **版本兼容性**：契约版本控制和兼容性管理
-3. **自动化测试**：基于契约的自动化测试生成
-4. **Mock服务**：自动生成Mock服务进行测试
-5. **演进治理**：契约演进和变更管理
+1. **契约定义**：明确的交互协议和约束条件
+2. **前置条件**：调用前的状态和参数验证
+3. **后置条件**：调用后的状态和结果保证
+4. **不变量**：系统状态的一致性约束
+5. **异常处理**：异常情况的处理和恢复
 
 ## 理论基础
 
-### 契约理论
+### 契约建模理论
 
 契约建模基于以下理论：
 
 ```text
-Contract = (Interface, Version, Compatibility, Testing, Mock, Evolution)
+ContractModel = (Precondition, Postcondition, Invariant, Exception, Verification)
 ```
 
 其中：
 
-- Interface：接口定义（请求、响应、错误）
-- Version：版本管理（版本号、兼容性、迁移）
-- Compatibility：兼容性规则（向前兼容、向后兼容）
-- Testing：测试用例（单元测试、集成测试、契约测试）
-- Mock：Mock服务（模拟响应、异常场景）
-- Evolution：演进管理（变更策略、迁移路径）
+- Precondition：前置条件（调用前的状态要求）
+- Postcondition：后置条件（调用后的状态保证）
+- Invariant：不变量（系统状态的一致性约束）
+- Exception：异常处理（异常情况的处理机制）
+- Verification：验证（契约的验证和检查）
 
-### 契约设计理论
+### 契约设计层次理论
 
 ```yaml
 # 契约设计层次
 contract_design_hierarchy:
   interface_layer:
     - "接口定义"
-    - "请求规范"
-    - "响应规范"
+    - "方法签名"
+    - "参数类型"
+    - "返回值类型"
     
-  version_layer:
-    - "版本管理"
-    - "兼容性控制"
-    - "迁移策略"
+  specification_layer:
+    - "前置条件"
+    - "后置条件"
+    - "不变量"
+    - "异常规范"
     
-  testing_layer:
-    - "测试用例"
-    - "Mock服务"
-    - "契约测试"
+  implementation_layer:
+    - "契约实现"
+    - "验证逻辑"
+    - "异常处理"
+    - "错误恢复"
     
-  evolution_layer:
-    - "变更管理"
-    - "演进策略"
-    - "治理规则"
+  verification_layer:
+    - "静态检查"
+    - "动态验证"
+    - "测试验证"
+    - "形式化验证"
 ```
 
 ## 核心组件
 
-### 契约接口模型
+### 契约定义模型
 
 ```yaml
-# 契约接口定义
-contract_interfaces:
-  - name: "user_service_contract"
-    description: "用户服务契约"
-    version: "1.0.0"
+# 契约定义
+contract_definitions:
+  - name: "method_contract"
+    description: "方法契约"
     
-    endpoints:
-      - name: "getUser"
-        description: "获取用户信息"
-        request:
-          method: "GET"
-          path: "/users/{id}"
-          parameters:
-            - name: "id"
-              type: "string"
-              required: true
-              description: "用户ID"
-        response:
-          success:
-            status_code: 200
-            schema:
-              type: "object"
-              properties:
-                id:
-                  type: "string"
+    contracts:
+      - name: "user_management_contract"
+        description: "用户管理契约"
+        interface: "UserService"
+        
+        methods:
+          - name: "createUser"
+            description: "创建用户"
+            signature: "createUser(name: String, email: String): User"
+            
+            preconditions:
+              - name: "valid_name"
+                condition: "name != null && name.length() > 0"
+                description: "用户名不能为空"
+                
+              - name: "valid_email"
+                condition: "email != null && email.matches(email_pattern)"
+                description: "邮箱格式必须正确"
+                
+              - name: "unique_email"
+                condition: "!existsUserWithEmail(email)"
+                description: "邮箱必须唯一"
+                
+            postconditions:
+              - name: "user_created"
+                condition: "result != null && result.id != null"
+                description: "用户创建成功"
+                
+              - name: "user_persisted"
+                condition: "existsUserWithId(result.id)"
+                description: "用户已持久化"
+                
+              - name: "user_data_correct"
+                condition: "result.name.equals(name) && result.email.equals(email)"
+                description: "用户数据正确"
+                
+            invariants:
+              - name: "user_count_invariant"
+                condition: "getUserCount() == getUserCount()@pre + 1"
+                description: "用户数量增加1"
+                
+            exceptions:
+              - name: "invalid_input_exception"
+                type: "IllegalArgumentException"
+                condition: "name == null || email == null"
+                description: "输入参数无效"
+                
+              - name: "duplicate_email_exception"
+                type: "DuplicateEmailException"
+                condition: "existsUserWithEmail(email)"
+                description: "邮箱已存在"
+                
+          - name: "updateUser"
+            description: "更新用户"
+            signature: "updateUser(id: Long, updates: UserUpdate): User"
+            
+            preconditions:
+              - name: "valid_id"
+                condition: "id != null && id > 0"
+                description: "用户ID必须有效"
+                
+              - name: "user_exists"
+                condition: "existsUserWithId(id)"
+                description: "用户必须存在"
+                
+              - name: "valid_updates"
+                condition: "updates != null && !updates.isEmpty()"
+                description: "更新内容不能为空"
+                
+            postconditions:
+              - name: "user_updated"
+                condition: "result != null && result.id.equals(id)"
+                description: "用户更新成功"
+                
+              - name: "changes_applied"
+                condition: "appliedChanges(updates, result)"
+                description: "更新内容已应用"
+                
+            invariants:
+              - name: "user_count_invariant"
+                condition: "getUserCount() == getUserCount()@pre"
+                description: "用户数量不变"
+                
+            exceptions:
+              - name: "user_not_found_exception"
+                type: "UserNotFoundException"
+                condition: "!existsUserWithId(id)"
+                description: "用户不存在"
+                
+              - name: "invalid_update_exception"
+                type: "InvalidUpdateException"
+                condition: "!isValidUpdate(updates)"
+                description: "更新内容无效"
+                
+          - name: "deleteUser"
+            description: "删除用户"
+            signature: "deleteUser(id: Long): boolean"
+            
+            preconditions:
+              - name: "valid_id"
+                condition: "id != null && id > 0"
+                description: "用户ID必须有效"
+                
+              - name: "user_exists"
+                condition: "existsUserWithId(id)"
+                description: "用户必须存在"
+                
+            postconditions:
+              - name: "user_deleted"
+                condition: "result == true"
+                description: "用户删除成功"
+                
+              - name: "user_removed"
+                condition: "!existsUserWithId(id)"
+                description: "用户已从系统中移除"
+                
+            invariants:
+              - name: "user_count_invariant"
+                condition: "getUserCount() == getUserCount()@pre - 1"
+                description: "用户数量减少1"
+                
+            exceptions:
+              - name: "user_not_found_exception"
+                type: "UserNotFoundException"
+                condition: "!existsUserWithId(id)"
+                description: "用户不存在"
+                
+              - name: "user_in_use_exception"
+                type: "UserInUseException"
+                condition: "isUserInUse(id)"
+                description: "用户正在使用中"
+```
+
+### 接口契约模型
+
+```yaml
+# 接口契约定义
+interface_contract_definitions:
+  - name: "api_contract"
+    description: "API接口契约"
+    
+    interfaces:
+      - name: "UserAPI"
+        description: "用户API接口"
+        version: "v1.0"
+        base_url: "/api/v1/users"
+        
+        endpoints:
+          - name: "create_user"
+            description: "创建用户"
+            method: "POST"
+            path: "/"
+            
+            request_contract:
+              content_type: "application/json"
+              schema:
+                type: "object"
+                required: ["name", "email"]
+                properties:
+                  name:
+                    type: "string"
+                    min_length: 1
+                    max_length: 100
+                    description: "用户姓名"
+                  email:
+                    type: "string"
+                    format: "email"
+                    description: "用户邮箱"
+                  phone:
+                    type: "string"
+                    pattern: "^\\+?[1-9]\\d{1,14}$"
+                    description: "用户电话"
+                    
+            response_contract:
+              success:
+                status_code: 201
+                content_type: "application/json"
+                schema:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "integer"
+                      description: "用户ID"
+                    name:
+                      type: "string"
+                      description: "用户姓名"
+                    email:
+                      type: "string"
+                      description: "用户邮箱"
+                    created_at:
+                      type: "string"
+                      format: "date-time"
+                      description: "创建时间"
+                      
+              error:
+                status_code: 400
+                content_type: "application/json"
+                schema:
+                  type: "object"
+                  properties:
+                    error:
+                      type: "string"
+                      description: "错误信息"
+                    code:
+                      type: "string"
+                      description: "错误代码"
+                    details:
+                      type: "object"
+                      description: "错误详情"
+                      
+          - name: "get_user"
+            description: "获取用户"
+            method: "GET"
+            path: "/{id}"
+            
+            request_contract:
+              parameters:
+                - name: "id"
+                  in: "path"
+                  required: true
+                  type: "integer"
                   description: "用户ID"
-                name:
-                  type: "string"
-                  description: "用户姓名"
-                email:
-                  type: "string"
-                  format: "email"
-                  description: "用户邮箱"
-          error:
-            status_code: 404
-            schema:
-              type: "object"
-              properties:
-                error:
-                  type: "string"
-                  description: "错误信息"
                   
-      - name: "createUser"
-        description: "创建用户"
-        request:
-          method: "POST"
-          path: "/users"
-          body:
-            type: "object"
-            required: ["name", "email"]
-            properties:
-              name:
-                type: "string"
-                description: "用户姓名"
-              email:
-                type: "string"
-                format: "email"
-                description: "用户邮箱"
-        response:
-          success:
-            status_code: 201
-            schema:
-              type: "object"
-              properties:
-                id:
-                  type: "string"
+            response_contract:
+              success:
+                status_code: 200
+                content_type: "application/json"
+                schema:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "integer"
+                      description: "用户ID"
+                    name:
+                      type: "string"
+                      description: "用户姓名"
+                    email:
+                      type: "string"
+                      description: "用户邮箱"
+                    phone:
+                      type: "string"
+                      description: "用户电话"
+                    created_at:
+                      type: "string"
+                      format: "date-time"
+                      description: "创建时间"
+                      
+              error:
+                status_code: 404
+                content_type: "application/json"
+                schema:
+                  type: "object"
+                  properties:
+                    error:
+                      type: "string"
+                      description: "用户不存在"
+                    code:
+                      type: "string"
+                      description: "USER_NOT_FOUND"
+                      
+          - name: "update_user"
+            description: "更新用户"
+            method: "PUT"
+            path: "/{id}"
+            
+            request_contract:
+              parameters:
+                - name: "id"
+                  in: "path"
+                  required: true
+                  type: "integer"
                   description: "用户ID"
-                name:
-                  type: "string"
-                  description: "用户姓名"
-                email:
-                  type: "string"
-                  format: "email"
-                  description: "用户邮箱"
-                created_at:
-                  type: "string"
-                  format: "date-time"
-                  description: "创建时间"
-```
-
-### 契约版本模型
-
-```yaml
-# 契约版本定义
-contract_versions:
-  - name: "user_service_versions"
-    description: "用户服务契约版本"
-    versions:
-      - version: "1.0.0"
-        release_date: "2023-01-01"
-        features:
-          - "基本用户CRUD操作"
-          - "RESTful API设计"
-        compatibility:
-          backward_compatible: true
-          forward_compatible: true
-          
-      - version: "1.1.0"
-        release_date: "2023-03-01"
-        features:
-          - "添加用户角色字段"
-          - "支持用户搜索"
-        compatibility:
-          backward_compatible: true
-          forward_compatible: false
-        migration:
-          - "新增role字段为可选"
-          - "保持现有API不变"
-          
-      - version: "2.0.0"
-        release_date: "2023-06-01"
-        features:
-          - "GraphQL API支持"
-          - "批量操作"
-        compatibility:
-          backward_compatible: false
-          forward_compatible: false
-        breaking_changes:
-          - "移除email字段"
-          - "修改用户ID格式"
-        migration:
-          - "提供迁移工具"
-          - "支持双版本并行"
-```
-
-### 契约兼容性模型
-
-```yaml
-# 契约兼容性定义
-contract_compatibility:
-  - name: "backward_compatibility"
-    description: "向后兼容性"
-    rules:
-      - "新增字段必须是可选的"
-      - "不能删除现有字段"
-      - "不能修改字段类型"
-      - "不能修改字段名称"
-    examples:
-      - scenario: "新增字段"
-        before:
-          properties:
-            name: "string"
-            email: "string"
-        after:
-          properties:
-            name: "string"
-            email: "string"
-            role: "string"  # 新增可选字段
-        compatible: true
-        
-      - scenario: "删除字段"
-        before:
-          properties:
-            name: "string"
-            email: "string"
-        after:
-          properties:
-            name: "string"
-            # email字段被删除
-        compatible: false
-        
-  - name: "forward_compatibility"
-    description: "向前兼容性"
-    rules:
-      - "客户端可以忽略未知字段"
-      - "客户端可以处理新增字段"
-      - "客户端可以适应字段类型变化"
-    examples:
-      - scenario: "客户端忽略新字段"
-        server_response:
-          properties:
-            name: "string"
-            email: "string"
-            role: "string"  # 新字段
-        client_processing:
-          - "只处理name和email"
-          - "忽略role字段"
-        compatible: true
-```
-
-### 契约测试模型
-
-```yaml
-# 契约测试定义
-contract_testing:
-  - name: "consumer_driven_contracts"
-    description: "消费者驱动的契约测试"
-    approach:
-      - "消费者定义期望的契约"
-      - "提供者验证契约实现"
-      - "自动化测试验证"
-    tools:
-      - "Pact"
-      - "Spring Cloud Contract"
-      - "PactumJS"
-      
-  - name: "provider_contracts"
-    description: "提供者契约测试"
-    approach:
-      - "提供者定义服务契约"
-      - "生成测试用例"
-      - "验证服务实现"
-    tools:
-      - "OpenAPI"
-      - "Swagger"
-      - "Postman"
-      
-  - name: "contract_test_cases"
-    description: "契约测试用例"
-    test_cases:
-      - name: "valid_request_test"
-        description: "有效请求测试"
-        request:
-          method: "GET"
-          path: "/users/123"
-          headers:
-            Authorization: "Bearer token"
-        expected_response:
-          status_code: 200
-          body:
-            id: "123"
-            name: "John Doe"
-            email: "john@example.com"
+                  
+              content_type: "application/json"
+              schema:
+                type: "object"
+                properties:
+                  name:
+                    type: "string"
+                    min_length: 1
+                    max_length: 100
+                    description: "用户姓名"
+                  email:
+                    type: "string"
+                    format: "email"
+                    description: "用户邮箱"
+                  phone:
+                    type: "string"
+                    pattern: "^\\+?[1-9]\\d{1,14}$"
+                    description: "用户电话"
+                    
+            response_contract:
+              success:
+                status_code: 200
+                content_type: "application/json"
+                schema:
+                  type: "object"
+                  properties:
+                    id:
+                      type: "integer"
+                      description: "用户ID"
+                    name:
+                      type: "string"
+                      description: "用户姓名"
+                    email:
+                      type: "string"
+                      description: "用户邮箱"
+                    phone:
+                      type: "string"
+                      description: "用户电话"
+                    updated_at:
+                      type: "string"
+                      format: "date-time"
+                      description: "更新时间"
+                      
+              error:
+                status_code: 404
+                content_type: "application/json"
+                schema:
+                  type: "object"
+                  properties:
+                    error:
+                      type: "string"
+                      description: "用户不存在"
+                    code:
+                      type: "string"
+                      description: "USER_NOT_FOUND"
+                      
+          - name: "delete_user"
+            description: "删除用户"
+            method: "DELETE"
+            path: "/{id}"
             
-      - name: "invalid_request_test"
-        description: "无效请求测试"
-        request:
-          method: "GET"
-          path: "/users/invalid-id"
-        expected_response:
-          status_code: 400
-          body:
-            error: "Invalid user ID"
-            
-      - name: "not_found_test"
-        description: "资源不存在测试"
-        request:
-          method: "GET"
-          path: "/users/999"
-        expected_response:
-          status_code: 404
-          body:
-            error: "User not found"
+            request_contract:
+              parameters:
+                - name: "id"
+                  in: "path"
+                  required: true
+                  type: "integer"
+                  description: "用户ID"
+                  
+            response_contract:
+              success:
+                status_code: 204
+                description: "用户删除成功"
+                
+              error:
+                status_code: 404
+                content_type: "application/json"
+                schema:
+                  type: "object"
+                  properties:
+                    error:
+                      type: "string"
+                      description: "用户不存在"
+                    code:
+                      type: "string"
+                      description: "USER_NOT_FOUND"
 ```
 
-### Mock服务模型
+### 数据契约模型
 
 ```yaml
-# Mock服务定义
-mock_services:
-  - name: "user_service_mock"
-    description: "用户服务Mock"
-    base_url: "http://localhost:8080"
+# 数据契约定义
+data_contract_definitions:
+  - name: "data_model_contract"
+    description: "数据模型契约"
     
-    endpoints:
-      - name: "getUser"
-        path: "/users/{id}"
-        method: "GET"
-        responses:
-          - name: "success_response"
-            status_code: 200
-            headers:
-              Content-Type: "application/json"
-            body:
-              id: "{{request.params.id}}"
-              name: "Mock User"
-              email: "mock@example.com"
-              role: "user"
-            conditions:
-              - "request.params.id is not empty"
+    models:
+      - name: "User"
+        description: "用户数据模型"
+        version: "1.0"
+        
+        properties:
+          - name: "id"
+            type: "Long"
+            description: "用户唯一标识"
+            constraints:
+              - "primary_key"
+              - "auto_increment"
+              - "not_null"
               
-          - name: "not_found_response"
-            status_code: 404
-            headers:
-              Content-Type: "application/json"
-            body:
-              error: "User not found"
-            conditions:
-              - "request.params.id == '999'"
+          - name: "name"
+            type: "String"
+            description: "用户姓名"
+            constraints:
+              - "not_null"
+              - "min_length: 1"
+              - "max_length: 100"
+              - "pattern: ^[a-zA-Z\\s]+$"
               
-          - name: "error_response"
-            status_code: 500
-            headers:
-              Content-Type: "application/json"
-            body:
-              error: "Internal server error"
-            conditions:
-              - "request.params.id == 'error'"
+          - name: "email"
+            type: "String"
+            description: "用户邮箱"
+            constraints:
+              - "not_null"
+              - "unique"
+              - "email_format"
+              - "max_length: 255"
               
-      - name: "createUser"
-        path: "/users"
-        method: "POST"
-        responses:
-          - name: "success_response"
-            status_code: 201
-            headers:
-              Content-Type: "application/json"
-            body:
-              id: "{{generate.uuid}}"
-              name: "{{request.body.name}}"
-              email: "{{request.body.email}}"
-              created_at: "{{now}}"
-            conditions:
-              - "request.body.name is not empty"
-              - "request.body.email is valid email"
+          - name: "phone"
+            type: "String"
+            description: "用户电话"
+            constraints:
+              - "nullable"
+              - "phone_format"
+              - "max_length: 20"
+              
+          - name: "status"
+            type: "UserStatus"
+            description: "用户状态"
+            constraints:
+              - "not_null"
+              - "default: ACTIVE"
+              
+          - name: "created_at"
+            type: "LocalDateTime"
+            description: "创建时间"
+            constraints:
+              - "not_null"
+              - "auto_generated"
+              
+          - name: "updated_at"
+            type: "LocalDateTime"
+            description: "更新时间"
+            constraints:
+              - "not_null"
+              - "auto_generated"
+              
+        invariants:
+          - name: "email_uniqueness"
+            condition: "unique(email)"
+            description: "邮箱必须唯一"
+            
+          - name: "name_not_empty"
+            condition: "name != null && name.trim().length() > 0"
+            description: "姓名不能为空"
+            
+          - name: "valid_status"
+            condition: "status in [ACTIVE, INACTIVE, SUSPENDED]"
+            description: "状态必须有效"
+            
+        relationships:
+          - name: "orders"
+            type: "OneToMany"
+            target: "Order"
+            description: "用户订单"
+            constraints:
+              - "cascade_delete"
+              
+          - name: "profile"
+            type: "OneToOne"
+            target: "UserProfile"
+            description: "用户档案"
+            constraints:
+              - "cascade_delete"
+              
+  - name: "message_contract"
+    description: "消息契约"
+    
+    messages:
+      - name: "UserCreatedEvent"
+        description: "用户创建事件"
+        version: "1.0"
+        
+        properties:
+          - name: "event_id"
+            type: "String"
+            description: "事件ID"
+            constraints:
+              - "not_null"
+              - "uuid_format"
+              
+          - name: "user_id"
+            type: "Long"
+            description: "用户ID"
+            constraints:
+              - "not_null"
+              - "positive"
+              
+          - name: "user_name"
+            type: "String"
+            description: "用户姓名"
+            constraints:
+              - "not_null"
+              - "max_length: 100"
+              
+          - name: "user_email"
+            type: "String"
+            description: "用户邮箱"
+            constraints:
+              - "not_null"
+              - "email_format"
+              
+          - name: "timestamp"
+            type: "LocalDateTime"
+            description: "事件时间"
+            constraints:
+              - "not_null"
+              
+        invariants:
+          - name: "valid_timestamp"
+            condition: "timestamp <= now()"
+            description: "时间戳不能超过当前时间"
+            
+          - name: "valid_user_id"
+            condition: "user_id > 0"
+            description: "用户ID必须为正数"
+            
+      - name: "UserUpdatedEvent"
+        description: "用户更新事件"
+        version: "1.0"
+        
+        properties:
+          - name: "event_id"
+            type: "String"
+            description: "事件ID"
+            constraints:
+              - "not_null"
+              - "uuid_format"
+              
+          - name: "user_id"
+            type: "Long"
+            description: "用户ID"
+            constraints:
+              - "not_null"
+              - "positive"
+              
+          - name: "changes"
+            type: "Map<String, Object>"
+            description: "变更内容"
+            constraints:
+              - "not_null"
+              - "not_empty"
+              
+          - name: "timestamp"
+            type: "LocalDateTime"
+            description: "事件时间"
+            constraints:
+              - "not_null"
+              
+        invariants:
+          - name: "valid_changes"
+            condition: "changes.keySet().containsAll(['name', 'email', 'phone'])"
+            description: "变更字段必须有效"
+```
+
+### 验证契约模型
+
+```yaml
+# 验证契约定义
+validation_contract_definitions:
+  - name: "validation_rules"
+    description: "验证规则契约"
+    
+    rules:
+      - name: "user_validation"
+        description: "用户验证规则"
+        
+        validations:
+          - name: "name_validation"
+            description: "姓名验证"
+            rules:
+              - name: "not_null"
+                condition: "name != null"
+                message: "姓名不能为空"
+                
+              - name: "not_empty"
+                condition: "name.trim().length() > 0"
+                message: "姓名不能为空字符串"
+                
+              - name: "length_limit"
+                condition: "name.length() <= 100"
+                message: "姓名长度不能超过100个字符"
+                
+              - name: "pattern_match"
+                condition: "name.matches('^[a-zA-Z\\s]+$')"
+                message: "姓名只能包含字母和空格"
+                
+          - name: "email_validation"
+            description: "邮箱验证"
+            rules:
+              - name: "not_null"
+                condition: "email != null"
+                message: "邮箱不能为空"
+                
+              - name: "email_format"
+                condition: "email.matches('^[A-Za-z0-9+_.-]+@(.+)$')"
+                message: "邮箱格式不正确"
+                
+              - name: "length_limit"
+                condition: "email.length() <= 255"
+                message: "邮箱长度不能超过255个字符"
+                
+              - name: "unique_check"
+                condition: "!existsUserWithEmail(email)"
+                message: "邮箱已存在"
+                
+          - name: "phone_validation"
+            description: "电话验证"
+            rules:
+              - name: "nullable"
+                condition: "phone == null || phone.trim().length() > 0"
+                message: "电话不能为空字符串"
+                
+              - name: "phone_format"
+                condition: "phone == null || phone.matches('^\\+?[1-9]\\d{1,14}$')"
+                message: "电话格式不正确"
+                
+              - name: "length_limit"
+                condition: "phone == null || phone.length() <= 20"
+                message: "电话长度不能超过20个字符"
+                
+  - name: "business_rules"
+    description: "业务规则契约"
+    
+    rules:
+      - name: "user_business_rules"
+        description: "用户业务规则"
+        
+        rules:
+          - name: "age_requirement"
+            description: "年龄要求"
+            condition: "user.age >= 18"
+            message: "用户必须年满18岁"
+            
+          - name: "email_verification"
+            description: "邮箱验证"
+            condition: "user.emailVerified || user.status == PENDING"
+            message: "邮箱必须验证或状态为待验证"
+            
+          - name: "account_limit"
+            description: "账户限制"
+            condition: "getUserCount() < MAX_USERS"
+            message: "用户数量已达到上限"
+            
+          - name: "password_strength"
+            description: "密码强度"
+            condition: "isPasswordStrong(user.password)"
+            message: "密码强度不符合要求"
 ```
 
 ## 国际标准对标
 
 ### 契约规范标准
 
-#### OpenAPI (Swagger)
+#### Design by Contract
 
-- **版本**：OpenAPI 3.1
-- **标准**：OAS (OpenAPI Specification)
-- **核心概念**：Path、Operation、Schema、Security
-- **工具支持**：Swagger UI、Swagger Editor、OpenAPI Generator
+- **标准**：Design by Contract (DbC)
+- **核心概念**：前置条件、后置条件、不变量
+- **理论基础**：Bertrand Meyer的Eiffel语言
+- **工具支持**：Eiffel、JML、Spec#
 
-#### Pact
+#### Java Modeling Language (JML)
 
-- **版本**：Pact 4.0+
-- **标准**：Consumer-Driven Contracts
-- **核心概念**：Consumer、Provider、Interaction、Verification
-- **工具支持**：Pact Broker、Pact CLI、Pact Libraries
+- **标准**：JML Specification
+- **核心概念**：方法规范、类不变量、异常规范
+- **理论基础**：Hoare逻辑、形式化方法
+- **工具支持**：OpenJML、ESC/Java2、KeY
 
-#### AsyncAPI
+#### Spec #1
 
-- **版本**：AsyncAPI 2.6+
-- **标准**：AsyncAPI Specification
-- **核心概念**：Channel、Message、Operation、Server
-- **工具支持**：AsyncAPI Generator、AsyncAPI Studio
+- **标准**：Microsoft Spec#
+- **核心概念**：方法契约、对象不变量、框架
+- **理论基础**：分离逻辑、形式化验证
+- **工具支持**：Spec#编译器、Boogie验证器
 
-### 契约测试标准
+### API契约标准
 
-#### Consumer-Driven Contract Testing
+#### OpenAPI
 
-- **标准**：CDC Testing
-- **核心概念**：Consumer Expectations、Provider Verification
-- **工具支持**：Pact、Spring Cloud Contract、PactumJS
+- **标准**：OpenAPI 3.0
+- **核心概念**：API规范、请求响应契约、数据模型
+- **理论基础**：RESTful API设计
+- **工具支持**：Swagger、OpenAPI Generator
 
-#### API Contract Testing
+#### GraphQL
 
-- **标准**：API Testing
-- **核心概念**：Request/Response Validation、Schema Validation
-- **工具支持**：Postman、Newman、Dredd
+- **标准**：GraphQL Specification
+- **核心概念**：查询契约、类型系统、解析器
+- **理论基础**：类型系统、查询语言
+- **工具支持**：GraphQL Playground、Apollo
+
+#### gRPC
+
+- **标准**：gRPC Protocol
+- **核心概念**：服务契约、消息契约、流契约
+- **理论基础**：Protocol Buffers、HTTP/2
+- **工具支持**：gRPC、Protocol Buffers
 
 ## 著名大学课程对标
 
@@ -414,238 +766,362 @@ mock_services:
 
 #### MIT 6.170 - Software Studio
 
-- **课程内容**：软件设计、架构、接口设计
-- **契约相关**：API设计、契约测试、服务集成
-- **实践项目**：微服务契约设计
-- **相关技术**：OpenAPI、Pact、Swagger
+- **课程内容**：软件工程、设计模式、契约编程
+- **契约建模相关**：Design by Contract、接口契约、验证
+- **实践项目**：契约驱动的Web应用开发
+- **相关技术**：JML、Spec#、契约验证
 
-#### Stanford CS210 - Software Engineering
+#### Stanford CS210 - Software Project Experience with Corporate Partners
 
-- **课程内容**：软件工程、系统设计、测试
-- **契约相关**：契约测试、Mock服务、集成测试
-- **实践项目**：分布式系统契约管理
-- **相关技术**：Spring Cloud Contract、Pact
+- **课程内容**：软件项目、企业合作、工程实践
+- **契约建模相关**：API契约、服务契约、验证测试
+- **实践项目**：企业级软件项目开发
+- **相关技术**：OpenAPI、契约测试、API设计
 
 #### CMU 15-413 - Software Engineering
 
-- **课程内容**：软件工程、分布式系统、测试
-- **契约相关**：服务契约、兼容性测试、演进管理
-- **实践项目**：契约驱动的微服务
-- **相关技术**：OpenAPI、Pact、API Gateway
+- **课程内容**：软件工程、开发方法、质量保证
+- **契约建模相关**：形式化方法、契约验证、测试驱动
+- **实践项目**：大型软件系统开发
+- **相关技术**：形式化验证、契约测试、质量保证
 
-### 测试课程
+### 形式化方法课程
 
-#### MIT 6.005 - Software Construction
+#### MIT 6.042 - Mathematics for Computer Science
 
-- **课程内容**：软件构建、测试、质量保证
-- **契约相关**：契约测试、Mock测试、集成测试
-- **实践项目**：自动化测试系统
-- **相关技术**：JUnit、Mockito、Pact
+- **课程内容**：离散数学、逻辑、证明
+- **契约建模相关**：逻辑推理、形式化证明、契约验证
+- **实践项目**：形式化证明和验证
+- **相关技术**：逻辑推理、形式化方法
 
-#### Stanford CS108 - Object-Oriented System Design
+#### Stanford CS103 - Mathematical Foundations of Computing
 
-- **课程内容**：面向对象设计、系统架构、测试
-- **契约相关**：接口契约、测试驱动开发
-- **实践项目**：契约驱动的系统设计
-- **相关技术**：Design by Contract、TDD
+- **课程内容**：数学基础、逻辑、证明
+- **契约建模相关**：逻辑系统、形式化推理、契约逻辑
+- **实践项目**：形式化证明系统
+- **相关技术**：逻辑系统、形式化推理
 
 ## 工程实践
 
 ### 契约设计模式
 
-#### 消费者驱动契约模式
+#### 接口契约模式
 
 ```yaml
-# 消费者驱动契约模式
-consumer_driven_contract_pattern:
-  description: "消费者定义期望的契约，提供者实现"
-  workflow:
-    - name: "契约定义"
-      description: "消费者定义期望的接口"
-      activities:
-        - "分析业务需求"
-        - "定义接口规范"
-        - "创建测试用例"
+# 接口契约模式
+interface_contract_pattern:
+  description: "接口契约设计模式"
+  structure:
+    - name: "接口定义"
+      description: "定义接口规范"
+      components:
+        - "方法签名"
+        - "参数类型"
+        - "返回值类型"
+        - "异常声明"
         
-    - name: "契约实现"
-      description: "提供者实现契约"
-      activities:
-        - "理解契约要求"
-        - "实现服务接口"
-        - "验证契约实现"
+    - name: "契约规范"
+      description: "定义契约规范"
+      components:
+        - "前置条件"
+        - "后置条件"
+        - "不变量"
+        - "异常规范"
         
-    - name: "契约验证"
-      description: "自动化验证契约"
-      activities:
-        - "运行契约测试"
-        - "验证兼容性"
-        - "生成测试报告"
+    - name: "实现验证"
+      description: "验证实现正确性"
+      components:
+        - "静态检查"
+        - "动态验证"
+        - "测试验证"
+        - "形式化验证"
         
   benefits:
-    - "确保服务满足消费者需求"
-    - "减少集成问题"
-    - "提高开发效率"
+    - "接口清晰"
+    - "行为明确"
+    - "错误预防"
+    - "质量保证"
+    
+  use_cases:
+    - "API设计"
+    - "服务接口"
+    - "组件接口"
+    - "库接口"
 ```
 
-#### 契约演进模式
+#### 数据契约模式
 
 ```yaml
-# 契约演进模式
-contract_evolution_pattern:
-  description: "管理契约的演进和变更"
-  strategies:
-    - name: "向后兼容演进"
-      description: "新版本保持向后兼容"
-      rules:
-        - "只添加可选字段"
-        - "不删除现有字段"
-        - "不修改字段类型"
-      examples:
-        - "添加新的可选字段"
-        - "扩展枚举值"
-        - "增加新的端点"
+# 数据契约模式
+data_contract_pattern:
+  description: "数据契约设计模式"
+  structure:
+    - name: "数据模型"
+      description: "定义数据模型"
+      components:
+        - "属性定义"
+        - "类型约束"
+        - "关系定义"
+        - "验证规则"
         
-    - name: "版本化演进"
-      description: "通过版本号管理变更"
-      rules:
-        - "使用语义化版本号"
-        - "维护多个版本"
-        - "提供迁移路径"
-      examples:
-        - "v1.0.0 -> v1.1.0 (向后兼容)"
-        - "v1.1.0 -> v2.0.0 (破坏性变更)"
-        - "并行支持多个版本"
+    - name: "验证逻辑"
+      description: "实现验证逻辑"
+      components:
+        - "字段验证"
+        - "业务规则"
+        - "一致性检查"
+        - "完整性验证"
         
-    - name: "渐进式演进"
-      description: "渐进式引入变更"
-      phases:
-        - "标记废弃"
-        - "提供替代方案"
-        - "移除废弃功能"
+    - name: "序列化契约"
+      description: "定义序列化契约"
+      components:
+        - "格式规范"
+        - "版本控制"
+        - "兼容性"
+        - "转换规则"
+        
+  benefits:
+    - "数据一致性"
+    - "类型安全"
+    - "版本兼容"
+    - "错误预防"
+    
+  use_cases:
+    - "数据模型"
+    - "消息契约"
+    - "存储契约"
+    - "传输契约"
 ```
 
-### 契约测试模式
+### 契约实现模式
 
-#### 契约测试金字塔
-
-```yaml
-# 契约测试金字塔
-contract_test_pyramid:
-  description: "契约测试的分层策略"
-  layers:
-    - name: "单元测试层"
-      description: "服务内部逻辑测试"
-      percentage: 70
-      focus:
-        - "业务逻辑"
-        - "数据处理"
-        - "错误处理"
-      tools:
-        - "JUnit"
-        - "pytest"
-        - "unittest"
-        
-    - name: "契约测试层"
-      description: "服务间契约验证"
-      percentage: 20
-      focus:
-        - "接口规范"
-        - "数据格式"
-        - "错误响应"
-      tools:
-        - "Pact"
-        - "Spring Cloud Contract"
-        - "OpenAPI"
-        
-    - name: "集成测试层"
-      description: "端到端集成测试"
-      percentage: 10
-      focus:
-        - "服务集成"
-        - "数据流"
-        - "性能验证"
-      tools:
-        - "Postman"
-        - "Newman"
-        - "Dredd"
-```
-
-#### Mock服务模式
+#### 验证模式
 
 ```yaml
-# Mock服务模式
-mock_service_pattern:
-  description: "使用Mock服务进行测试"
+# 验证模式
+validation_pattern:
+  description: "契约验证实现模式"
   types:
-    - name: "静态Mock"
-      description: "预定义的响应"
-      characteristics:
-        - "固定响应"
-        - "简单实现"
-        - "快速启动"
-      use_cases:
-        - "单元测试"
-        - "开发环境"
-        - "演示环境"
+    - name: "静态验证"
+      description: "编译时验证"
+      techniques:
+        - "类型检查"
+        - "静态分析"
+        - "代码检查"
+        - "契约检查"
+      tools:
+        - "编译器"
+        - "静态分析工具"
+        - "代码检查工具"
+        - "契约验证工具"
         
-    - name: "动态Mock"
-      description: "基于规则的响应"
-      characteristics:
-        - "条件响应"
-        - "参数化"
-        - "状态管理"
-      use_cases:
+    - name: "动态验证"
+      description: "运行时验证"
+      techniques:
+        - "断言检查"
+        - "异常处理"
+        - "日志记录"
+        - "监控告警"
+      tools:
+        - "断言库"
+        - "异常处理框架"
+        - "日志框架"
+        - "监控系统"
+        
+    - name: "测试验证"
+      description: "测试时验证"
+      techniques:
+        - "单元测试"
         - "集成测试"
         - "契约测试"
-        - "性能测试"
+        - "属性测试"
+      tools:
+        - "测试框架"
+        - "契约测试工具"
+        - "属性测试工具"
+        - "测试生成器"
+```
+
+#### 异常处理模式
+
+```yaml
+# 异常处理模式
+exception_handling_pattern:
+  description: "契约异常处理模式"
+  types:
+    - name: "防御性编程"
+      description: "防御性异常处理"
+      techniques:
+        - "输入验证"
+        - "状态检查"
+        - "错误恢复"
+        - "优雅降级"
+      implementation:
+        - "参数检查"
+        - "状态验证"
+        - "异常捕获"
+        - "错误处理"
         
-    - name: "智能Mock"
-      description: "基于AI的响应生成"
-      characteristics:
-        - "自动生成"
-        - "学习能力"
-        - "真实数据"
-      use_cases:
-        - "复杂场景"
-        - "大数据测试"
-        - "探索性测试"
+    - name: "契约违反处理"
+      description: "契约违反异常处理"
+      techniques:
+        - "契约检查"
+        - "违反检测"
+        - "错误报告"
+        - "恢复策略"
+      implementation:
+        - "前置条件检查"
+        - "后置条件验证"
+        - "不变量检查"
+        - "异常抛出"
+        
+    - name: "业务异常处理"
+      description: "业务逻辑异常处理"
+      techniques:
+        - "业务规则检查"
+        - "异常分类"
+        - "错误码定义"
+        - "用户友好消息"
+      implementation:
+        - "业务验证"
+        - "异常分类"
+        - "错误码映射"
+        - "消息本地化"
 ```
 
 ## 最佳实践
 
 ### 契约设计原则
 
-1. **简洁性**：契约应该简洁易懂
-2. **一致性**：保持契约设计的一致性
-3. **可扩展性**：支持未来的扩展和变化
-4. **向后兼容**：新版本应该向后兼容
+1. **明确性**：契约条件必须明确清晰
+2. **完整性**：覆盖所有重要的约束条件
+3. **一致性**：契约之间保持一致性
+4. **可验证性**：契约必须可以验证
 
-### 契约测试原则
+### 契约实现原则
 
-1. **自动化**：契约测试应该自动化
-2. **快速反馈**：提供快速的测试反馈
-3. **可靠性**：确保测试的可靠性
-4. **覆盖率**：保持足够的测试覆盖率
+1. **及早验证**：在最早可能的时候进行验证
+2. **优雅处理**：优雅地处理契约违反
+3. **性能考虑**：验证不应显著影响性能
+4. **可配置性**：验证级别应该可配置
 
-### 契约演进原则
+### 契约维护原则
 
-1. **渐进式变更**：采用渐进式的变更策略
-2. **版本管理**：使用语义化版本管理
-3. **迁移支持**：提供迁移工具和文档
-4. **监控告警**：监控契约变更的影响
+1. **版本控制**：契约应该有版本控制
+2. **向后兼容**：新版本应该向后兼容
+3. **文档更新**：及时更新契约文档
+4. **测试覆盖**：确保契约有充分的测试覆盖
+
+## 应用案例
+
+### 微服务契约
+
+```yaml
+# 微服务契约
+microservice_contract:
+  description: "微服务架构的契约设计"
+  components:
+    - name: "服务契约"
+      description: "服务间交互契约"
+      contracts:
+        - "API契约"
+        - "消息契约"
+        - "事件契约"
+        - "数据契约"
+        
+    - name: "接口契约"
+      description: "服务接口契约"
+      contracts:
+        - "REST API契约"
+        - "gRPC服务契约"
+        - "消息队列契约"
+        - "事件流契约"
+        
+    - name: "数据契约"
+      description: "数据交换契约"
+      contracts:
+        - "请求数据契约"
+        - "响应数据契约"
+        - "消息数据契约"
+        - "事件数据契约"
+        
+    - name: "验证契约"
+      description: "数据验证契约"
+      contracts:
+        - "输入验证契约"
+        - "输出验证契约"
+        - "业务规则契约"
+        - "一致性契约"
+        
+    - name: "异常契约"
+      description: "异常处理契约"
+      contracts:
+        - "错误码契约"
+        - "异常消息契约"
+        - "重试策略契约"
+        - "降级策略契约"
+```
+
+### API契约管理
+
+```yaml
+# API契约管理
+api_contract_management:
+  description: "API契约的管理和维护"
+  components:
+    - name: "契约定义"
+      description: "API契约定义"
+      activities:
+        - "接口设计"
+        - "数据模型定义"
+        - "验证规则定义"
+        - "异常定义"
+        
+    - name: "契约文档"
+      description: "契约文档管理"
+      activities:
+        - "OpenAPI规范"
+        - "GraphQL Schema"
+        - "gRPC Proto"
+        - "契约文档"
+        
+    - name: "契约验证"
+      description: "契约验证机制"
+      activities:
+        - "静态验证"
+        - "动态验证"
+        - "测试验证"
+        - "监控验证"
+        
+    - name: "契约版本"
+      description: "契约版本管理"
+      activities:
+        - "版本控制"
+        - "兼容性管理"
+        - "迁移策略"
+        - "废弃管理"
+        
+    - name: "契约测试"
+      description: "契约测试策略"
+      activities:
+        - "单元测试"
+        - "集成测试"
+        - "契约测试"
+        - "回归测试"
+```
 
 ## 相关概念
 
-- [API建模](../api/theory.md)
-- [消息建模](../message/theory.md)
-- [协议建模](../protocol/theory.md)
+- [API建模](api/theory.md)
+- [消息建模](message/theory.md)
+- [协议建模](protocol/theory.md)
 - [交互建模](../theory.md)
 
 ## 参考文献
 
-1. Hohpe, G., & Woolf, B. (2003). "Enterprise Integration Patterns"
-2. Fowler, M. (2018). "Patterns of Enterprise Application Architecture"
-3. Richardson, C. (2018). "Microservices Patterns"
-4. Newman, S. (2021). "Building Microservices"
-5. Allman, E. (2012). "Designing Data-Intensive Applications"
-6. Kleppmann, M. (2017). "Designing Data-Intensive Applications"
+1. Meyer, B. (1997). "Object-Oriented Software Construction"
+2. Leavens, G. T., et al. (2013). "JML Reference Manual"
+3. Barnett, M., et al. (2005). "The Spec# Programming System"
+4. OpenAPI Initiative (2021). "OpenAPI Specification 3.0"
+5. GraphQL Foundation (2021). "GraphQL Specification"
+6. gRPC Authors (2021). "gRPC Documentation"

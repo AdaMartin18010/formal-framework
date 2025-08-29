@@ -2,252 +2,567 @@
 
 ## 概念定义
 
-容器建模理论是一种形式化建模方法，用于描述和管理容器化应用的各个方面。它通过结构化的方式定义容器镜像、资源配置、生命周期、网络策略和存储管理，实现容器化应用的自动化和标准化。
+容器建模理论是一种形式化建模方法，用于描述和管理容器化应用的运行时环境。它通过容器定义、资源管理、生命周期控制、网络配置等方式，实现容器化应用的标准化部署和自动化管理。
 
 ### 核心特征
 
-1. **镜像化**：基于不可变镜像的应用打包和分发
-2. **资源隔离**：通过命名空间和cgroup实现资源隔离
-3. **生命周期管理**：完整的容器创建、启动、停止、销毁流程
-4. **网络虚拟化**：容器间网络通信和端口映射
-5. **存储抽象**：卷挂载和持久化存储管理
+1. **容器标准化**：统一的容器定义和规范
+2. **资源隔离**：容器间的资源隔离和限制
+3. **生命周期管理**：容器的创建、运行、停止、销毁
+4. **网络配置**：容器网络连接和通信
+5. **存储管理**：容器数据持久化和存储
 
 ## 理论基础
 
-### 容器理论
+### 容器建模理论
 
 容器建模基于以下理论：
 
 ```text
-Container = (Image, Resources, Network, Storage, Lifecycle)
+ContainerModel = (Image, Runtime, Resources, Network, Storage, Lifecycle)
 ```
 
 其中：
 
-- Image：容器镜像定义
-- Resources：资源限制和请求
-- Network：网络配置和策略
-- Storage：存储卷和挂载点
-- Lifecycle：生命周期管理
+- Image：容器镜像（基础镜像、应用代码、配置）
+- Runtime：运行时环境（容器引擎、运行时库、系统调用）
+- Resources：资源管理（CPU、内存、磁盘、网络）
+- Network：网络配置（网络模式、端口映射、服务发现）
+- Storage：存储管理（卷挂载、数据持久化、备份）
+- Lifecycle：生命周期（创建、启动、运行、停止、销毁）
 
-### 容器架构理论
+### 容器设计层次理论
 
 ```yaml
-# 容器架构层次
-container_architecture:
-  application_layer:
+# 容器设计层次
+container_design_hierarchy:
+  image_layer:
+    - "基础镜像"
     - "应用代码"
-    - "运行时环境"
+    - "配置文件"
     - "依赖库"
     
-  container_layer:
-    - "容器运行时"
-    - "镜像管理"
+  runtime_layer:
+    - "容器引擎"
+    - "运行时环境"
+    - "系统调用"
     - "资源隔离"
+    
+  resource_layer:
+    - "CPU限制"
+    - "内存限制"
+    - "磁盘限制"
+    - "网络限制"
     
   orchestration_layer:
     - "容器编排"
     - "服务发现"
     - "负载均衡"
-    
-  infrastructure_layer:
-    - "操作系统"
-    - "虚拟化"
-    - "硬件资源"
+    - "自动扩缩容"
 ```
 
 ## 核心组件
 
-### 镜像模型
+### 容器镜像模型
 
 ```yaml
 # 容器镜像定义
-container_image:
-  name: "web-application"
-  tag: "v1.0.0"
-  base_image: "node:18-alpine"
-  
-  layers:
-    - layer: "base"
-      description: "基础镜像层"
-      size: "50MB"
-      commands: []
-      
-    - layer: "dependencies"
-      description: "依赖安装层"
-      size: "200MB"
-      commands:
-        - "COPY package*.json ./"
-        - "RUN npm ci --only=production"
-        
-    - layer: "application"
-      description: "应用代码层"
-      size: "10MB"
-      commands:
-        - "COPY . ."
-        - "EXPOSE 3000"
-        - "CMD [\"npm\", \"start\"]"
-  
-  metadata:
-    author: "development-team"
-    created: "2024-01-01T00:00:00Z"
-    labels:
-      - "maintainer=dev@example.com"
-      - "version=1.0.0"
-      - "environment=production"
-      
-  security:
-    scan_results:
-      vulnerabilities: 0
-      critical: 0
-      high: 0
-      medium: 0
-      low: 0
-    signatures:
-      - type: "cosign"
-        key: "cosign-key.pub"
-        verified: true
-```
-
-### 资源配置模型
-
-```yaml
-# 资源配置定义
-resource_configuration:
-  cpu:
-    requests: "100m"
-    limits: "500m"
-    shares: 1024
-    quota: 50000
+container_image_definitions:
+  - name: "web_application_image"
+    description: "Web应用容器镜像"
+    version: "1.0.0"
     
-  memory:
-    requests: "128Mi"
-    limits: "512Mi"
-    swap: "256Mi"
-    
-  storage:
-    ephemeral: "1Gi"
-    persistent:
-      - name: "app-data"
-        size: "10Gi"
-        access_mode: "ReadWriteOnce"
-        storage_class: "fast-ssd"
+    layers:
+      - name: "base_layer"
+        description: "基础层"
+        image: "ubuntu:20.04"
+        size: "72MB"
         
-  network:
-    bandwidth:
-      ingress: "100Mbps"
-      egress: "100Mbps"
-    ports:
-      - container_port: 3000
-        host_port: 8080
-        protocol: "TCP"
-```
-
-### 生命周期模型
-
-```yaml
-# 容器生命周期定义
-container_lifecycle:
-  creation:
-    triggers:
-      - type: "manual"
-        description: "手动创建"
-      - type: "deployment"
-        description: "部署触发"
-      - type: "scaling"
-        description: "扩缩容触发"
-    steps:
-      - step: "image_pull"
-        description: "拉取镜像"
-        timeout: "5m"
-        
-      - step: "container_create"
-        description: "创建容器"
-        timeout: "30s"
-        
-  startup:
-    probes:
-      - type: "readiness"
-        http_get:
-          path: "/health"
-          port: 3000
-        initial_delay: "10s"
-        period: "5s"
-        timeout: "3s"
-        failure_threshold: 3
-        
-      - type: "liveness"
-        http_get:
-          path: "/health"
-          port: 3000
-        initial_delay: "30s"
-        period: "10s"
-        timeout: "5s"
-        failure_threshold: 3
-        
-    init_containers:
-      - name: "db-migration"
-        image: "db-migrator:latest"
-        command: ["npm", "run", "migrate"]
-        
-  runtime:
-    monitoring:
-      metrics:
-        - "cpu_usage"
-        - "memory_usage"
-        - "network_io"
-        - "disk_io"
-      logs:
-        driver: "json-file"
-        options:
-          max_size: "10m"
-          max_file: "3"
+      - name: "runtime_layer"
+        description: "运行时层"
+        components:
+          - name: "nodejs"
+            version: "18.0.0"
+            size: "45MB"
+          - name: "npm"
+            version: "9.0.0"
+            size: "12MB"
+            
+      - name: "application_layer"
+        description: "应用层"
+        components:
+          - name: "app_code"
+            source: "./src"
+            size: "15MB"
+          - name: "package.json"
+            source: "./package.json"
+            size: "2KB"
+          - name: "node_modules"
+            source: "./node_modules"
+            size: "180MB"
+            
+      - name: "config_layer"
+        description: "配置层"
+        components:
+          - name: "nginx.conf"
+            source: "./nginx/nginx.conf"
+            size: "5KB"
+          - name: "app.config"
+            source: "./config/app.config"
+            size: "3KB"
+            
+    metadata:
+      - name: "maintainer"
+        value: "devops@example.com"
+      - name: "description"
+        value: "Web application container"
+      - name: "labels"
+        value:
+          - "app=web"
+          - "version=1.0.0"
+          - "environment=production"
           
-  shutdown:
-    graceful_period: "30s"
-    signals:
-      - signal: "SIGTERM"
+    ports:
+      - port: 80
+        protocol: "tcp"
+        description: "HTTP port"
+      - port: 443
+        protocol: "tcp"
+        description: "HTTPS port"
+        
+    volumes:
+      - name: "app_data"
+        path: "/app/data"
+        description: "Application data"
+      - name: "logs"
+        path: "/app/logs"
+        description: "Application logs"
+        
+    environment:
+      - name: "NODE_ENV"
+        value: "production"
+        description: "Node.js environment"
+      - name: "PORT"
+        value: "3000"
+        description: "Application port"
+      - name: "DATABASE_URL"
+        value: "postgresql://user:pass@db:5432/app"
+        description: "Database connection string"
+        
+    health_check:
+      - type: "HTTP"
+        path: "/health"
+        port: 3000
+        interval: "30s"
         timeout: "10s"
-      - signal: "SIGKILL"
-        timeout: "5s"
+        retries: 3
+        start_period: "40s"
 ```
 
-### 网络模型
+### 容器运行时模型
+
+```yaml
+# 容器运行时定义
+container_runtime_definitions:
+  - name: "docker_runtime"
+    description: "Docker容器运行时"
+    version: "20.10+"
+    
+    runtime:
+      - name: "containerd"
+        description: "容器运行时"
+        features:
+          - "容器生命周期管理"
+          - "镜像管理"
+          - "网络管理"
+          - "存储管理"
+          
+      - name: "runc"
+        description: "容器运行时"
+        features:
+          - "OCI标准兼容"
+          - "资源隔离"
+          - "安全沙箱"
+          - "性能优化"
+          
+      - name: "cri-o"
+        description: "Kubernetes容器运行时"
+        features:
+          - "Kubernetes原生"
+          - "轻量级"
+          - "安全优先"
+          - "标准兼容"
+          
+  - name: "resource_management"
+    description: "资源管理"
+    
+    resources:
+      - name: "cpu_management"
+        description: "CPU管理"
+        limits:
+          - name: "cpu_limit"
+            type: "cpu"
+            value: "2.0"
+            unit: "cores"
+            description: "CPU限制"
+          - name: "cpu_reservation"
+            type: "cpu"
+            value: "1.0"
+            unit: "cores"
+            description: "CPU预留"
+            
+      - name: "memory_management"
+        description: "内存管理"
+        limits:
+          - name: "memory_limit"
+            type: "memory"
+            value: "2Gi"
+            unit: "bytes"
+            description: "内存限制"
+          - name: "memory_reservation"
+            type: "memory"
+            value: "1Gi"
+            unit: "bytes"
+            description: "内存预留"
+            
+      - name: "disk_management"
+        description: "磁盘管理"
+        limits:
+          - name: "disk_limit"
+            type: "disk"
+            value: "10Gi"
+            unit: "bytes"
+            description: "磁盘限制"
+          - name: "iops_limit"
+            type: "iops"
+            value: "1000"
+            unit: "iops"
+            description: "IOPS限制"
+            
+      - name: "network_management"
+        description: "网络管理"
+        limits:
+          - name: "bandwidth_limit"
+            type: "bandwidth"
+            value: "100Mbps"
+            unit: "bits_per_second"
+            description: "带宽限制"
+          - name: "connection_limit"
+            type: "connections"
+            value: "1000"
+            unit: "connections"
+            description: "连接数限制"
+```
+
+### 容器网络模型
 
 ```yaml
 # 容器网络定义
-container_network:
-  network_mode: "bridge"
-  
-  interfaces:
-    - name: "eth0"
-      type: "bridge"
-      ip_address: "172.17.0.2"
-      subnet: "172.17.0.0/16"
-      gateway: "172.17.0.1"
-      
-  port_mappings:
-    - container_port: 3000
-      host_port: 8080
-      protocol: "TCP"
-      bind_address: "0.0.0.0"
-      
-  dns:
-    servers: ["8.8.8.8", "8.8.4.4"]
-    search_domains: ["example.com"]
+container_network_definitions:
+  - name: "network_modes"
+    description: "网络模式"
     
-  firewall_rules:
-    - direction: "ingress"
-      protocol: "TCP"
-      port: 3000
-      source: "0.0.0.0/0"
-      action: "allow"
-      
-    - direction: "egress"
-      protocol: "TCP"
-      port: 53
-      destination: "8.8.8.8"
-      action: "allow"
+    modes:
+      - name: "bridge_mode"
+        description: "桥接模式"
+        features:
+          - "默认网络模式"
+          - "NAT网络"
+          - "端口映射"
+          - "容器间通信"
+        configuration:
+          - name: "bridge_name"
+            value: "docker0"
+            description: "桥接网络名称"
+          - name: "subnet"
+            value: "172.17.0.0/16"
+            description: "子网配置"
+          - name: "gateway"
+            value: "172.17.0.1"
+            description: "网关地址"
+            
+      - name: "host_mode"
+        description: "主机模式"
+        features:
+          - "共享主机网络"
+          - "高性能"
+          - "端口冲突"
+          - "安全风险"
+        configuration:
+          - name: "network_interface"
+            value: "host"
+            description: "使用主机网络接口"
+            
+      - name: "overlay_mode"
+        description: "覆盖网络模式"
+        features:
+          - "跨主机通信"
+          - "服务发现"
+          - "负载均衡"
+          - "加密通信"
+        configuration:
+          - name: "overlay_network"
+            value: "my_overlay"
+            description: "覆盖网络名称"
+          - name: "encryption"
+            value: "true"
+            description: "启用加密"
+            
+      - name: "macvlan_mode"
+        description: "MACVLAN模式"
+        features:
+          - "直接网络访问"
+          - "高性能"
+          - "MAC地址管理"
+          - "网络隔离"
+        configuration:
+          - name: "parent_interface"
+            value: "eth0"
+            description: "父网络接口"
+          - name: "subnet"
+            value: "192.168.1.0/24"
+            description: "子网配置"
+            
+  - name: "network_configuration"
+    description: "网络配置"
+    
+    configuration:
+      - name: "port_mapping"
+        description: "端口映射"
+        mapping:
+          - host_port: 8080
+            container_port: 80
+            protocol: "tcp"
+            description: "HTTP端口映射"
+          - host_port: 8443
+            container_port: 443
+            protocol: "tcp"
+            description: "HTTPS端口映射"
+            
+      - name: "dns_configuration"
+        description: "DNS配置"
+        dns:
+          - server: "8.8.8.8"
+            description: "Google DNS"
+          - server: "8.8.4.4"
+            description: "Google DNS备用"
+            
+      - name: "network_aliases"
+        description: "网络别名"
+        aliases:
+          - name: "web"
+            description: "Web服务别名"
+          - name: "api"
+            description: "API服务别名"
+```
+
+### 容器存储模型
+
+```yaml
+# 容器存储定义
+container_storage_definitions:
+  - name: "volume_types"
+    description: "卷类型"
+    
+    types:
+      - name: "bind_mount"
+        description: "绑定挂载"
+        features:
+          - "直接挂载主机目录"
+          - "高性能"
+          - "数据持久化"
+          - "共享访问"
+        configuration:
+          - name: "host_path"
+            value: "/data/app"
+            description: "主机路径"
+          - name: "container_path"
+            value: "/app/data"
+            description: "容器路径"
+          - name: "read_only"
+            value: "false"
+            description: "只读模式"
+            
+      - name: "named_volume"
+        description: "命名卷"
+        features:
+          - "Docker管理"
+          - "数据持久化"
+          - "备份恢复"
+          - "跨容器共享"
+        configuration:
+          - name: "volume_name"
+            value: "app_data"
+            description: "卷名称"
+          - name: "driver"
+            value: "local"
+            description: "存储驱动"
+          - name: "options"
+            value: "type=nfs,o=addr=192.168.1.100,rw"
+            description: "存储选项"
+            
+      - name: "tmpfs_mount"
+        description: "临时文件系统"
+        features:
+          - "内存存储"
+          - "高性能"
+          - "临时数据"
+          - "容器销毁时清除"
+        configuration:
+          - name: "size"
+            value: "100m"
+            description: "存储大小"
+          - name: "mode"
+            value: "1777"
+            description: "权限模式"
+            
+  - name: "storage_drivers"
+    description: "存储驱动"
+    
+    drivers:
+      - name: "overlay2"
+        description: "Overlay2存储驱动"
+        features:
+          - "分层存储"
+          - "写时复制"
+          - "高性能"
+          - "空间效率"
+        configuration:
+          - name: "storage_root"
+            value: "/var/lib/docker"
+            description: "存储根目录"
+          - name: "driver_opts"
+            value: "overlay2.override_kernel_check=true"
+            description: "驱动选项"
+            
+      - name: "aufs"
+        description: "AUFS存储驱动"
+        features:
+          - "联合文件系统"
+          - "分层存储"
+          - "兼容性好"
+          - "性能一般"
+        configuration:
+          - name: "storage_root"
+            value: "/var/lib/docker/aufs"
+            description: "存储根目录"
+            
+      - name: "devicemapper"
+        description: "Device Mapper存储驱动"
+        features:
+          - "块设备存储"
+          - "高性能"
+          - "精简配置"
+          - "快照支持"
+        configuration:
+          - name: "storage_device"
+            value: "/dev/sdb"
+            description: "存储设备"
+          - name: "data_device"
+            value: "/dev/sdc"
+            description: "数据设备"
+```
+
+### 容器生命周期模型
+
+```yaml
+# 容器生命周期定义
+container_lifecycle_definitions:
+  - name: "lifecycle_states"
+    description: "生命周期状态"
+    
+    states:
+      - name: "created"
+        description: "已创建"
+        characteristics:
+          - "镜像已下载"
+          - "容器已创建"
+          - "尚未启动"
+          - "可配置启动参数"
+          
+      - name: "running"
+        description: "运行中"
+        characteristics:
+          - "容器已启动"
+          - "进程正在运行"
+          - "网络已配置"
+          - "存储已挂载"
+          
+      - name: "paused"
+        description: "已暂停"
+        characteristics:
+          - "进程已暂停"
+          - "状态保持"
+          - "可恢复运行"
+          - "资源占用减少"
+          
+      - name: "stopped"
+        description: "已停止"
+        characteristics:
+          - "进程已终止"
+          - "网络已断开"
+          - "存储保持"
+          - "可重新启动"
+          
+      - name: "removed"
+        description: "已删除"
+        characteristics:
+          - "容器已删除"
+          - "存储已清理"
+          - "网络已清理"
+          - "不可恢复"
+          
+  - name: "lifecycle_events"
+    description: "生命周期事件"
+    
+    events:
+      - name: "create_event"
+        description: "创建事件"
+        triggers:
+          - "docker create"
+          - "docker run"
+          - "docker-compose up"
+        actions:
+          - "下载镜像"
+          - "创建容器"
+          - "配置网络"
+          - "挂载存储"
+          
+      - name: "start_event"
+        description: "启动事件"
+        triggers:
+          - "docker start"
+          - "docker run"
+          - "系统重启"
+        actions:
+          - "启动进程"
+          - "配置网络"
+          - "挂载存储"
+          - "执行启动命令"
+          
+      - name: "stop_event"
+        description: "停止事件"
+        triggers:
+          - "docker stop"
+          - "docker kill"
+          - "系统关闭"
+        actions:
+          - "发送停止信号"
+          - "等待进程终止"
+          - "清理资源"
+          - "保存状态"
+          
+      - name: "remove_event"
+        description: "删除事件"
+        triggers:
+          - "docker rm"
+          - "docker-compose down"
+          - "系统清理"
+        actions:
+          - "停止容器"
+          - "删除容器"
+          - "清理存储"
+          - "清理网络"
 ```
 
 ## 国际标准对标
@@ -256,243 +571,401 @@ container_network:
 
 #### OCI (Open Container Initiative)
 
-- **版本**：OCI 1.1
-- **规范**：容器运行时规范、镜像规范
-- **核心概念**：Bundle、Runtime、Image Format
+- **版本**：OCI 1.0
+- **标准**：Open Container Initiative
+- **核心概念**：Container Runtime、Image Format、Distribution
 - **工具支持**：runc、containerd、CRI-O
 
 #### Docker
 
-- **版本**：Docker 24.0+
-- **规范**：Dockerfile、docker-compose
-- **核心概念**：Image、Container、Volume、Network
-- **工具支持**：Docker Engine、Docker Compose、Docker Swarm
+- **版本**：Docker 20.10+
+- **标准**：Docker Engine
+- **核心概念**：Container、Image、Volume、Network
+- **工具支持**：Docker CLI、Docker Compose、Docker Swarm
 
 #### Kubernetes
 
 - **版本**：Kubernetes 1.28+
-- **规范**：Pod、Container、Service、Deployment
-- **核心概念**：Pod、Container、Service、Volume
+- **标准**：Kubernetes Container Runtime Interface
+- **核心概念**：Pod、Container、Volume、Service
 - **工具支持**：kubectl、kubeadm、Helm
 
-### 行业标准
+### 容器编排标准
 
-#### 云原生标准
+#### Docker Swarm
 
-- **CNCF**：云原生计算基金会标准
-- **OCI**：开放容器倡议标准
-- **CNAB**：云原生应用包标准
-- **Helm**：Kubernetes包管理器标准
+- **版本**：Docker Swarm 1.0+
+- **标准**：Docker Swarm Mode
+- **核心概念**：Service、Task、Node、Stack
+- **工具支持**：Docker Swarm CLI、Docker Compose
 
-#### 安全标准
+#### Kubernetes1
 
-- **CIS Docker Benchmark**：Docker安全基准
-- **CIS Kubernetes Benchmark**：Kubernetes安全基准
-- **NIST Container Security**：容器安全标准
-- **OWASP Container Security**：容器安全指南
+- **版本**：Kubernetes 1.28+
+- **标准**：Kubernetes API
+- **核心概念**：Deployment、Service、ConfigMap、Secret
+- **工具支持**：kubectl、kubeadm、Helm
+
+#### Apache Mesos
+
+- **版本**：Mesos 1.10+
+- **标准**：Apache Mesos
+- **核心概念**：Framework、Task、Resource、Scheduler
+- **工具支持**：Marathon、Chronos、Mesos CLI
 
 ## 著名大学课程对标
 
 ### 系统课程
 
+#### MIT 6.033 - Computer System Engineering
+
+- **课程内容**：系统工程、操作系统、虚拟化
+- **容器建模相关**：容器技术、资源隔离、系统调用
+- **实践项目**：容器运行时实现
+- **相关技术**：Docker、containerd、runc
+
+#### Stanford CS140 - Operating Systems
+
+- **课程内容**：操作系统、进程管理、虚拟化
+- **容器建模相关**：容器隔离、资源管理、进程控制
+- **实践项目**：容器引擎实现
+- **相关技术**：Linux Containers、cgroups、namespaces
+
+#### CMU 15-410 - Operating System Design and Implementation
+
+- **课程内容**：操作系统设计、内核开发、系统编程
+- **容器建模相关**：容器技术、系统调用、资源管理
+- **实践项目**：容器运行时系统
+- **相关技术**：Linux内核、系统调用、进程管理
+
+### 分布式系统课程
+
 #### MIT 6.824 - Distributed Systems
 
-- **课程内容**：分布式系统、容错、一致性
-- **容器相关**：容器编排、服务发现、负载均衡
-- **实践项目**：分布式容器系统
+- **课程内容**：分布式系统、容器编排、服务发现
+- **容器建模相关**：容器编排、服务发现、负载均衡
+- **实践项目**：容器编排系统
 - **相关技术**：Kubernetes、Docker Swarm、Mesos
 
 #### Stanford CS244 - Advanced Topics in Networking
 
-- **课程内容**：网络协议、性能优化、虚拟化
-- **容器相关**：容器网络、网络虚拟化、服务网格
-- **实践项目**：容器网络工具
-- **相关技术**：Calico、Flannel、Istio
-
-#### CMU 15-440 - Distributed Systems
-
-- **课程内容**：分布式系统、网络编程、系统设计
-- **容器相关**：容器编排、分布式存储、故障恢复
-- **实践项目**：容器编排系统
-- **相关技术**：Kubernetes、etcd、Raft
-
-### 虚拟化课程
-
-#### MIT 6.828 - Operating System Engineering
-
-- **课程内容**：操作系统、内核开发、虚拟化
-- **容器相关**：容器运行时、命名空间、cgroup
-- **实践项目**：容器运行时实现
-- **相关技术**：runc、containerd、gVisor
-
-#### Stanford CS140 - Operating Systems
-
-- **课程内容**：操作系统原理、进程管理、内存管理
-- **容器相关**：进程隔离、资源管理、文件系统
-- **实践项目**：容器隔离机制
-- **相关技术**：namespaces、cgroups、overlayfs
+- **课程内容**：网络技术、容器网络、服务网格
+- **容器建模相关**：容器网络、服务发现、负载均衡
+- **实践项目**：容器网络系统
+- **相关技术**：Docker Network、Kubernetes Service、Istio
 
 ## 工程实践
 
 ### 容器设计模式
 
-#### 微服务容器化
+#### 单容器模式
 
 ```yaml
-# 微服务容器化模式
-microservice_containerization:
-  service_decomposition:
-    - service: "user-service"
-      containers:
-        - name: "user-api"
-          image: "user-api:v1.0.0"
-          ports: [8080]
-        - name: "user-db"
-          image: "postgres:13"
-          ports: [5432]
-          
-    - service: "order-service"
-      containers:
-        - name: "order-api"
-          image: "order-api:v1.0.0"
-          ports: [8081]
-        - name: "order-db"
-          image: "mysql:8.0"
-          ports: [3306]
-          
-  service_discovery:
-    - type: "dns"
-      service: "user-service"
-      endpoints: ["user-api:8080"]
-      
-    - type: "dns"
-      service: "order-service"
-      endpoints: ["order-api:8081"]
-      
-  load_balancing:
-    - service: "user-service"
-      algorithm: "round_robin"
-      health_check: "/health"
-      
-    - service: "order-service"
-      algorithm: "least_connections"
-      health_check: "/health"
-```
-
-#### 云原生容器化
-
-```yaml
-# 云原生容器化模式
-cloud_native_containerization:
-  kubernetes_deployment:
-    - name: "web-application"
-      replicas: 3
-      containers:
-        - name: "web"
-          image: "web-app:v1.0.0"
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
-              
-  auto_scaling:
-    - type: "horizontal"
-      min_replicas: 3
-      max_replicas: 10
-      target_cpu_utilization: 70
-      
-  service_mesh:
-    - type: "istio"
-      services:
-        - "web-application"
-        - "api-gateway"
-      traffic_routing:
-        - destination: "web-application"
-          weight: 80
-        - destination: "web-application-v2"
-          weight: 20
-```
-
-### 容器安全实践
-
-#### 安全扫描
-
-```yaml
-# 容器安全扫描
-container_security_scanning:
-  image_scanning:
-    - tool: "Trivy"
-      frequency: "on_build"
-      severity_threshold: "medium"
-      scan_layers: true
-      
-    - tool: "Clair"
-      frequency: "on_push"
-      severity_threshold: "high"
-      scan_vulnerabilities: true
-      
-  runtime_security:
-    - tool: "Falco"
-      rules:
-        - "container_privileged"
-        - "container_shell"
-        - "container_network"
+# 单容器模式
+single_container_pattern:
+  description: "单个容器运行单个应用"
+  structure:
+    - name: "应用容器"
+      description: "运行单个应用"
+      components:
+        - "应用代码"
+        - "运行时环境"
+        - "配置文件"
+        - "依赖库"
         
-  network_security:
-    - type: "network_policy"
-      ingress:
-        - from:
-            - namespace_selector:
-                match_labels:
-                  name: "frontend"
-          ports:
-            - protocol: "TCP"
-              port: 8080
-              
-    - type: "pod_security_policy"
-      privileged: false
-      read_only_root_filesystem: true
-      run_as_non_root: true
+  benefits:
+    - "简单部署"
+    - "易于管理"
+    - "资源隔离"
+    - "版本控制"
+    
+  use_cases:
+    - "简单应用"
+    - "开发环境"
+    - "测试环境"
+    - "单服务部署"
+```
+
+#### 多容器模式
+
+```yaml
+# 多容器模式
+multi_container_pattern:
+  description: "多个容器协作运行应用"
+  structure:
+    - name: "应用容器"
+      description: "运行应用逻辑"
+      components:
+        - "业务逻辑"
+        - "API服务"
+        - "配置管理"
+        
+    - name: "数据容器"
+      description: "运行数据服务"
+      components:
+        - "数据库"
+        - "缓存服务"
+        - "文件存储"
+        
+    - name: "代理容器"
+      description: "运行代理服务"
+      components:
+        - "负载均衡"
+        - "反向代理"
+        - "SSL终止"
+        
+  benefits:
+    - "服务分离"
+    - "独立扩展"
+    - "故障隔离"
+    - "技术多样性"
+    
+  use_cases:
+    - "微服务架构"
+    - "复杂应用"
+    - "生产环境"
+    - "高可用部署"
+```
+
+#### 边车模式
+
+```yaml
+# 边车模式
+sidecar_pattern:
+  description: "主容器和边车容器协作"
+  structure:
+    - name: "主容器"
+      description: "运行主要应用"
+      components:
+        - "业务逻辑"
+        - "核心功能"
+        - "数据访问"
+        
+    - name: "边车容器"
+      description: "提供辅助功能"
+      components:
+        - "日志收集"
+        - "监控代理"
+        - "配置管理"
+        - "安全代理"
+        
+  benefits:
+    - "功能分离"
+    - "独立更新"
+    - "技术解耦"
+    - "可重用性"
+    
+  use_cases:
+    - "日志收集"
+    - "监控代理"
+    - "配置管理"
+    - "安全增强"
+```
+
+### 容器实现模式
+
+#### 容器编排模式
+
+```yaml
+# 容器编排模式
+container_orchestration_pattern:
+  description: "容器编排和管理"
+  components:
+    - name: "调度器"
+      description: "容器调度"
+      features:
+        - "资源调度"
+        - "负载均衡"
+        - "故障恢复"
+        - "自动扩缩容"
+        
+    - name: "服务发现"
+      description: "服务发现和注册"
+      features:
+        - "服务注册"
+        - "服务发现"
+        - "健康检查"
+        - "负载均衡"
+        
+    - name: "配置管理"
+      description: "配置管理"
+      features:
+        - "配置存储"
+        - "配置分发"
+        - "配置更新"
+        - "版本管理"
+        
+    - name: "存储管理"
+      description: "存储管理"
+      features:
+        - "卷管理"
+        - "数据持久化"
+        - "备份恢复"
+        - "存储编排"
+```
+
+#### 容器安全模式
+
+```yaml
+# 容器安全模式
+container_security_pattern:
+  description: "容器安全防护"
+  challenges:
+    - "镜像安全"
+    - "运行时安全"
+    - "网络安全"
+    - "数据安全"
+    
+  solutions:
+    - name: "镜像扫描"
+      description: "扫描容器镜像"
+      implementation:
+        - "漏洞扫描"
+        - "恶意代码检测"
+        - "合规检查"
+        - "签名验证"
+        
+    - name: "运行时保护"
+      description: "保护容器运行时"
+      implementation:
+        - "进程监控"
+        - "系统调用过滤"
+        - "资源限制"
+        - "沙箱隔离"
+        
+    - name: "网络安全"
+      description: "保护容器网络"
+      implementation:
+        - "网络隔离"
+        - "流量监控"
+        - "访问控制"
+        - "加密通信"
+        
+    - name: "数据保护"
+      description: "保护容器数据"
+      implementation:
+        - "数据加密"
+        - "访问控制"
+        - "审计日志"
+        - "备份加密"
 ```
 
 ## 最佳实践
 
 ### 容器设计原则
 
-1. **单一职责**：每个容器只运行一个应用进程
-2. **不可变性**：容器镜像应该是不可变的
-3. **最小化**：使用最小的基础镜像
-4. **安全性**：以非特权用户运行容器
+1. **单一职责**：每个容器只运行一个应用
+2. **最小化镜像**：使用最小化的基础镜像
+3. **无状态设计**：容器应该是无状态的
+4. **健康检查**：实现容器健康检查
 
-### 资源管理原则
+### 容器安全原则
 
-1. **资源限制**：为容器设置资源限制
-2. **资源请求**：为容器设置资源请求
-3. **资源监控**：监控容器的资源使用情况
-4. **资源优化**：根据监控数据优化资源配置
+1. **最小权限**：容器使用最小权限运行
+2. **镜像安全**：使用安全的容器镜像
+3. **网络安全**：实施网络隔离和访问控制
+4. **数据保护**：加密和保护敏感数据
 
-### 网络设计原则
+### 容器性能原则
 
-1. **网络隔离**：使用网络策略隔离容器网络
-2. **服务发现**：实现容器间的服务发现
-3. **负载均衡**：实现容器负载均衡
-4. **网络安全**：实施网络安全策略
+1. **资源限制**：设置合理的资源限制
+2. **镜像优化**：优化容器镜像大小
+3. **网络优化**：优化容器网络性能
+4. **存储优化**：选择合适的存储方案
+
+## 应用案例
+
+### 微服务容器化
+
+```yaml
+# 微服务容器化
+microservice_containerization:
+  description: "微服务架构的容器化部署"
+  components:
+    - name: "服务容器"
+      description: "各个微服务的容器"
+      services:
+        - "用户服务容器"
+        - "订单服务容器"
+        - "支付服务容器"
+        - "通知服务容器"
+        
+    - name: "数据容器"
+      description: "数据服务的容器"
+      services:
+        - "数据库容器"
+        - "缓存容器"
+        - "消息队列容器"
+        
+    - name: "基础设施容器"
+      description: "基础设施服务"
+      services:
+        - "API网关容器"
+        - "服务发现容器"
+        - "监控容器"
+        - "日志容器"
+        
+    - name: "编排管理"
+      description: "容器编排和管理"
+      features:
+        - "服务编排"
+        - "负载均衡"
+        - "自动扩缩容"
+        - "故障恢复"
+```
+
+### 持续集成容器化
+
+```yaml
+# 持续集成容器化
+ci_containerization:
+  description: "持续集成的容器化实现"
+  components:
+    - name: "构建容器"
+      description: "代码构建容器"
+      features:
+        - "代码编译"
+        - "单元测试"
+        - "代码质量检查"
+        - "构建产物"
+        
+    - name: "测试容器"
+      description: "测试执行容器"
+      features:
+        - "集成测试"
+        - "端到端测试"
+        - "性能测试"
+        - "安全测试"
+        
+    - name: "部署容器"
+      description: "应用部署容器"
+      features:
+        - "环境部署"
+        - "配置管理"
+        - "服务启动"
+        - "健康检查"
+        
+    - name: "监控容器"
+      description: "监控和日志容器"
+      features:
+        - "应用监控"
+        - "日志收集"
+        - "告警通知"
+        - "性能分析"
+```
 
 ## 相关概念
 
 - [网络建模](../network/theory.md)
-- [存储建模](../storage/theory.md)
 - [编排建模](../orchestration/theory.md)
+- [存储建模](../storage/theory.md)
 - [运行时建模](../theory.md)
 
 ## 参考文献
 
-1. Burns, B., & Beda, J. (2019). "Kubernetes: Up and Running"
-2. Hightower, K., et al. (2017). "Kubernetes: Up and Running"
-3. Turnbull, J. (2018). "The Art of Monitoring"
-4. Newman, S. (2021). "Building Microservices"
-5. Richardson, C. (2018). "Microservices Patterns"
-6. Vernon, V. (2013). "Implementing Domain-Driven Design"
+1. Solomon, H., & Pai, S. (2019). "Docker: Up & Running"
+2. Burns, B., & Beda, J. (2019). "Kubernetes: Up and Running"
+3. OCI (2017). "Open Container Initiative Runtime Specification"
+4. Docker (2023). "Docker Documentation"
+5. Kubernetes (2023). "Kubernetes Documentation"
+6. Bernstein, D. (2014). "Containers and Cloud: From LXC to Docker to Kubernetes"

@@ -1,389 +1,1125 @@
-# 模型驱动工程 (Model Driven Engineering, MDE)
+# 模型驱动工程理论 (Model-Driven Engineering Theory)
 
 ## 概念定义
 
-模型驱动工程是一种软件开发方法，以模型为核心，通过模型转换和代码生成技术，实现从需求到代码的自动化开发过程。
+模型驱动工程理论是一种软件开发方法论，通过抽象层次化的模型来驱动整个软件开发生命周期。它强调以模型为中心，通过模型转换、代码生成、模型验证等方式，实现从需求分析到代码实现的自动化过程。
 
 ### 核心特征
 
-1. **模型为中心**：以抽象模型作为开发的核心工件
-2. **自动化转换**：通过模型转换实现自动化代码生成
-3. **抽象层次**：支持多层次抽象和精化
-4. **平台无关**：模型与具体实现平台分离
+1. **模型为中心**：以抽象模型作为开发的核心驱动力
+2. **层次化抽象**：从业务模型到技术模型的层次化转换
+3. **自动化转换**：模型间的自动转换和代码生成
+4. **形式化验证**：基于模型的验证和验证
+5. **平台无关性**：模型与具体技术平台的解耦
 
 ## 理论基础
 
-### 模型层次理论
+### 模型驱动工程理论
 
-MDE基于模型层次理论，支持从抽象到具体的多层次建模：
-
-- **计算无关模型 (CIM)**：描述业务需求和约束
-- **平台无关模型 (PIM)**：描述系统功能和结构
-- **平台特定模型 (PSM)**：描述特定平台的实现
-- **代码模型 (Code)**：具体的可执行代码
-
-### 形式化定义
-
-设 M 为模型集合，T 为转换关系，则MDE可形式化为：
+模型驱动工程基于以下理论：
 
 ```text
-MDE = (M, T, G, V)
+MDE = (Models, Transformations, Metamodels, Tools, Processes)
 ```
 
 其中：
 
-- M 为模型集合 (Models)
-- T 为转换关系集合 (Transformations)
-- G 为生成器集合 (Generators)
-- V 为验证器集合 (Validators)
+- Models：模型（业务模型、平台模型、实现模型）
+- Transformations：转换（模型转换、代码生成、反向工程）
+- Metamodels：元模型（模型的结构和约束定义）
+- Tools：工具（建模工具、转换引擎、验证工具）
+- Processes：过程（MDE开发流程和方法）
 
-## 核心概念
-
-### 模型转换
-
-模型转换是MDE的核心机制，支持模型间的自动转换：
+### 模型驱动设计层次理论
 
 ```yaml
-# 模型转换示例
-transformation: PIM_to_PSM
-source: PlatformIndependentModel
-target: PlatformSpecificModel
-rules:
-  - name: entity_to_table
-    source_pattern: "Entity(name, attributes)"
-    target_pattern: "Table(name, columns)"
-    mapping:
-      - source: "entity.name"
-        target: "table.name"
-      - source: "entity.attributes"
-        target: "table.columns"
-        
-  - name: relationship_to_foreign_key
-    source_pattern: "Relationship(source, target, type)"
-    target_pattern: "ForeignKey(source_table, target_table, column)"
-    mapping:
-      - source: "relationship.source"
-        target: "foreign_key.source_table"
-      - source: "relationship.target"
-        target: "foreign_key.target_table"
+# 模型驱动设计层次
+mde_design_hierarchy:
+  computation_independent_model:
+    - "业务模型"
+    - "需求模型"
+    - "领域模型"
+    - "用例模型"
+    
+  platform_independent_model:
+    - "分析模型"
+    - "设计模型"
+    - "架构模型"
+    - "接口模型"
+    
+  platform_specific_model:
+    - "实现模型"
+    - "部署模型"
+    - "配置模型"
+    - "测试模型"
+    
+  code_model:
+    - "源代码"
+    - "配置文件"
+    - "部署脚本"
+    - "测试代码"
 ```
 
-### 代码生成
+## 核心组件
 
-代码生成将抽象模型转换为具体代码：
-
-```yaml
-# 代码生成示例
-code_generation:
-  templates:
-    - name: entity_class
-      language: "Java"
-      template: |
-        public class {{entity.name}} {
-          {% for attr in entity.attributes %}
-          private {{attr.type}} {{attr.name}};
-          {% endfor %}
-          
-          // Constructor
-          public {{entity.name}}() {}
-          
-          // Getters and Setters
-          {% for attr in entity.attributes %}
-          public {{attr.type}} get{{attr.name|title}}() {
-            return {{attr.name}};
-          }
-          
-          public void set{{attr.name|title}}({{attr.type}} {{attr.name}}) {
-            this.{{attr.name}} = {{attr.name}};
-          }
-          {% endfor %}
-        }
-        
-  generators:
-    - name: java_entity_generator
-      input: "EntityModel"
-      output: "JavaClass"
-      template: "entity_class"
-```
-
-### 模型验证
-
-模型验证确保模型的正确性和一致性：
+### 元模型定义
 
 ```yaml
-# 模型验证示例
-model_validation:
-  constraints:
-    - name: unique_entity_names
-      rule: "∀e1,e2 ∈ Entity : e1 ≠ e2 → e1.name ≠ e2.name"
-      severity: "error"
-      
-    - name: valid_relationship_types
-      rule: "∀r ∈ Relationship : r.type ∈ {one_to_one, one_to_many, many_to_many}"
-      severity: "warning"
-      
-    - name: circular_reference_check
-      rule: "¬∃e ∈ Entity : e references e"
-      severity: "error"
-```
-
-## 在Formal Framework中的应用
-
-### 数据模型驱动
-
-```yaml
-# 数据模型驱动示例
-data_model_driven:
-  models:
-    - level: "CIM"
-      description: "业务数据需求"
-      content: |
-        - 用户管理：用户注册、登录、信息维护
-        - 订单管理：订单创建、支付、发货、收货
-        - 商品管理：商品信息、库存、分类
-        
-    - level: "PIM"
-      description: "平台无关数据模型"
-      content: |
-        entities:
-          - User(id, name, email, password)
-          - Order(id, user_id, total_amount, status)
-          - Product(id, name, price, stock)
+# 元模型定义
+metamodel_definitions:
+  - name: "business_metamodel"
+    description: "业务元模型"
+    version: "1.0.0"
+    
+    concepts:
+      - name: "BusinessProcess"
+        description: "业务流程"
+        attributes:
+          - name: "name"
+            type: "String"
+            description: "流程名称"
+          - name: "description"
+            type: "String"
+            description: "流程描述"
+          - name: "owner"
+            type: "String"
+            description: "流程负责人"
+          - name: "version"
+            type: "String"
+            description: "流程版本"
         relationships:
-          - User -> Order (one_to_many)
-          - Order -> Product (many_to_many)
+          - name: "contains"
+            target: "BusinessActivity"
+            type: "composition"
+            description: "包含业务活动"
+          - name: "triggers"
+            target: "BusinessEvent"
+            type: "association"
+            description: "触发业务事件"
+            
+      - name: "BusinessActivity"
+        description: "业务活动"
+        attributes:
+          - name: "name"
+            type: "String"
+            description: "活动名称"
+          - name: "type"
+            type: "ActivityType"
+            description: "活动类型"
+          - name: "duration"
+            type: "Duration"
+            description: "预期持续时间"
+          - name: "cost"
+            type: "Money"
+            description: "预期成本"
+        relationships:
+          - name: "performedBy"
+            target: "BusinessRole"
+            type: "association"
+            description: "执行角色"
+          - name: "produces"
+            target: "BusinessArtifact"
+            type: "association"
+            description: "产生业务制品"
+          - name: "consumes"
+            target: "BusinessArtifact"
+            type: "association"
+            description: "消耗业务制品"
+            
+      - name: "BusinessRole"
+        description: "业务角色"
+        attributes:
+          - name: "name"
+            type: "String"
+            description: "角色名称"
+          - name: "description"
+            type: "String"
+            description: "角色描述"
+          - name: "skills"
+            type: "String[]"
+            description: "所需技能"
+          - name: "responsibilities"
+            type: "String[]"
+            description: "职责列表"
+        relationships:
+          - name: "assignedTo"
+            target: "BusinessActor"
+            type: "association"
+            description: "分配给业务参与者"
+          - name: "reportsTo"
+            target: "BusinessRole"
+            type: "association"
+            description: "汇报给上级角色"
+            
+      - name: "BusinessArtifact"
+        description: "业务制品"
+        attributes:
+          - name: "name"
+            type: "String"
+            description: "制品名称"
+          - name: "type"
+            type: "ArtifactType"
+            description: "制品类型"
+          - name: "format"
+            type: "String"
+            description: "制品格式"
+          - name: "location"
+            type: "String"
+            description: "存储位置"
+        relationships:
+          - name: "createdBy"
+            target: "BusinessActivity"
+            type: "association"
+            description: "创建活动"
+          - name: "usedBy"
+            target: "BusinessActivity"
+            type: "association"
+            description: "使用活动"
+            
+  - name: "system_metamodel"
+    description: "系统元模型"
+    version: "1.0.0"
+    
+    concepts:
+      - name: "System"
+        description: "系统"
+        attributes:
+          - name: "name"
+            type: "String"
+            description: "系统名称"
+          - name: "description"
+            type: "String"
+            description: "系统描述"
+          - name: "version"
+            type: "String"
+            description: "系统版本"
+          - name: "architecture"
+            type: "ArchitectureType"
+            description: "架构类型"
+        relationships:
+          - name: "contains"
+            target: "Component"
+            type: "composition"
+            description: "包含组件"
+          - name: "interfaces"
+            target: "Interface"
+            type: "composition"
+            description: "系统接口"
+          - name: "deploys"
+            target: "Deployment"
+            type: "association"
+            description: "部署配置"
+            
+      - name: "Component"
+        description: "组件"
+        attributes:
+          - name: "name"
+            type: "String"
+            description: "组件名称"
+          - name: "type"
+            type: "ComponentType"
+            description: "组件类型"
+          - name: "technology"
+            type: "String"
+            description: "技术栈"
+          - name: "version"
+            type: "String"
+            description: "组件版本"
+        relationships:
+          - name: "provides"
+            target: "Interface"
+            type: "composition"
+            description: "提供接口"
+          - name: "requires"
+            target: "Interface"
+            type: "association"
+            description: "需要接口"
+          - name: "dependsOn"
+            target: "Component"
+            type: "association"
+            description: "依赖组件"
+          - name: "contains"
+            target: "Class"
+            type: "composition"
+            description: "包含类"
+            
+      - name: "Interface"
+        description: "接口"
+        attributes:
+          - name: "name"
+            type: "String"
+            description: "接口名称"
+          - name: "type"
+            type: "InterfaceType"
+            description: "接口类型"
+          - name: "protocol"
+            type: "String"
+            description: "通信协议"
+          - name: "version"
+            type: "String"
+            description: "接口版本"
+        relationships:
+          - name: "defines"
+            target: "Operation"
+            type: "composition"
+            description: "定义操作"
+          - name: "uses"
+            target: "DataType"
+            type: "association"
+            description: "使用数据类型"
+          - name: "implements"
+            target: "Component"
+            type: "association"
+            description: "实现组件"
+            
+      - name: "Class"
+        description: "类"
+        attributes:
+          - name: "name"
+            type: "String"
+            description: "类名称"
+          - name: "visibility"
+            type: "Visibility"
+            description: "可见性"
+          - name: "abstract"
+            type: "Boolean"
+            description: "是否抽象"
+          - name: "final"
+            type: "Boolean"
+            description: "是否最终"
+        relationships:
+          - name: "hasAttributes"
+            target: "Attribute"
+            type: "composition"
+            description: "拥有属性"
+          - name: "hasMethods"
+            target: "Method"
+            type: "composition"
+            description: "拥有方法"
+          - name: "inheritsFrom"
+            target: "Class"
+            type: "association"
+            description: "继承自"
+          - name: "implements"
+            target: "Interface"
+            type: "association"
+            description: "实现接口"
+```
+
+### 模型转换定义
+
+```yaml
+# 模型转换定义
+transformation_definitions:
+  - name: "business_to_system_transformation"
+    description: "业务模型到系统模型转换"
+    source: "business_metamodel"
+    target: "system_metamodel"
+    
+    rules:
+      - name: "process_to_system"
+        description: "业务流程转换为系统"
+        source_pattern: "BusinessProcess"
+        target_pattern: "System"
+        mapping:
+          - source: "name"
+            target: "name"
+            transformation: "direct"
+          - source: "description"
+            target: "description"
+            transformation: "direct"
+          - source: "version"
+            target: "version"
+            transformation: "direct"
+          - source: "contains"
+            target: "contains"
+            transformation: "activity_to_component"
+            
+      - name: "activity_to_component"
+        description: "业务活动转换为组件"
+        source_pattern: "BusinessActivity"
+        target_pattern: "Component"
+        mapping:
+          - source: "name"
+            target: "name"
+            transformation: "direct"
+          - source: "type"
+            target: "type"
+            transformation: "activity_type_to_component_type"
+          - source: "performedBy"
+            target: "provides"
+            transformation: "role_to_interface"
+            
+      - name: "role_to_interface"
+        description: "业务角色转换为接口"
+        source_pattern: "BusinessRole"
+        target_pattern: "Interface"
+        mapping:
+          - source: "name"
+            target: "name"
+            transformation: "direct"
+          - source: "responsibilities"
+            target: "defines"
+            transformation: "responsibilities_to_operations"
+            
+  - name: "system_to_code_transformation"
+    description: "系统模型到代码转换"
+    source: "system_metamodel"
+    target: "code_metamodel"
+    
+    rules:
+      - name: "component_to_class"
+        description: "组件转换为类"
+        source_pattern: "Component"
+        target_pattern: "Class"
+        mapping:
+          - source: "name"
+            target: "name"
+            transformation: "direct"
+          - source: "type"
+            target: "visibility"
+            transformation: "component_type_to_visibility"
+          - source: "provides"
+            target: "implements"
+            transformation: "interface_to_interface"
+          - source: "contains"
+            target: "hasMethods"
+            transformation: "class_to_methods"
+            
+      - name: "interface_to_interface"
+        description: "接口转换为代码接口"
+        source_pattern: "Interface"
+        target_pattern: "CodeInterface"
+        mapping:
+          - source: "name"
+            target: "name"
+            transformation: "direct"
+          - source: "defines"
+            target: "hasMethods"
+            transformation: "operation_to_method"
+          - source: "uses"
+            target: "imports"
+            transformation: "datatype_to_import"
+            
+      - name: "operation_to_method"
+        description: "操作转换为方法"
+        source_pattern: "Operation"
+        target_pattern: "Method"
+        mapping:
+          - source: "name"
+            target: "name"
+            transformation: "direct"
+          - source: "parameters"
+            target: "parameters"
+            transformation: "parameter_to_parameter"
+          - source: "returnType"
+            target: "returnType"
+            transformation: "datatype_to_type"
+```
+
+### 代码生成模板
+
+```yaml
+# 代码生成模板
+code_generation_templates:
+  - name: "java_class_template"
+    description: "Java类生成模板"
+    language: "Java"
+    
+    template: |
+      package {{package}};
+      
+      {{#imports}}
+      import {{import}};
+      {{/imports}}
+      
+      {{#annotations}}
+      @{{annotation}}
+      {{/annotations}}
+      public {{#abstract}}abstract {{/abstract}}class {{className}} {{#extends}}extends {{superClass}} {{/extends}}{{#implements}}implements {{#interfaces}}{{interface}}{{^last}}, {{/last}}{{/interfaces}} {{/implements}}{
           
-    - level: "PSM"
-      description: "数据库特定模型"
-      content: |
-        tables:
-          - users(id, name, email, password_hash)
-          - orders(id, user_id, total_amount, status)
-          - products(id, name, price, stock)
-          - order_items(order_id, product_id, quantity)
-        constraints:
-          - foreign_key: orders.user_id -> users.id
-          - foreign_key: order_items.order_id -> orders.id
+          {{#attributes}}
+          {{#visibility}}{{visibility}} {{/visibility}}{{#static}}static {{/static}}{{#final}}final {{/final}}{{type}} {{name}}{{#initialValue}} = {{initialValue}}{{/initialValue}};
+          {{/attributes}}
+          
+          {{#constructors}}
+          public {{className}}({{#parameters}}{{type}} {{name}}{{^last}}, {{/last}}{{/parameters}}) {
+              {{#superCall}}super({{#superParameters}}{{name}}{{^last}}, {{/last}}{{/superParameters}});
+              {{/superCall}}
+              {{#assignments}}
+              this.{{attribute}} = {{value}};
+              {{/assignments}}
+          }
+          {{/constructors}}
+          
+          {{#methods}}
+          {{#visibility}}{{visibility}} {{/visibility}}{{#static}}static {{/static}}{{#final}}final {{/final}}{{returnType}} {{methodName}}({{#parameters}}{{type}} {{name}}{{^last}}, {{/last}}{{/parameters}}) {{#throws}}throws {{#exceptions}}{{exception}}{{^last}}, {{/last}}{{/exceptions}} {{/throws}}{
+              {{#body}}
+              {{line}}
+              {{/body}}
+          }
+          {{/methods}}
+      }
+      
+    variables:
+      - name: "package"
+        type: "String"
+        description: "包名"
+      - name: "imports"
+        type: "String[]"
+        description: "导入语句"
+      - name: "annotations"
+        type: "String[]"
+        description: "注解"
+      - name: "className"
+        type: "String"
+        description: "类名"
+      - name: "abstract"
+        type: "Boolean"
+        description: "是否抽象"
+      - name: "extends"
+        type: "String"
+        description: "继承的父类"
+      - name: "implements"
+        type: "String[]"
+        description: "实现的接口"
+      - name: "attributes"
+        type: "Attribute[]"
+        description: "属性列表"
+      - name: "constructors"
+        type: "Constructor[]"
+        description: "构造函数"
+      - name: "methods"
+        type: "Method[]"
+        description: "方法列表"
+        
+  - name: "java_interface_template"
+    description: "Java接口生成模板"
+    language: "Java"
+    
+    template: |
+      package {{package}};
+      
+      {{#imports}}
+      import {{import}};
+      {{/imports}}
+      
+      {{#annotations}}
+      @{{annotation}}
+      {{/annotations}}
+      public interface {{interfaceName}} {{#extends}}extends {{#superInterfaces}}{{superInterface}}{{^last}}, {{/last}}{{/superInterfaces}} {{/extends}}{
+          
+          {{#constants}}
+          {{#visibility}}{{visibility}} {{/visibility}}static final {{type}} {{name}} = {{value}};
+          {{/constants}}
+          
+          {{#methods}}
+          {{returnType}} {{methodName}}({{#parameters}}{{type}} {{name}}{{^last}}, {{/last}}{{/parameters}}) {{#throws}}throws {{#exceptions}}{{exception}}{{^last}}, {{/last}}{{/exceptions}} {{/throws}};
+          {{/methods}}
+      }
+      
+    variables:
+      - name: "package"
+        type: "String"
+        description: "包名"
+      - name: "imports"
+        type: "String[]"
+        description: "导入语句"
+      - name: "annotations"
+        type: "String[]"
+        description: "注解"
+      - name: "interfaceName"
+        type: "String"
+        description: "接口名"
+      - name: "extends"
+        type: "String[]"
+        description: "继承的接口"
+      - name: "constants"
+        type: "Constant[]"
+        description: "常量列表"
+      - name: "methods"
+        type: "Method[]"
+        description: "方法列表"
+        
+  - name: "spring_service_template"
+    description: "Spring服务类生成模板"
+    language: "Java"
+    
+    template: |
+      package {{package}};
+      
+      import org.springframework.stereotype.Service;
+      import org.springframework.beans.factory.annotation.Autowired;
+      import org.springframework.transaction.annotation.Transactional;
+      {{#imports}}
+      import {{import}};
+      {{/imports}}
+      
+      @Service
+      @Transactional
+      public class {{serviceName}} {
+          
+          {{#dependencies}}
+          @Autowired
+          private {{type}} {{name}};
+          {{/dependencies}}
+          
+          {{#methods}}
+          public {{returnType}} {{methodName}}({{#parameters}}{{type}} {{name}}{{^last}}, {{/last}}{{/parameters}}) {
+              {{#body}}
+              {{line}}
+              {{/body}}
+          }
+          {{/methods}}
+      }
+      
+    variables:
+      - name: "package"
+        type: "String"
+        description: "包名"
+      - name: "imports"
+        type: "String[]"
+        description: "导入语句"
+      - name: "serviceName"
+        type: "String"
+        description: "服务类名"
+      - name: "dependencies"
+        type: "Dependency[]"
+        description: "依赖注入"
+      - name: "methods"
+        type: "Method[]"
+        description: "服务方法"
 ```
 
-### 业务逻辑驱动
+### 模型验证规则
 
 ```yaml
-# 业务逻辑驱动示例
-business_logic_driven:
-  models:
-    - level: "CIM"
-      description: "业务流程需求"
-      content: |
-        - 订单处理流程：验证订单 -> 检查库存 -> 处理支付 -> 发货
-        - 用户注册流程：验证信息 -> 创建账户 -> 发送确认邮件
+# 模型验证规则
+validation_rules:
+  - name: "business_model_validation"
+    description: "业务模型验证规则"
+    
+    rules:
+      - name: "process_completeness"
+        description: "流程完整性验证"
+        condition: "BusinessProcess.contains->size() > 0"
+        message: "业务流程必须包含至少一个业务活动"
+        severity: "error"
         
-    - level: "PIM"
-      description: "平台无关业务逻辑"
-      content: |
-        workflows:
-          - name: OrderProcessing
-            steps:
-              - validate_order
-              - check_inventory
-              - process_payment
-              - ship_order
-        rules:
-          - name: order_validation
-            condition: "order.total_amount > 0"
-            action: "approve_order"
-            
-    - level: "PSM"
-      description: "特定平台实现"
-      content: |
-        services:
-          - OrderService.java
-          - PaymentService.java
-          - InventoryService.java
-        controllers:
-          - OrderController.java
-          - UserController.java
+      - name: "activity_consistency"
+        description: "活动一致性验证"
+        condition: "BusinessActivity.performedBy->notEmpty()"
+        message: "业务活动必须指定执行角色"
+        severity: "warning"
+        
+      - name: "role_hierarchy"
+        description: "角色层次验证"
+        condition: "BusinessRole.reportsTo->forAll(r | r <> self)"
+        message: "角色不能向自己汇报"
+        severity: "error"
+        
+      - name: "artifact_usage"
+        description: "制品使用验证"
+        condition: "BusinessArtifact.usedBy->notEmpty() or BusinessArtifact.createdBy->notEmpty()"
+        message: "业务制品必须被使用或创建"
+        severity: "warning"
+        
+  - name: "system_model_validation"
+    description: "系统模型验证规则"
+    
+    rules:
+      - name: "component_interface"
+        description: "组件接口验证"
+        condition: "Component.provides->notEmpty()"
+        message: "组件必须提供至少一个接口"
+        severity: "error"
+        
+      - name: "interface_operation"
+        description: "接口操作验证"
+        condition: "Interface.defines->notEmpty()"
+        message: "接口必须定义至少一个操作"
+        severity: "error"
+        
+      - name: "dependency_cycle"
+        description: "依赖循环验证"
+        condition: "Component.dependsOn->closure()->excludes(self)"
+        message: "组件依赖不能形成循环"
+        severity: "error"
+        
+      - name: "class_method"
+        description: "类方法验证"
+        condition: "Class.hasMethods->notEmpty()"
+        message: "类必须包含至少一个方法"
+        severity: "warning"
 ```
 
-### API设计驱动
+## 国际标准对标
+
+### 模型驱动架构标准
+
+#### OMG MDA (Model-Driven Architecture)
+
+- **版本**：MDA 2.0
+- **标准**：Object Management Group
+- **核心概念**：CIM、PIM、PSM、代码模型
+- **工具支持**：Eclipse Modeling Framework、Papyrus、MagicDraw
+
+#### OMG UML (Unified Modeling Language)
+
+- **版本**：UML 2.5.1
+- **标准**：Object Management Group
+- **核心概念**：类图、序列图、活动图、状态图
+- **工具支持**：Enterprise Architect、Visual Paradigm、StarUML
+
+#### OMG MOF (Meta-Object Facility)
+
+- **版本**：MOF 2.5.1
+- **标准**：Object Management Group
+- **核心概念**：元模型、反射、抽象语法
+- **工具支持**：Eclipse EMF、ATL、QVT
+
+### 模型转换标准
+
+#### OMG QVT (Query/View/Transformation)
+
+- **版本**：QVT 1.3
+- **标准**：Object Management Group
+- **核心概念**：模型转换、查询、视图
+- **工具支持**：Eclipse QVTd、ATL、Medini QVT
+
+#### ATL (Atlas Transformation Language)
+
+- **版本**：ATL 3.0
+- **标准**：Eclipse Foundation
+- **核心概念**：声明式转换、命令式转换、辅助函数
+- **工具支持**：Eclipse ATL、ATL Zoo
+
+#### Xtend
+
+- **版本**：Xtend 2.25
+- **标准**：Eclipse Foundation
+- **核心概念**：表达式语言、模板、代码生成
+- **工具支持**：Eclipse Xtext、Xtend IDE
+
+## 著名大学课程对标
+
+### 软件工程课程
+
+#### MIT 6.170 - Software Studio
+
+- **课程内容**：软件工程、设计模式、模型驱动开发
+- **MDE相关**：UML建模、代码生成、模型验证
+- **实践项目**：模型驱动的Web应用开发
+- **相关技术**：UML、Eclipse、代码生成
+
+#### Stanford CS210 - Software Project Experience with Corporate Partners
+
+- **课程内容**：软件项目、企业合作、工程实践
+- **MDE相关**：需求建模、系统设计、代码生成
+- **实践项目**：企业级软件项目开发
+- **相关技术**：需求工程、系统架构、开发工具
+
+#### CMU 15-413 - Software Engineering
+
+- **课程内容**：软件工程、开发方法、质量保证
+- **MDE相关**：模型驱动开发、自动化测试、持续集成
+- **实践项目**：大型软件系统开发
+- **相关技术**：敏捷开发、测试驱动、CI/CD
+
+### 编译器课程
+
+#### MIT 6.035 - Computer Language Engineering
+
+- **课程内容**：编译器、语言设计、代码生成
+- **MDE相关**：抽象语法树、代码生成、优化
+- **实践项目**：编译器实现
+- **相关技术**：ANTLR、LLVM、代码生成
+
+#### Stanford CS143 - Compilers
+
+- **课程内容**：编译器原理、语法分析、代码生成
+- **MDE相关**：语法树、语义分析、代码生成
+- **实践项目**：编译器前端实现
+- **相关技术**：Flex、Bison、AST
+
+## 工程实践
+
+### MDE开发模式
+
+#### 瀑布式MDE模式
 
 ```yaml
-# API设计驱动示例
-api_design_driven:
-  models:
-    - level: "CIM"
-      description: "API需求"
-      content: |
-        - 用户管理API：注册、登录、信息查询
-        - 订单管理API：创建订单、查询订单、取消订单
-        - 商品管理API：商品列表、商品详情、库存查询
+# 瀑布式MDE模式
+waterfall_mde_pattern:
+  description: "瀑布式模型驱动工程"
+  phases:
+    - name: "需求分析"
+      description: "业务需求分析"
+      activities:
+        - "业务建模"
+        - "需求收集"
+        - "需求分析"
+        - "需求验证"
+      outputs:
+        - "业务模型"
+        - "需求文档"
+        - "用例模型"
         
-    - level: "PIM"
-      description: "平台无关API设计"
-      content: |
-        endpoints:
-          - path: "/api/users"
-            methods: [GET, POST]
-            parameters: [page, size]
-            responses: [UserList, User]
-          - path: "/api/orders"
-            methods: [GET, POST, PUT]
-            parameters: [order_id]
-            responses: [OrderList, Order]
-            
-    - level: "PSM"
-      description: "RESTful API实现"
-      content: |
-        controllers:
-          - UserController.java
-          - OrderController.java
-        dtos:
-          - UserDTO.java
-          - OrderDTO.java
-        responses:
-          - ApiResponse.java
+    - name: "系统设计"
+      description: "系统架构设计"
+      activities:
+        - "架构设计"
+        - "详细设计"
+        - "接口设计"
+        - "数据设计"
+      outputs:
+        - "系统模型"
+        - "架构文档"
+        - "设计模型"
+        
+    - name: "代码生成"
+      description: "自动代码生成"
+      activities:
+        - "模型转换"
+        - "代码生成"
+        - "配置生成"
+        - "测试生成"
+      outputs:
+        - "源代码"
+        - "配置文件"
+        - "测试代码"
+        
+    - name: "测试验证"
+      description: "系统测试验证"
+      activities:
+        - "单元测试"
+        - "集成测试"
+        - "系统测试"
+        - "验收测试"
+      outputs:
+        - "测试报告"
+        - "缺陷报告"
+        - "验证结果"
+        
+    - name: "部署维护"
+      description: "系统部署维护"
+      activities:
+        - "系统部署"
+        - "用户培训"
+        - "系统维护"
+        - "版本更新"
+      outputs:
+        - "部署文档"
+        - "用户手册"
+        - "维护记录"
 ```
 
-## 工具和技术
+#### 敏捷MDE模式
 
-### 建模工具
+```yaml
+# 敏捷MDE模式
+agile_mde_pattern:
+  description: "敏捷模型驱动工程"
+  principles:
+    - "迭代开发"
+    - "持续集成"
+    - "快速反馈"
+    - "模型演化"
+    
+  iterations:
+    - name: "迭代规划"
+      description: "迭代计划制定"
+      activities:
+        - "需求优先级排序"
+        - "模型增量设计"
+        - "转换规则定义"
+        - "测试用例设计"
+        
+    - name: "模型开发"
+      description: "模型增量开发"
+      activities:
+        - "模型创建"
+        - "模型验证"
+        - "模型转换"
+        - "代码生成"
+        
+    - name: "集成测试"
+      description: "持续集成测试"
+      activities:
+        - "代码集成"
+        - "自动化测试"
+        - "回归测试"
+        - "性能测试"
+        
+    - name: "评审交付"
+      description: "迭代评审交付"
+      activities:
+        - "模型评审"
+        - "代码评审"
+        - "测试评审"
+        - "用户验收"
+```
 
-1. **UML工具**：Enterprise Architect、Visual Paradigm、StarUML
-2. **DSL工具**：Xtext、JetBrains MPS、MetaEdit+
-3. **模型编辑器**：Eclipse Modeling Framework (EMF)、GMF
-4. **可视化工具**：Draw.io、Lucidchart、Visio
+### MDE工具链模式
 
-### 转换引擎
+#### 集成开发环境
 
-1. **ATL**：Atlas Transformation Language
-2. **QVT**：Query/View/Transformation
-3. **Acceleo**：基于模板的代码生成
-4. **Xtend**：基于Java的转换语言
+```yaml
+# 集成开发环境
+integrated_development_environment:
+  description: "MDE集成开发环境"
+  components:
+    - name: "建模工具"
+      description: "可视化建模工具"
+      features:
+        - "图形化建模"
+        - "模型编辑器"
+        - "模型浏览器"
+        - "模型验证器"
+      tools:
+        - "Eclipse Papyrus"
+        - "Visual Paradigm"
+        - "Enterprise Architect"
+        - "MagicDraw"
+        
+    - name: "转换引擎"
+      description: "模型转换引擎"
+      features:
+        - "模型转换"
+        - "代码生成"
+        - "反向工程"
+        - "转换验证"
+      tools:
+        - "Eclipse ATL"
+        - "Eclipse QVTd"
+        - "Xtend"
+        - "Acceleo"
+        
+    - name: "版本控制"
+      description: "模型版本控制"
+      features:
+        - "模型版本管理"
+        - "分支合并"
+        - "冲突解决"
+        - "历史追踪"
+      tools:
+        - "Git"
+        - "SVN"
+        - "Eclipse EGit"
+        - "Model Version Control"
+        
+    - name: "协作平台"
+      description: "团队协作平台"
+      features:
+        - "模型共享"
+        - "团队协作"
+        - "权限管理"
+        - "工作流管理"
+      tools:
+        - "Eclipse Sirius"
+        - "WebGME"
+        - "MetaEdit+"
+        - "Collaborative Modeling"
+```
 
-### 验证工具
+#### 持续集成流水线
 
-1. **OCL**：Object Constraint Language
-2. **Alloy**：关系逻辑验证
-3. **Z3**：SMT求解器
-4. **ProB**：B方法验证工具
+```yaml
+# 持续集成流水线
+continuous_integration_pipeline:
+  description: "MDE持续集成流水线"
+  stages:
+    - name: "模型构建"
+      description: "模型构建和验证"
+      activities:
+        - "模型检查"
+        - "模型验证"
+        - "模型测试"
+        - "模型质量评估"
+      tools:
+        - "Eclipse EMF"
+        - "OCL Validator"
+        - "Model Testing Framework"
+        
+    - name: "代码生成"
+      description: "自动代码生成"
+      activities:
+        - "模型转换"
+        - "代码生成"
+        - "配置生成"
+        - "文档生成"
+      tools:
+        - "Eclipse ATL"
+        - "Xtend"
+        - "Acceleo"
+        - "Code Generation Engine"
+        
+    - name: "代码构建"
+      description: "代码编译构建"
+      activities:
+        - "代码编译"
+        - "依赖管理"
+        - "打包构建"
+        - "制品管理"
+      tools:
+        - "Maven"
+        - "Gradle"
+        - "Ant"
+        - "Build Tools"
+        
+    - name: "自动化测试"
+      description: "自动化测试执行"
+      activities:
+        - "单元测试"
+        - "集成测试"
+        - "回归测试"
+        - "性能测试"
+      tools:
+        - "JUnit"
+        - "TestNG"
+        - "Selenium"
+        - "Performance Testing Tools"
+        
+    - name: "部署发布"
+      description: "自动部署发布"
+      activities:
+        - "环境部署"
+        - "配置管理"
+        - "服务启动"
+        - "健康检查"
+      tools:
+        - "Docker"
+        - "Kubernetes"
+        - "Jenkins"
+        - "Deployment Tools"
+```
 
 ## 最佳实践
 
-### 建模原则
+### MDE设计原则
 
-1. **抽象层次**：建立清晰的抽象层次结构
-2. **关注点分离**：不同模型关注不同的系统方面
-3. **一致性**：确保模型间的一致性和完整性
-4. **可追溯性**：建立需求到代码的可追溯关系
+1. **模型优先**：以模型为中心进行设计
+2. **抽象层次**：建立清晰的抽象层次
+3. **自动化转换**：最大化自动化转换
+4. **质量保证**：在模型层面保证质量
 
-### 转换策略
+### MDE开发原则
 
-1. **增量转换**：支持模型的增量更新和转换
-2. **双向转换**：支持模型和代码间的双向同步
-3. **版本管理**：对模型和转换进行版本控制
-4. **质量保证**：确保转换结果的正确性和质量
+1. **迭代演进**：支持模型的迭代演进
+2. **工具集成**：集成完整的工具链
+3. **团队协作**：支持团队协作开发
+4. **持续集成**：建立持续集成机制
 
-### 工具集成
+### MDE维护原则
 
-1. **IDE集成**：与开发环境深度集成
-2. **CI/CD集成**：集成到持续集成和部署流程
-3. **版本控制**：支持模型和转换的版本管理
-4. **协作支持**：支持团队协作和评审
+1. **模型同步**：保持模型与代码同步
+2. **版本管理**：有效的模型版本管理
+3. **变更追踪**：追踪模型变更影响
+4. **文档更新**：及时更新相关文档
 
 ## 应用案例
 
 ### 企业应用开发
 
 ```yaml
-# 企业应用MDE案例
-enterprise_mde:
-  domain: "企业资源管理"
-  models:
-    - level: "CIM"
-      content: "员工管理、部门管理、项目管理需求"
-    - level: "PIM"
-      content: "员工实体、部门实体、项目实体及其关系"
-    - level: "PSM"
-      content: "Spring Boot应用、JPA实体、REST API"
-  transformations:
-    - name: "entity_to_jpa"
-      source: "PIM Entity"
-      target: "JPA Entity"
-    - name: "entity_to_rest"
-      source: "PIM Entity"
-      target: "REST Controller"
+# 企业应用开发
+enterprise_application_development:
+  description: "基于MDE的企业应用开发"
+  components:
+    - name: "业务建模"
+      description: "业务领域建模"
+      models:
+        - "业务流程模型"
+        - "业务规则模型"
+        - "业务数据模型"
+        - "业务服务模型"
+        
+    - name: "系统设计"
+      description: "系统架构设计"
+      models:
+        - "系统架构模型"
+        - "组件设计模型"
+        - "接口设计模型"
+        - "部署设计模型"
+        
+    - name: "代码生成"
+      description: "自动代码生成"
+      outputs:
+        - "Java实体类"
+        - "Spring服务类"
+        - "REST API接口"
+        - "数据库脚本"
+        - "配置文件"
+        
+    - name: "测试验证"
+      description: "自动化测试"
+      tests:
+        - "单元测试"
+        - "集成测试"
+        - "API测试"
+        - "性能测试"
+        
+    - name: "部署运维"
+      description: "自动化部署"
+      activities:
+        - "容器化部署"
+        - "配置管理"
+        - "监控告警"
+        - "日志管理"
 ```
 
 ### 嵌入式系统开发
 
 ```yaml
-# 嵌入式系统MDE案例
-embedded_mde:
-  domain: "汽车控制系统"
-  models:
-    - level: "CIM"
-      content: "车辆控制、安全监控、用户交互需求"
-    - level: "PIM"
-      content: "控制算法、状态机、数据流模型"
-    - level: "PSM"
-      content: "C代码、硬件配置、实时调度"
-  transformations:
-    - name: "state_machine_to_c"
-      source: "PIM StateMachine"
-      target: "C StateMachine"
-    - name: "data_flow_to_c"
-      source: "PIM DataFlow"
-      target: "C DataFlow"
+# 嵌入式系统开发
+embedded_system_development:
+  description: "基于MDE的嵌入式系统开发"
+  components:
+    - name: "系统建模"
+      description: "嵌入式系统建模"
+      models:
+        - "硬件架构模型"
+        - "软件架构模型"
+        - "通信协议模型"
+        - "时序模型"
+        
+    - name: "代码生成"
+      description: "嵌入式代码生成"
+      outputs:
+        - "C/C++代码"
+        - "硬件抽象层"
+        - "驱动代码"
+        - "应用代码"
+        
+    - name: "仿真验证"
+      description: "系统仿真验证"
+      activities:
+        - "模型仿真"
+        - "代码仿真"
+        - "硬件仿真"
+        - "系统验证"
+        
+    - name: "部署测试"
+      description: "硬件部署测试"
+      activities:
+        - "硬件部署"
+        - "功能测试"
+        - "性能测试"
+        - "可靠性测试"
 ```
-
-### Web应用开发
-
-```yaml
-# Web应用MDE案例
-web_mde:
-  domain: "电子商务平台"
-  models:
-    - level: "CIM"
-      content: "用户购物、商品浏览、订单管理需求"
-    - level: "PIM"
-      content: "用户界面、业务逻辑、数据模型"
-    - level: "PSM"
-      content: "React组件、Node.js服务、MongoDB数据"
-  transformations:
-    - name: "ui_model_to_react"
-      source: "PIM UIModel"
-      target: "React Component"
-    - name: "api_model_to_express"
-      source: "PIM APIModel"
-      target: "Express Route"
-```
-
-## 评估标准
-
-### 质量指标
-
-- **模型完整性**：模型覆盖系统需求的完整程度
-- **转换正确性**：模型转换的正确性和一致性
-- **代码质量**：生成代码的质量和可维护性
-- **开发效率**：使用MDE提升的开发效率
-
-### 成功标准
-
-1. **自动化程度**：高比例的代码通过模型转换自动生成
-2. **质量提升**：生成的代码质量优于手工编写
-3. **效率提升**：开发效率显著提升
-4. **维护性**：系统维护成本降低
 
 ## 相关概念
 
-- [递归建模](./recursive-modeling.md)
-- [领域特定语言](./domain-specific-language.md)
-- [形式化建模](./formal-modeling.md)
-- [代码生成](./code-generation.md)
+- [模型转换](model-transformation.md)
+- [代码生成](code-generation.md)
+- [形式化验证](formal-verification.md)
+- [领域特定语言](domain-specific-language.md)
 
 ## 参考文献
 
 1. Schmidt, D. C. (2006). "Model-Driven Engineering"
 2. Bézivin, J. (2005). "On the Unification Power of Models"
 3. Selic, B. (2003). "The Pragmatics of Model-Driven Development"
-4. Kent, S. (2002). "Model Driven Engineering"
+4. OMG (2015). "Model Driven Architecture (MDA)"
+5. OMG (2017). "Unified Modeling Language (UML)"
+6. Eclipse Foundation (2023). "Eclipse Modeling Framework (EMF)"

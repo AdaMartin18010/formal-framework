@@ -23,6 +23,7 @@ Trace = (TraceID, Spans, Context, Sampling, Propagation)
 ```
 
 其中：
+
 - TraceID：追踪标识（全局唯一标识符）
 - Spans：跨度集合（操作单元、时间范围）
 - Context：上下文信息（请求上下文、元数据）
@@ -514,18 +515,21 @@ trace_queries:
 ### 追踪标准
 
 #### OpenTelemetry Tracing
+
 - **版本**：OpenTelemetry 1.20+
 - **标准**：OpenTelemetry Tracing
 - **核心概念**：Trace、Span、Context、Propagation
 - **工具支持**：OpenTelemetry Collector、Jaeger、Zipkin
 
 #### W3C Trace Context
+
 - **版本**：W3C Trace Context 1.0
 - **标准**：W3C Trace Context
 - **核心概念**：Traceparent、Tracestate
 - **工具支持**：OpenTelemetry、Jaeger、Zipkin
 
 #### B3 Propagation
+
 - **版本**：B3 Propagation 1.0
 - **标准**：B3 Propagation
 - **核心概念**：TraceId、SpanId、Sampling
@@ -534,18 +538,21 @@ trace_queries:
 ### 追踪系统标准
 
 #### Jaeger
+
 - **版本**：Jaeger 1.40+
 - **标准**：Jaeger
 - **核心概念**：Trace、Span、Service
 - **工具支持**：Jaeger UI、Jaeger Agent、Jaeger Collector
 
 #### Zipkin
+
 - **版本**：Zipkin 2.23+
 - **标准**：Zipkin
 - **核心概念**：Trace、Span、Annotation
 - **工具支持**：Zipkin UI、Zipkin Server
 
 #### Grafana Tempo
+
 - **版本**：Tempo 1.5+
 - **标准**：Grafana Tempo
 - **核心概念**：Trace、Span、Block
@@ -556,18 +563,21 @@ trace_queries:
 ### 分布式系统课程
 
 #### MIT 6.824 - Distributed Systems
+
 - **课程内容**：分布式系统、追踪、调试
 - **追踪相关**：分布式追踪、故障诊断、性能分析
 - **实践项目**：分布式追踪系统
 - **相关技术**：OpenTelemetry、Jaeger、Zipkin
 
 #### Stanford CS244 - Advanced Topics in Networking
+
 - **课程内容**：网络追踪、性能分析、故障诊断
 - **追踪相关**：网络追踪、链路分析、性能监控
 - **实践项目**：网络追踪系统
 - **相关技术**：网络监控、追踪工具
 
 #### CMU 15-440 - Distributed Systems
+
 - **课程内容**：分布式系统、追踪、监控
 - **追踪相关**：分布式追踪、链路追踪、故障分析
 - **实践项目**：分布式追踪平台
@@ -576,12 +586,14 @@ trace_queries:
 ### 系统性能课程
 
 #### MIT 6.033 - Computer System Engineering
+
 - **课程内容**：系统工程、性能分析、追踪
 - **追踪相关**：系统追踪、性能分析、瓶颈识别
 - **实践项目**：系统性能追踪
 - **相关技术**：系统监控、性能分析
 
 #### Stanford CS210 - Software Engineering
+
 - **课程内容**：软件工程、性能优化、追踪
 - **追踪相关**：应用追踪、性能分析、优化
 - **实践项目**：应用性能追踪
@@ -592,6 +604,7 @@ trace_queries:
 ### 追踪设计模式
 
 #### 分布式追踪模式
+
 ```yaml
 # 分布式追踪模式
 distributed_tracing_pattern:
@@ -627,6 +640,7 @@ distributed_tracing_pattern:
 ```
 
 #### 链路追踪模式
+
 ```yaml
 # 链路追踪模式
 link_tracing_pattern:
@@ -668,6 +682,7 @@ link_tracing_pattern:
 ### 追踪实现模式
 
 #### 追踪SDK模式
+
 ```yaml
 # 追踪SDK模式
 tracing_sdk_pattern:
@@ -703,6 +718,7 @@ tracing_sdk_pattern:
 ```
 
 #### 追踪分析模式
+
 ```yaml
 # 追踪分析模式
 tracing_analysis_pattern:
