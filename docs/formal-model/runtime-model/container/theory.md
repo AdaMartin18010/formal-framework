@@ -1,236 +1,498 @@
-# 容器建模理论探讨
+# 容器建模理论 (Container Modeling Theory)
 
-## 1. 形式化目标
+## 概念定义
 
-- 以结构化方式描述容器的镜像、资源、环境、生命周期、依赖等。
-- 支持多种容器（Docker、OCI等）统一建模。
-- 便于自动生成容器配置、部署脚本、监控与测试用例等。
+容器建模理论是一种形式化建模方法，用于描述和管理容器化应用的各个方面。它通过结构化的方式定义容器镜像、资源配置、生命周期、网络策略和存储管理，实现容器化应用的自动化和标准化。
 
-## 2. 核心概念
+### 核心特征
 
-- **镜像（Image）**：容器运行的基础。
-- **资源限制**：CPU、内存、存储等。
-- **环境变量**：配置注入。
-- **生命周期**：创建、启动、停止、销毁。
-- **依赖与网络**：容器间依赖、网络配置。
+1. **镜像化**：基于不可变镜像的应用打包和分发
+2. **资源隔离**：通过命名空间和cgroup实现资源隔离
+3. **生命周期管理**：完整的容器创建、启动、停止、销毁流程
+4. **网络虚拟化**：容器间网络通信和端口映射
+5. **存储抽象**：卷挂载和持久化存储管理
 
-## 3. 已有标准
+## 理论基础
 
-- Dockerfile、docker-compose
-- OCI容器规范
-- Kubernetes Pod/Container
+### 容器理论
 
-## 4. 可行性分析
+容器建模基于以下理论：
 
-- 容器建模结构化强，标准化程度高，适合DSL抽象。
-- 可自动生成容器配置、部署脚本、监控等。
-- 易于与AI结合进行资源优化、依赖推理、异常检测。
-
-## 5. 自动化价值
-
-- 降低手工配置和维护容器的成本。
-- 提高部署一致性和可复现性。
-- 支持自动化运维和弹性伸缩。
-
-## 6. 与AI结合点
-
-- 智能补全资源配置、依赖关系。
-- 自动推理容器拓扑、网络策略。
-- 智能生成扩缩容、容灾建议。
-
----
-
-## 7. 常见容器特性一览（表格）
-
-| 特性         | 说明                 | 典型场景           |
-|--------------|----------------------|--------------------|
-| 镜像         | 运行环境基础         | 应用部署、CI/CD    |
-| 资源限制     | CPU/内存/存储配额    | 多租户、弹性伸缩   |
-| 环境变量     | 配置注入             | 多环境部署         |
-| 生命周期     | 启动/停止/销毁       | 自动化运维         |
-| 网络         | 端口映射、服务发现   | 微服务、集群       |
-| 存储         | 卷挂载、持久化       | 数据库、日志       |
-
----
-
-## 8. 容器生命周期思维导图
-
-```mermaid
-mindmap
-  root((容器生命周期))
-    镜像构建
-    创建
-    启动
-    运行
-    停止
-    销毁
-    监控与日志
-    异常与恢复
+```text
+Container = (Image, Resources, Network, Storage, Lifecycle)
 ```
 
----
+其中：
 
-## 9. 形式化推理/证明片段
+- Image：容器镜像定义
+- Resources：资源限制和请求
+- Network：网络配置和策略
+- Storage：存储卷和挂载点
+- Lifecycle：生命周期管理
 
-**定理（资源隔离性）**：
-若容器A、B的资源限制互不重叠，则A、B运行互不干扰。
+### 容器架构理论
 
-*证明思路*：
-设A、B分别分配独立CPU/内存cgroup，调度器保证资源独占，则互不影响。
+```yaml
+# 容器架构层次
+container_architecture:
+  application_layer:
+    - "应用代码"
+    - "运行时环境"
+    - "依赖库"
+    
+  container_layer:
+    - "容器运行时"
+    - "镜像管理"
+    - "资源隔离"
+    
+  orchestration_layer:
+    - "容器编排"
+    - "服务发现"
+    - "负载均衡"
+    
+  infrastructure_layer:
+    - "操作系统"
+    - "虚拟化"
+    - "硬件资源"
+```
 
-**推论（依赖可达性）**：
-若容器依赖图为连通图，则所有服务可达，系统可用。
+## 核心组件
 
-## 理论确定性与论证推理
+### 镜像模型
 
-在容器建模领域，理论确定性是实现容器自动化部署、资源管理、生命周期控制的基础。以 Docker、Kubernetes、OCI、containerd 等主流容器平台为例：
+```yaml
+# 容器镜像定义
+container_image:
+  name: "web-application"
+  tag: "v1.0.0"
+  base_image: "node:18-alpine"
+  
+  layers:
+    - layer: "base"
+      description: "基础镜像层"
+      size: "50MB"
+      commands: []
+      
+    - layer: "dependencies"
+      description: "依赖安装层"
+      size: "200MB"
+      commands:
+        - "COPY package*.json ./"
+        - "RUN npm ci --only=production"
+        
+    - layer: "application"
+      description: "应用代码层"
+      size: "10MB"
+      commands:
+        - "COPY . ."
+        - "EXPOSE 3000"
+        - "CMD [\"npm\", \"start\"]"
+  
+  metadata:
+    author: "development-team"
+    created: "2024-01-01T00:00:00Z"
+    labels:
+      - "maintainer=dev@example.com"
+      - "version=1.0.0"
+      - "environment=production"
+      
+  security:
+    scan_results:
+      vulnerabilities: 0
+      critical: 0
+      high: 0
+      medium: 0
+      low: 0
+    signatures:
+      - type: "cosign"
+        key: "cosign-key.pub"
+        verified: true
+```
 
-1. **形式化定义**  
-   容器镜像、资源配置、生命周期、网络策略等均有标准化描述和配置语言。
+### 资源配置模型
 
-2. **公理化系统**  
-   通过容器编排和资源调度，实现容器逻辑的自动推理与资源优化。
+```yaml
+# 资源配置定义
+resource_configuration:
+  cpu:
+    requests: "100m"
+    limits: "500m"
+    shares: 1024
+    quota: 50000
+    
+  memory:
+    requests: "128Mi"
+    limits: "512Mi"
+    swap: "256Mi"
+    
+  storage:
+    ephemeral: "1Gi"
+    persistent:
+      - name: "app-data"
+        size: "10Gi"
+        access_mode: "ReadWriteOnce"
+        storage_class: "fast-ssd"
+        
+  network:
+    bandwidth:
+      ingress: "100Mbps"
+      egress: "100Mbps"
+    ports:
+      - container_port: 3000
+        host_port: 8080
+        protocol: "TCP"
+```
 
-3. **类型安全**  
-   容器配置、资源限制、环境变量等类型严格定义，防止容器运行错误。
+### 生命周期模型
 
-4. **可证明性**  
-   关键属性如资源隔离、服务可达性等可通过验证和测试进行形式化证明。
+```yaml
+# 容器生命周期定义
+container_lifecycle:
+  creation:
+    triggers:
+      - type: "manual"
+        description: "手动创建"
+      - type: "deployment"
+        description: "部署触发"
+      - type: "scaling"
+        description: "扩缩容触发"
+    steps:
+      - step: "image_pull"
+        description: "拉取镜像"
+        timeout: "5m"
+        
+      - step: "container_create"
+        description: "创建容器"
+        timeout: "30s"
+        
+  startup:
+    probes:
+      - type: "readiness"
+        http_get:
+          path: "/health"
+          port: 3000
+        initial_delay: "10s"
+        period: "5s"
+        timeout: "3s"
+        failure_threshold: 3
+        
+      - type: "liveness"
+        http_get:
+          path: "/health"
+          port: 3000
+        initial_delay: "30s"
+        period: "10s"
+        timeout: "5s"
+        failure_threshold: 3
+        
+    init_containers:
+      - name: "db-migration"
+        image: "db-migrator:latest"
+        command: ["npm", "run", "migrate"]
+        
+  runtime:
+    monitoring:
+      metrics:
+        - "cpu_usage"
+        - "memory_usage"
+        - "network_io"
+        - "disk_io"
+      logs:
+        driver: "json-file"
+        options:
+          max_size: "10m"
+          max_file: "3"
+          
+  shutdown:
+    graceful_period: "30s"
+    signals:
+      - signal: "SIGTERM"
+        timeout: "10s"
+      - signal: "SIGKILL"
+        timeout: "5s"
+```
 
-这些理论基础为容器建模的自动化配置、资源管理和生命周期控制提供了理论支撑。
+### 网络模型
 
-## 理论确定性与论证推理（递归扩展版）
+```yaml
+# 容器网络定义
+container_network:
+  network_mode: "bridge"
+  
+  interfaces:
+    - name: "eth0"
+      type: "bridge"
+      ip_address: "172.17.0.2"
+      subnet: "172.17.0.0/16"
+      gateway: "172.17.0.1"
+      
+  port_mappings:
+    - container_port: 3000
+      host_port: 8080
+      protocol: "TCP"
+      bind_address: "0.0.0.0"
+      
+  dns:
+    servers: ["8.8.8.8", "8.8.4.4"]
+    search_domains: ["example.com"]
+    
+  firewall_rules:
+    - direction: "ingress"
+      protocol: "TCP"
+      port: 3000
+      source: "0.0.0.0/0"
+      action: "allow"
+      
+    - direction: "egress"
+      protocol: "TCP"
+      port: 53
+      destination: "8.8.8.8"
+      action: "allow"
+```
 
-### 1. 形式化定义（递归细化）
+## 国际标准对标
 
-#### 1.1 容器镜像系统
+### 容器标准
 
-- **顶层**：采用 OCI（Open Container Initiative）标准、Docker Image 格式等标准化容器镜像定义
-- **子层**：
-  - **基础镜像**：FROM 指令，支持多阶段构建，结合 Alpine、Ubuntu、CentOS 等基础镜像
-  - **层缓存系统**：Layer Caching，支持增量构建和缓存优化，结合 Docker BuildKit
-  - **镜像签名**：Image Signing，支持镜像完整性验证，结合 Notary、Cosign
-  - **镜像扫描**：Image Scanning，支持安全漏洞检测，结合 Trivy、Clair、Snyk
+#### OCI (Open Container Initiative)
 
-#### 1.2 容器资源管理系统
+- **版本**：OCI 1.1
+- **规范**：容器运行时规范、镜像规范
+- **核心概念**：Bundle、Runtime、Image Format
+- **工具支持**：runc、containerd、CRI-O
 
-- **CPU资源**：CPU shares、CPU quota、CPU sets，支持 CPU 限制和调度
-- **内存资源**：Memory limit、Memory reservation、Memory swap，支持内存限制和管理
-- **存储资源**：Storage driver、Volume mounts、Storage quotas，支持存储隔离和管理
-- **网络资源**：Network namespace、Port mapping、Network policies，支持网络隔离和通信
+#### Docker
 
-#### 1.3 容器生命周期系统
+- **版本**：Docker 24.0+
+- **规范**：Dockerfile、docker-compose
+- **核心概念**：Image、Container、Volume、Network
+- **工具支持**：Docker Engine、Docker Compose、Docker Swarm
 
-- **创建阶段**：Container creation，支持容器实例化，结合 containerd、CRI-O
-- **启动阶段**：Container startup，支持容器初始化，结合 Entrypoint、CMD
-- **运行阶段**：Container runtime，支持容器运行监控，结合 cAdvisor、Prometheus
-- **停止阶段**：Container shutdown，支持优雅关闭，结合 SIGTERM、SIGKILL
+#### Kubernetes
 
-### 2. 公理化系统（递归细化）
+- **版本**：Kubernetes 1.28+
+- **规范**：Pod、Container、Service、Deployment
+- **核心概念**：Pod、Container、Service、Volume
+- **工具支持**：kubectl、kubeadm、Helm
 
-#### 2.1 容器调度推理引擎
+### 行业标准
 
-- **资源调度推理**：基于资源需求自动调度容器到合适的节点
-- **亲和性推理**：基于亲和性规则自动调度容器，如节点亲和性、Pod亲和性
-- **反亲和性推理**：基于反亲和性规则避免容器冲突，如Pod反亲和性、节点反亲和性
+#### 云原生标准
 
-#### 2.2 容器编排推理引擎
+- **CNCF**：云原生计算基金会标准
+- **OCI**：开放容器倡议标准
+- **CNAB**：云原生应用包标准
+- **Helm**：Kubernetes包管理器标准
 
-- **服务发现推理**：自动推导容器间的服务发现关系
-- **负载均衡推理**：自动推导负载均衡策略，如轮询、最少连接、IP哈希等
-- **扩缩容推理**：基于负载情况自动推导扩缩容策略
+#### 安全标准
 
-#### 2.3 容器安全推理引擎
+- **CIS Docker Benchmark**：Docker安全基准
+- **CIS Kubernetes Benchmark**：Kubernetes安全基准
+- **NIST Container Security**：容器安全标准
+- **OWASP Container Security**：容器安全指南
 
-- **安全策略推理**：自动推导容器安全策略，如网络策略、安全上下文等
-- **权限推理**：基于最小权限原则自动推导容器权限
-- **漏洞检测推理**：自动检测容器镜像中的安全漏洞
+## 著名大学课程对标
 
-### 3. 类型安全（递归细化）
+### 系统课程
 
-#### 3.1 容器配置类型安全
+#### MIT 6.824 - Distributed Systems
 
-- **镜像类型安全**：确保镜像格式的正确性，如OCI格式、Docker格式等
-- **资源类型安全**：确保资源配置的正确性，如CPU单位、内存单位等
-- **网络类型安全**：确保网络配置的正确性，如端口号、IP地址等
+- **课程内容**：分布式系统、容错、一致性
+- **容器相关**：容器编排、服务发现、负载均衡
+- **实践项目**：分布式容器系统
+- **相关技术**：Kubernetes、Docker Swarm、Mesos
 
-#### 3.2 容器运行时类型安全
+#### Stanford CS244 - Advanced Topics in Networking
 
-- **进程类型安全**：确保容器进程的正确性，如PID namespace、进程树等
-- **文件系统类型安全**：确保文件系统的正确性，如挂载点、权限等
-- **网络类型安全**：确保网络通信的正确性，如网络接口、路由等
+- **课程内容**：网络协议、性能优化、虚拟化
+- **容器相关**：容器网络、网络虚拟化、服务网格
+- **实践项目**：容器网络工具
+- **相关技术**：Calico、Flannel、Istio
 
-#### 3.3 容器编排类型安全
+#### CMU 15-440 - Distributed Systems
 
-- **Pod类型安全**：确保Pod配置的正确性，如容器列表、共享资源等
-- **服务类型安全**：确保服务配置的正确性，如服务端口、选择器等
-- **部署类型安全**：确保部署配置的正确性，如副本数、更新策略等
+- **课程内容**：分布式系统、网络编程、系统设计
+- **容器相关**：容器编排、分布式存储、故障恢复
+- **实践项目**：容器编排系统
+- **相关技术**：Kubernetes、etcd、Raft
 
-### 4. 可证明性（递归细化）
+### 虚拟化课程
 
-#### 4.1 容器隔离性证明
+#### MIT 6.828 - Operating System Engineering
 
-- **资源隔离**：通过资源监控验证容器间的资源隔离
-- **网络隔离**：通过网络测试验证容器间的网络隔离
-- **文件系统隔离**：通过文件系统测试验证容器间的文件系统隔离
+- **课程内容**：操作系统、内核开发、虚拟化
+- **容器相关**：容器运行时、命名空间、cgroup
+- **实践项目**：容器运行时实现
+- **相关技术**：runc、containerd、gVisor
 
-#### 4.2 容器性能证明
+#### Stanford CS140 - Operating Systems
 
-- **启动性能**：通过启动时间测试验证容器的启动性能
-- **运行性能**：通过性能测试验证容器的运行性能
-- **资源利用率**：通过资源监控验证容器的资源利用率
+- **课程内容**：操作系统原理、进程管理、内存管理
+- **容器相关**：进程隔离、资源管理、文件系统
+- **实践项目**：容器隔离机制
+- **相关技术**：namespaces、cgroups、overlayfs
 
-#### 4.3 容器可靠性证明
+## 工程实践
 
-- **故障恢复**：通过故障测试验证容器的故障恢复能力
-- **数据持久性**：通过数据测试验证容器的数据持久性
-- **服务可用性**：通过可用性测试验证容器的服务可用性
+### 容器设计模式
 
-### 5. 最新开源框架集成
+#### 微服务容器化
 
-#### 5.1 Docker生态系统
+```yaml
+# 微服务容器化模式
+microservice_containerization:
+  service_decomposition:
+    - service: "user-service"
+      containers:
+        - name: "user-api"
+          image: "user-api:v1.0.0"
+          ports: [8080]
+        - name: "user-db"
+          image: "postgres:13"
+          ports: [5432]
+          
+    - service: "order-service"
+      containers:
+        - name: "order-api"
+          image: "order-api:v1.0.0"
+          ports: [8081]
+        - name: "order-db"
+          image: "mysql:8.0"
+          ports: [3306]
+          
+  service_discovery:
+    - type: "dns"
+      service: "user-service"
+      endpoints: ["user-api:8080"]
+      
+    - type: "dns"
+      service: "order-service"
+      endpoints: ["order-api:8081"]
+      
+  load_balancing:
+    - service: "user-service"
+      algorithm: "round_robin"
+      health_check: "/health"
+      
+    - service: "order-service"
+      algorithm: "least_connections"
+      health_check: "/health"
+```
 
-- **Docker Engine**：容器运行时引擎
-- **Docker Compose**：多容器应用编排
-- **Docker Swarm**：容器集群管理
-- **Docker Hub**：容器镜像仓库
-- **Docker Desktop**：桌面容器环境
+#### 云原生容器化
 
-#### 5.2 Kubernetes生态系统
+```yaml
+# 云原生容器化模式
+cloud_native_containerization:
+  kubernetes_deployment:
+    - name: "web-application"
+      replicas: 3
+      containers:
+        - name: "web"
+          image: "web-app:v1.0.0"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+              
+  auto_scaling:
+    - type: "horizontal"
+      min_replicas: 3
+      max_replicas: 10
+      target_cpu_utilization: 70
+      
+  service_mesh:
+    - type: "istio"
+      services:
+        - "web-application"
+        - "api-gateway"
+      traffic_routing:
+        - destination: "web-application"
+          weight: 80
+        - destination: "web-application-v2"
+          weight: 20
+```
 
-- **Kubernetes Core**：容器编排平台
-- **Kubernetes API Server**：集群API服务器
-- **Kubernetes Scheduler**：容器调度器
-- **Kubernetes Controller Manager**：控制器管理器
-- **Kubernetes Kubelet**：节点代理
+### 容器安全实践
 
-#### 5.3 容器运行时生态系统
+#### 安全扫描
 
-- **containerd**：容器运行时
-- **CRI-O**：轻量级容器运行时
-- **runc**：容器运行时
-- **gVisor**：安全容器运行时
-- **Kata Containers**：虚拟化容器运行时
+```yaml
+# 容器安全扫描
+container_security_scanning:
+  image_scanning:
+    - tool: "Trivy"
+      frequency: "on_build"
+      severity_threshold: "medium"
+      scan_layers: true
+      
+    - tool: "Clair"
+      frequency: "on_push"
+      severity_threshold: "high"
+      scan_vulnerabilities: true
+      
+  runtime_security:
+    - tool: "Falco"
+      rules:
+        - "container_privileged"
+        - "container_shell"
+        - "container_network"
+        
+  network_security:
+    - type: "network_policy"
+      ingress:
+        - from:
+            - namespace_selector:
+                match_labels:
+                  name: "frontend"
+          ports:
+            - protocol: "TCP"
+              port: 8080
+              
+    - type: "pod_security_policy"
+      privileged: false
+      read_only_root_filesystem: true
+      run_as_non_root: true
+```
 
-### 6. 工程实践案例
+## 最佳实践
 
-#### 6.1 微服务容器化
+### 容器设计原则
 
-- **服务拆分**：将单体应用拆分为多个微服务容器
-- **服务发现**：通过服务注册和发现实现容器间通信
-- **负载均衡**：通过负载均衡器实现容器负载分发
-- **配置管理**：通过配置中心实现容器配置管理
+1. **单一职责**：每个容器只运行一个应用进程
+2. **不可变性**：容器镜像应该是不可变的
+3. **最小化**：使用最小的基础镜像
+4. **安全性**：以非特权用户运行容器
 
-#### 6.2 云原生容器化
+### 资源管理原则
 
-- **容器编排**：通过Kubernetes实现容器编排和管理
-- **自动扩缩容**：通过HPA实现容器自动扩缩容
-- **服务网格**：通过Istio实现容器服务网格
-- **监控告警**：通过Prometheus实现容器监控告警
+1. **资源限制**：为容器设置资源限制
+2. **资源请求**：为容器设置资源请求
+3. **资源监控**：监控容器的资源使用情况
+4. **资源优化**：根据监控数据优化资源配置
 
-#### 6.3 容器安全实践
+### 网络设计原则
 
-- **镜像安全**：通过镜像扫描实现容器镜像安全
-- **运行时安全**：通过安全策略实现容器运行时安全
-- **网络安全**：通过网络策略实现容器网络安全
-- **数据安全**：通过加密存储实现容器数据安全
+1. **网络隔离**：使用网络策略隔离容器网络
+2. **服务发现**：实现容器间的服务发现
+3. **负载均衡**：实现容器负载均衡
+4. **网络安全**：实施网络安全策略
+
+## 相关概念
+
+- [网络建模](../network/theory.md)
+- [存储建模](../storage/theory.md)
+- [编排建模](../orchestration/theory.md)
+- [运行时建模](../theory.md)
+
+## 参考文献
+
+1. Burns, B., & Beda, J. (2019). "Kubernetes: Up and Running"
+2. Hightower, K., et al. (2017). "Kubernetes: Up and Running"
+3. Turnbull, J. (2018). "The Art of Monitoring"
+4. Newman, S. (2021). "Building Microservices"
+5. Richardson, C. (2018). "Microservices Patterns"
+6. Vernon, V. (2013). "Implementing Domain-Driven Design"

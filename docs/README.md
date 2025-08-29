@@ -161,8 +161,8 @@ Formal Framework 致力于构建软件工程领域的知识基础设施，通过
   - cloud-native-architecture/：云原生（API网关、服务网格、容器编排、Serverless等）
   - finance-architecture/：金融（核心银行、支付、风控、合规、区块链金融等）
   - iot-architecture/：物联网（设备接入、边缘计算、实时控制等）
-  - enterprise-management-model/：企业管理（资产、HR、采购、项目等）
-  - 其他行业模型（智能家居、物流、Web3等）
+  - web3-architecture/：Web3架构（共识机制、智能合约、钱包身份等）
+- 其他技术架构模型（AI基础设施、云原生、物联网、金融等）
 - **每个模型均包含 DSL 草案（dsl-draft.md）与理论文档（theory.md），支持递归扩展与行业映射**
 
 ---
@@ -186,8 +186,8 @@ graph TD
   行业模型 --> 金融
   行业模型 --> 云原生
   行业模型 --> IOT
-  行业模型 --> 智能家居
-  行业模型 --> 企业管理
+  行业模型 --> Web3架构
+行业模型 --> AI基础设施
 ```
 
 - **递归扩展路径**：每个模型均可递归细分为子模型（如数据模型→实体/关系/索引/迁移/查询等），理论与DSL均支持多层嵌套与组合。
@@ -200,12 +200,12 @@ graph TD
 | 通用模型         | 行业模型举例           | 映射关系说明                 |
 |------------------|------------------------|------------------------------|
 | 数据模型         | 金融-账户/交易/报表    | 账户/交易为实体，报表为查询  |
-| 功能模型         | 智能家居-场景联动      | 业务逻辑/规则引擎            |
+| 功能模型         | Web3-智能合约         | 业务逻辑/规则引擎            |
 | 交互模型         | 云原生-API网关         | API/协议/消息/契约           |
 | 运行时模型       | AI-分布式训练/推理     | 容器/网络/编排/存储/调度     |
 | 部署模型         | 金融-核心银行部署      | 配置/基础设施/回滚/版本      |
 | 监控模型         | 工业-设备监控/告警     | 指标/日志/追踪/告警          |
-| 测试模型         | 企业-自动化测试        | 用例/断言/覆盖率/性能         |
+| 测试模型         | 金融-合规测试          | 用例/断言/覆盖率/性能         |
 | CI/CD模型        | AI-自动化训练/部署     | 流水线/阶段/触发/门禁         |
 | 分布式模式模型   | 云原生-服务网格/微服务 | 容错/一致性/负载均衡/发现     |
 
@@ -354,7 +354,7 @@ flowchart TD
 
 ### 7.3 其他行业映射
 
-- 云原生、物联网、企业管理、智能家居等均可参考上述映射方式，递归扩展与通用模型对齐
+- 云原生、物联网、Web3、AI基础设施等均可参考上述映射方式，递归扩展与通用模型对齐
 
 ---
 
@@ -486,7 +486,7 @@ def generate_feature_table(features):
 
 - **物联网设备建模**：递归生成设备、传感器、数据流表结构
 - **云原生服务编排**：递归生成多层服务 mesh、API gateway 配置
-- **企业管理资产台账**：递归生成资产、子资产、生命周期表
+- **Web3智能合约**：递归生成合约、接口、事件定义
 
 ---
 
@@ -686,7 +686,7 @@ def generate_feature_table(features):
 - AI-特征库建模：industry-model/ai-infrastructure-architecture/feature-store/dsl-draft.md
 - 云原生-API网关：industry-model/cloud-native-architecture/api-gateway/dsl-draft.md
 - 物联网-设备接入：industry-model/iot-architecture/device-access/dsl-draft.md
-- 企业管理-资产台账：industry-model/enterprise-management-model/asset-management/dsl-draft.md
+- Web3-智能合约：industry-model/web3-architecture/smart-contract/dsl-draft.md
 
 ### 19.2 自动化工具库（示例条目）
 

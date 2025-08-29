@@ -1,88 +1,713 @@
-# 查询建模理论递归补全
+# 查询建模理论 (Query Modeling Theory)
 
-## 1. 查询建模的AST与递归结构
+## 概念定义
 
-查询建模是数据模型的核心组成，主流开源项目（如Prisma、TypeORM、SQLAlchemy、GraphQL等）均采用AST（抽象语法树）或等价结构来描述查询、条件、聚合、排序、分页、嵌套、子查询等。其递归结构体现在：
+查询建模理论是一种形式化建模方法，用于描述和管理数据查询的结构和语义。它通过结构化的方式定义查询语句、条件、聚合、排序、分页等，实现数据查询的自动化和标准化。
 
-- **查询节点**：每个查询为AST的一级节点，包含select、from、where、order_by、group_by、limit等子节点。
-- **条件节点**：支持多级嵌套条件、逻辑组合（AND/OR/NOT）、表达式递归。
-- **聚合与分组节点**：支持count、sum、avg、group_by等递归聚合。
-- **嵌套与子查询节点**：支持子查询、联合查询、递归查询等复杂结构。
-- **AST递归遍历**：支持多级嵌套、组合、参数化、动态查询等复杂结构的递归推理与校验。
+### 核心特征
 
-**示例（Prisma/GraphQL 查询AST片段）**：
+1. **查询规范化**：统一的查询语法和语义标准
+2. **类型安全**：强类型的查询参数和返回结果
+3. **性能优化**：自动的查询优化和执行计划
+4. **权限控制**：细粒度的查询权限管理
+5. **审计追踪**：完整的查询审计和日志记录
 
-```graphql
-query {
-  users(where: { age_gt: 18 }) {
-    id
-    name
-    posts(orderBy: { createdAt: desc }) {
-      id
-      title
-    }
-  }
-}
+## 理论基础
+
+### 查询理论
+
+查询建模基于以下理论：
+
+```text
+Query = (Select, From, Where, GroupBy, OrderBy, Limit, Offset)
 ```
 
-## 2. 类型推理与查询安全机制
+其中：
 
-- **静态推理**：如Prisma、TypeORM在Schema定义阶段静态推理查询字段、参数、返回类型。
-- **动态推理**：如SQLAlchemy、GraphQL支持运行时动态推断查询结构与类型。
-- **类型安全**：字段类型校验、参数类型校验、聚合类型推断、返回类型一致性等，防止类型不一致和数据异常。
-- **递归推理**：多级嵌套结构递归推理每个字段、参数、聚合、子查询的类型合法性。
+- Select：选择字段（字段列表、聚合函数、表达式）
+- From：数据源（表、视图、子查询）
+- Where：过滤条件（条件表达式、逻辑组合）
+- GroupBy：分组字段（分组列、聚合计算）
+- OrderBy：排序规则（排序字段、排序方向）
+- Limit：结果限制（返回行数限制）
+- Offset：结果偏移（分页偏移量）
 
-## 3. 推理引擎与自动化校验
+### 查询设计理论
 
-- **Query Validator**：自动递归校验查询结构、字段类型、参数一致性、聚合合法性。
-- **类型推理引擎**：基于AST递归遍历，自动推断未知字段、参数、聚合、子查询的类型。
-- **自动化集成**：与CI/CD、自动测试、权限校验、审计机制集成，实现查询变更的自动检测与补偿。
+```yaml
+# 查询设计层次
+query_design_hierarchy:
+  selection_layer:
+    - "字段选择"
+    - "聚合计算"
+    - "表达式定义"
+    
+  source_layer:
+    - "数据源定义"
+    - "表连接"
+    - "子查询"
+    
+  filter_layer:
+    - "条件过滤"
+    - "逻辑组合"
+    - "参数绑定"
+    
+  result_layer:
+    - "结果排序"
+    - "结果分页"
+    - "结果限制"
+```
 
-## 4. 异常与补偿机制
+## 核心组件
 
-- **类型不匹配异常**：如查询字段与Schema定义不符，自动抛出异常并记录。
-- **参数缺失/错误异常**：如必需参数缺失、类型错误，自动检测与补偿。
-- **聚合/分组异常**：如聚合字段与分组字段不一致，自动检测与修复建议。
-- **补偿机制**：支持类型自动转换、默认值填充、异常字段隔离、自动回滚等，保障查询链路稳定。
-- **回滚与告警**：查询变更导致的异常可自动回滚并触发告警。
+### 查询语句模型
 
-## 5. AI辅助与工程自动化实践
+```yaml
+# 查询语句定义
+query_statements:
+  - name: "user_query"
+    description: "用户查询"
+    type: "SELECT"
+    
+    select:
+      fields:
+        - name: "id"
+          type: "integer"
+          description: "用户ID"
+        - name: "name"
+          type: "string"
+          description: "用户姓名"
+        - name: "email"
+          type: "string"
+          description: "用户邮箱"
+        - name: "created_at"
+          type: "datetime"
+          description: "创建时间"
+      aggregations:
+        - name: "total_users"
+          function: "COUNT"
+          field: "id"
+          alias: "user_count"
+          
+    from:
+      tables:
+        - name: "users"
+          alias: "u"
+          description: "用户表"
+          
+    where:
+      conditions:
+        - expression: "u.status = 'active'"
+          description: "活跃用户"
+        - expression: "u.created_at >= '2023-01-01'"
+          description: "2023年后创建"
+        - expression: "u.age >= 18"
+          description: "成年用户"
+      logic: "AND"
+      
+    order_by:
+      fields:
+        - name: "created_at"
+          direction: "DESC"
+          description: "按创建时间倒序"
+        - name: "name"
+          direction: "ASC"
+          description: "按姓名正序"
+          
+    limit: 100
+    offset: 0
+```
 
-- **查询自动生成**：AI模型可基于自然语言或业务描述自动生成查询DSL/SQL/GraphQL。
-- **异常检测与修复建议**：AI辅助识别查询异常并给出修复建议。
-- **工程自动化**：查询变更自动生成测试用例、性能分析、回滚脚本、兼容性报告。
+### 条件表达式模型
 
-## 6. 典型开源项目源码剖析
+```yaml
+# 条件表达式定义
+condition_expressions:
+  - name: "comparison_conditions"
+    description: "比较条件"
+    
+    conditions:
+      - name: "equality"
+        operator: "="
+        description: "等于"
+        examples:
+          - expression: "status = 'active'"
+          - expression: "age = 25"
+          - expression: "is_vip = true"
+            
+      - name: "inequality"
+        operator: "!="
+        description: "不等于"
+        examples:
+          - expression: "status != 'inactive'"
+          - expression: "age != 0"
+            
+      - name: "greater_than"
+        operator: ">"
+        description: "大于"
+        examples:
+          - expression: "amount > 1000"
+          - expression: "age > 18"
+            
+      - name: "greater_equal"
+        operator: ">="
+        description: "大于等于"
+        examples:
+          - expression: "amount >= 500"
+          - expression: "age >= 21"
+            
+      - name: "less_than"
+        operator: "<"
+        description: "小于"
+        examples:
+          - expression: "amount < 100"
+          - expression: "age < 65"
+            
+      - name: "less_equal"
+        operator: "<="
+        description: "小于等于"
+        examples:
+          - expression: "amount <= 50"
+          - expression: "age <= 30"
+            
+  - name: "logical_conditions"
+    description: "逻辑条件"
+    
+    conditions:
+      - name: "and_condition"
+        operator: "AND"
+        description: "逻辑与"
+        examples:
+          - expression: "status = 'active' AND age >= 18"
+          - expression: "amount > 100 AND is_vip = true"
+            
+      - name: "or_condition"
+        operator: "OR"
+        description: "逻辑或"
+        examples:
+          - expression: "status = 'active' OR is_vip = true"
+          - expression: "age < 18 OR age > 65"
+            
+      - name: "not_condition"
+        operator: "NOT"
+        description: "逻辑非"
+        examples:
+          - expression: "NOT status = 'inactive'"
+          - expression: "NOT is_deleted = true"
+            
+  - name: "pattern_conditions"
+    description: "模式匹配条件"
+    
+    conditions:
+      - name: "like_pattern"
+        operator: "LIKE"
+        description: "模式匹配"
+        examples:
+          - expression: "name LIKE 'John%'"
+          - expression: "email LIKE '%@gmail.com'"
+          - expression: "description LIKE '%important%'"
+            
+      - name: "in_list"
+        operator: "IN"
+        description: "包含在列表中"
+        examples:
+          - expression: "status IN ('active', 'pending')"
+          - expression: "category IN (1, 2, 3)"
+          - expression: "country IN ('US', 'CA', 'UK')"
+            
+      - name: "between_range"
+        operator: "BETWEEN"
+        description: "范围匹配"
+        examples:
+          - expression: "age BETWEEN 18 AND 65"
+          - expression: "amount BETWEEN 100 AND 1000"
+          - expression: "created_at BETWEEN '2023-01-01' AND '2023-12-31'"
+```
 
-- **Prisma**：`query-engine`模块实现AST结构体定义与递归推理，`prisma-client-js`实现类型安全API生成。
-- **TypeORM**：`QueryBuilder`递归实现SQL/NoSQL/GraphQL查询建模与类型推理。
-- **SQLAlchemy**：`sqlalchemy.sql`递归实现查询表达式、聚合、子查询、参数化等。
-- **GraphQL**：`graphql-js`递归实现查询AST、类型推理、解析与校验。
+### 聚合函数模型
 
-## 7. 全链路自动化与可证明性递归
+```yaml
+# 聚合函数定义
+aggregation_functions:
+  - name: "count_functions"
+    description: "计数函数"
+    
+    functions:
+      - name: "COUNT"
+        description: "计数"
+        syntax: "COUNT(expression)"
+        examples:
+          - expression: "COUNT(*)"
+            description: "所有行数"
+          - expression: "COUNT(id)"
+            description: "非空ID数量"
+          - expression: "COUNT(DISTINCT category)"
+            description: "不同类别数量"
+            
+  - name: "sum_functions"
+    description: "求和函数"
+    
+    functions:
+      - name: "SUM"
+        description: "求和"
+        syntax: "SUM(expression)"
+        examples:
+          - expression: "SUM(amount)"
+            description: "总金额"
+          - expression: "SUM(quantity)"
+            description: "总数量"
+          - expression: "SUM(price * quantity)"
+            description: "总价值"
+            
+  - name: "average_functions"
+    description: "平均值函数"
+    
+    functions:
+      - name: "AVG"
+        description: "平均值"
+        syntax: "AVG(expression)"
+        examples:
+          - expression: "AVG(amount)"
+            description: "平均金额"
+          - expression: "AVG(age)"
+            description: "平均年龄"
+          - expression: "AVG(rating)"
+            description: "平均评分"
+            
+  - name: "extreme_functions"
+    description: "极值函数"
+    
+    functions:
+      - name: "MAX"
+        description: "最大值"
+        syntax: "MAX(expression)"
+        examples:
+          - expression: "MAX(amount)"
+            description: "最大金额"
+          - expression: "MAX(created_at)"
+            description: "最新创建时间"
+            
+      - name: "MIN"
+        description: "最小值"
+        syntax: "MIN(expression)"
+        examples:
+          - expression: "MIN(amount)"
+            description: "最小金额"
+          - expression: "MIN(created_at)"
+            description: "最早创建时间"
+```
 
-- **自动化链路**：查询建模系统与采集、存储、分析、API、权限、审计等全链路自动集成。
-- **可证明性**：查询建模推理与校验过程具备可追溯性与可证明性，支持自动生成证明链路。
-- **递归补全**：所有查询建模定义、推理、校验、异常补偿、AI自动化等链路均可递归扩展，支撑复杂数据场景的工程落地。
+### 连接查询模型
 
-## 8. 复杂查询、权限与安全递归理论
+```yaml
+# 连接查询定义
+join_queries:
+  - name: "inner_join"
+    description: "内连接"
+    type: "INNER JOIN"
+    
+    examples:
+      - name: "user_orders"
+        description: "用户订单查询"
+        query:
+          select:
+            fields:
+              - "u.name"
+              - "u.email"
+              - "o.order_id"
+              - "o.amount"
+              - "o.created_at"
+          from:
+            tables:
+              - name: "users"
+                alias: "u"
+          joins:
+            - type: "INNER JOIN"
+              table: "orders"
+              alias: "o"
+              condition: "u.id = o.user_id"
+          where:
+            conditions:
+              - expression: "o.status = 'completed'"
+          order_by:
+            fields:
+              - name: "o.created_at"
+                direction: "DESC"
+                
+  - name: "left_join"
+    description: "左连接"
+    type: "LEFT JOIN"
+    
+    examples:
+      - name: "all_users_with_orders"
+        description: "所有用户及其订单"
+        query:
+          select:
+            fields:
+              - "u.name"
+              - "u.email"
+              - "o.order_id"
+              - "o.amount"
+          from:
+            tables:
+              - name: "users"
+                alias: "u"
+          joins:
+            - type: "LEFT JOIN"
+              table: "orders"
+              alias: "o"
+              condition: "u.id = o.user_id"
+          where:
+            conditions:
+              - expression: "u.status = 'active'"
+              
+  - name: "right_join"
+    description: "右连接"
+    type: "RIGHT JOIN"
+    
+    examples:
+      - name: "all_orders_with_users"
+        description: "所有订单及其用户"
+        query:
+          select:
+            fields:
+              - "o.order_id"
+              - "o.amount"
+              - "u.name"
+              - "u.email"
+          from:
+            tables:
+              - name: "orders"
+                alias: "o"
+          joins:
+            - type: "RIGHT JOIN"
+              table: "users"
+              alias: "u"
+              condition: "o.user_id = u.id"
+```
 
-- **复杂查询建模**：支持多表连接、嵌套子查询、窗口函数、递归查询等高级特性递归建模。
-- **权限与安全建模**：支持查询级、字段级、行级权限控制，自动生成权限校验与审计日志。
-- **审计与合规**：查询操作自动记录审计日志，支持合规性分析与追溯。
+### 子查询模型
 
-## 9. 工程实践案例
+```yaml
+# 子查询定义
+subquery_definitions:
+  - name: "scalar_subquery"
+    description: "标量子查询"
+    type: "返回单个值"
+    
+    examples:
+      - name: "user_order_count"
+        description: "用户订单数量"
+        query:
+          select:
+            fields:
+              - name: "name"
+              - name: "email"
+              - name: "order_count"
+                subquery:
+                  select:
+                    fields:
+                      - name: "COUNT(*)"
+                  from:
+                    tables:
+                      - name: "orders"
+                  where:
+                    conditions:
+                      - expression: "user_id = users.id"
+        description: "查询每个用户的订单数量"
+        
+  - name: "table_subquery"
+    description: "表子查询"
+    type: "返回结果集"
+    
+    examples:
+      - name: "high_value_orders"
+        description: "高价值订单"
+        query:
+          select:
+            fields:
+              - "name"
+              - "email"
+              - "order_amount"
+          from:
+            subquery:
+              select:
+                fields:
+                  - "user_id"
+                  - "SUM(amount) as order_amount"
+              from:
+                tables:
+                  - name: "orders"
+              group_by:
+                fields:
+                  - "user_id"
+              having:
+                conditions:
+                  - expression: "SUM(amount) > 1000"
+          joins:
+            - type: "INNER JOIN"
+              table: "users"
+              condition: "users.id = subquery.user_id"
+```
 
-### 1. 电商平台多维分析查询
+## 国际标准对标
 
-- 通过DSL定义多维聚合、分组、筛选、排序，自动生成高性能SQL/GraphQL查询。
-- 支持权限控制与审计，保障数据安全。
+### 查询语言标准
 
-### 2. 金融风控实时查询
+#### SQL (Structured Query Language)
 
-- 支持复杂条件、嵌套子查询、窗口分析，自动生成高效SQL与NoSQL查询。
-- 自动检测异常查询、性能瓶颈，AI辅助优化。
+- **版本**：SQL:2016
+- **标准**：ISO/IEC 9075
+- **核心概念**：SELECT、FROM、WHERE、GROUP BY、ORDER BY
+- **工具支持**：MySQL、PostgreSQL、Oracle、SQL Server
 
----
+#### GraphQL
 
-本节递归补全了查询建模理论，涵盖AST结构、类型推理、推理引擎、异常补偿、AI自动化、工程最佳实践与典型源码剖析，为数据查询与分析领域的工程实现提供了全链路理论支撑。
+- **版本**：GraphQL 2021
+- **标准**：GraphQL Specification
+- **核心概念**：Query、Mutation、Subscription、Schema
+- **工具支持**：Apollo Server、GraphQL Yoga、Prisma
+
+#### OData
+
+- **版本**：OData 4.0
+- **标准**：OASIS OData
+- **核心概念**：Entity、Property、Navigation、Filter
+- **工具支持**：Microsoft OData、Apache Olingo
+
+### 查询优化标准
+
+#### Query Optimization
+
+- **标准**：Database Query Optimization
+- **核心概念**：Execution Plan、Index、Statistics
+- **工具支持**：Query Analyzer、EXPLAIN、Query Profiler
+
+#### Query Performance
+
+- **标准**：Query Performance Standards
+- **核心概念**：Response Time、Throughput、Resource Usage
+- **工具支持**：Performance Monitor、Query Profiler
+
+## 著名大学课程对标
+
+### 数据库课程
+
+#### MIT 6.830 - Database Systems
+
+- **课程内容**：数据库系统、查询处理、查询优化
+- **查询相关**：SQL查询、查询优化、执行计划
+- **实践项目**：查询优化器实现
+- **相关技术**：PostgreSQL、MySQL、查询分析
+
+#### Stanford CS245 - Principles of Data-Intensive Systems
+
+- **课程内容**：数据密集型系统、查询处理、性能优化
+- **查询相关**：分布式查询、查询优化、性能调优
+- **实践项目**：分布式查询系统
+- **相关技术**：Spark、Hadoop、查询优化
+
+#### CMU 15-445 - Database Systems
+
+- **课程内容**：数据库系统、查询执行、事务处理
+- **查询相关**：查询执行引擎、查询优化、索引设计
+- **实践项目**：数据库查询引擎
+- **相关技术**：SQLite、查询优化、索引
+
+### 数据科学课程
+
+#### MIT 6.862 - Applied Machine Learning
+
+- **课程内容**：机器学习、数据分析、查询处理
+- **查询相关**：数据查询、特征工程、数据预处理
+- **实践项目**：机器学习数据管道
+- **相关技术**：Pandas、SQL、数据查询
+
+#### Stanford CS246 - Mining Massive Data Sets
+
+- **课程内容**：大数据挖掘、查询处理、数据分析
+- **查询相关**：大规模查询、数据挖掘查询、分析查询
+- **实践项目**：大数据查询系统
+- **相关技术**：Spark、Hadoop、查询优化
+
+## 工程实践
+
+### 查询设计模式
+
+#### 简单查询模式
+
+```yaml
+# 简单查询模式
+simple_query_pattern:
+  description: "基本的查询模式"
+  structure:
+    - name: "单表查询"
+      description: "从单个表查询数据"
+      components:
+        - "SELECT字段"
+        - "FROM表"
+        - "WHERE条件"
+        - "ORDER BY排序"
+        
+  benefits:
+    - "简单易懂"
+    - "性能良好"
+    - "易于维护"
+    
+  use_cases:
+    - "用户列表查询"
+    - "产品信息查询"
+    - "配置数据查询"
+```
+
+#### 复杂查询模式
+
+```yaml
+# 复杂查询模式
+complex_query_pattern:
+  description: "复杂的多表查询模式"
+  structure:
+    - name: "多表连接"
+      description: "连接多个表查询数据"
+      components:
+        - "多表FROM"
+        - "JOIN连接"
+        - "复杂WHERE条件"
+        - "GROUP BY分组"
+        - "HAVING过滤"
+        
+  benefits:
+    - "支持复杂业务逻辑"
+    - "数据关联查询"
+    - "聚合分析"
+    
+  use_cases:
+    - "报表查询"
+    - "分析查询"
+    - "统计查询"
+```
+
+#### 分页查询模式
+
+```yaml
+# 分页查询模式
+pagination_query_pattern:
+  description: "支持分页的查询模式"
+  structure:
+    - name: "分页查询"
+      description: "分页返回查询结果"
+      components:
+        - "LIMIT限制"
+        - "OFFSET偏移"
+        - "ORDER BY排序"
+        - "COUNT总数查询"
+        
+  benefits:
+    - "支持大数据集"
+    - "提高响应速度"
+    - "减少内存使用"
+    
+  use_cases:
+    - "列表分页"
+    - "搜索结果"
+    - "数据浏览"
+```
+
+### 查询优化模式
+
+#### 索引优化模式
+
+```yaml
+# 索引优化模式
+index_optimization_pattern:
+  description: "通过索引优化查询性能"
+  strategies:
+    - name: "单列索引"
+      description: "在单个列上创建索引"
+      use_cases:
+        - "主键查询"
+        - "唯一值查询"
+        - "范围查询"
+        
+    - name: "复合索引"
+      description: "在多个列上创建索引"
+      use_cases:
+        - "多条件查询"
+        - "排序查询"
+        - "分组查询"
+        
+    - name: "覆盖索引"
+      description: "索引包含查询所需的所有字段"
+      use_cases:
+        - "只读查询"
+        - "统计查询"
+        - "聚合查询"
+```
+
+#### 查询重写模式
+
+```yaml
+# 查询重写模式
+query_rewrite_pattern:
+  description: "重写查询以提高性能"
+  strategies:
+    - name: "子查询优化"
+      description: "将子查询转换为连接"
+      examples:
+        - "EXISTS优化"
+        - "IN优化"
+        - "相关子查询优化"
+        
+    - name: "连接优化"
+      description: "优化表连接顺序"
+      examples:
+        - "小表驱动大表"
+        - "索引连接"
+        - "哈希连接"
+        
+    - name: "聚合优化"
+      description: "优化聚合操作"
+      examples:
+        - "预聚合"
+        - "流式聚合"
+        - "并行聚合"
+```
+
+## 最佳实践
+
+### 查询设计原则
+
+1. **简洁性**：查询应该简洁易懂
+2. **性能性**：考虑查询性能
+3. **可维护性**：便于维护和修改
+4. **安全性**：防止SQL注入
+
+### 查询优化原则
+
+1. **索引使用**：合理使用索引
+2. **查询重写**：优化查询语句
+3. **执行计划**：分析执行计划
+4. **资源控制**：控制查询资源使用
+
+### 查询安全原则
+
+1. **参数化查询**：使用参数化查询
+2. **权限控制**：控制查询权限
+3. **审计日志**：记录查询日志
+4. **数据脱敏**：敏感数据脱敏
+
+## 相关概念
+
+- [数据建模](../theory.md)
+- [实体建模](../entity/theory.md)
+- [关系建模](../relationship/theory.md)
+- [数据模型](../theory.md)
+
+## 参考文献
+
+1. Date, C. J. (2019). "SQL and Relational Theory"
+2. Melton, J., & Simon, A. R. (2002). "SQL:1999 Understanding Relational Language Components"
+3. Chamberlin, D. D., & Boyce, R. F. (1974). "SEQUEL: A Structured English Query Language"
+4. Codd, E. F. (1970). "A Relational Model of Data for Large Shared Data Banks"
+5. Stonebraker, M., & Hellerstein, J. M. (2005). "Readings in Database Systems"
+6. Abadi, D. J., et al. (2008). "Column-Stores vs. Row-Stores: How Different Are They Really?"

@@ -156,7 +156,7 @@ api:
 - **分布式一致性**：共识算法和一致性保证
 - **可验证计算**：零知识证明和验证
 
-#### 智能家居行业技术架构模型
+#### Web3行业技术架构模型1
 
 - **多协议设备互联**：Zigbee、WiFi、蓝牙等协议
 - **场景联动**：自动化场景配置
@@ -386,7 +386,7 @@ formal-framework/
           theory.md
         dsl-draft.md
         theory.md
-      smart-home-architecture/     # 代表项目：Home Assistant, OpenHAB, Domoticz
+      web3-architecture/           # 代表项目：Ethereum, Polkadot, Solana
         device-interoperability/
           dsl-draft.md
           theory.md
@@ -470,7 +470,7 @@ formal-framework/
           theory.md
         dsl-draft.md
         theory.md
-      enterprise-management-model/      # 代表项目：ERPNext, Odoo, Dolibarr, Tryton, Metasfresh
+      ai-infrastructure-architecture/  # 代表项目：TensorFlow, PyTorch, MLflow, Kubeflow
         hr-management/
           dsl-draft.md
           theory.md
@@ -506,31 +506,28 @@ formal-framework/
           theory.md
         dsl-draft.md
         theory.md
-      oa-office-model/                  # 代表项目：OnlyOffice, Nextcloud, EGroupware, Zimbra, OpenProject
-        document-management/
+      cloud-native-architecture/        # 代表项目：Kubernetes, Istio, Envoy, Prometheus
+        api-gateway/
           dsl-draft.md
           theory.md
-        workflow-automation/
+        service-mesh/
           dsl-draft.md
           theory.md
-        calendar-collaboration/
+        container-orchestration/
           dsl-draft.md
           theory.md
-        communication/
+        observability/
+          dsl-draft.md
+          theory.md
+        serverless/
           dsl-draft.md
           theory.md
         dsl-draft.md
         theory.md
-      logistics-model/                  # 代表项目：OpenTMS, OpenLMIS
+      iot-architecture/                 # 代表项目：Azure IoT, AWS IoT, Google Cloud IoT
         dsl-draft.md
         theory.md
-      order-model/                      # 代表项目：Odoo, ERPNext
-        dsl-draft.md
-        theory.md
-      business-model/                   # 代表项目：Magento, Shopware
-        dsl-draft.md
-        theory.md
-      sales-model/                      # 代表项目：Salesforce, SuiteCRM
+      finance-architecture/             # 代表项目：Apache Fineract, Mifos, OpenGamma
         dsl-draft.md
         theory.md
       # 可持续扩展更多行业，每个子目录建议包含 theory.md 和 dsl-draft.md
@@ -1033,7 +1030,7 @@ workflow:
 #### 2024年Q3
 
 - [ ] 完成Web3行业模型
-- [ ] 实现智能家居模型
+- [ ] 实现Web3模型
 - [ ] 集成云原生架构
 
 #### 2024年Q4
@@ -1231,9 +1228,9 @@ A: 可通过GitHub Issues、社区讨论区或邮件联系官方团队，企业�
 - **方案**：通过数据模型、API模型、规则引擎DSL，结合AI自动生成风控策略代码和测试用例，自动部署到云原生环境。
 - **成效**：新业务上线周期从3个月缩短到2周，风控规则变更可分钟级自动发布。
 
-### 3. 智能家居自动化平台
+### 3. Web3智能合约平台
 
-- **背景**：智能家居厂商需支持多协议设备互联、场景联动和用户自定义自动化。
+- **背景**：区块链平台需支持智能合约开发、部署和自动化执行。
 - **方案**：利用交互模型、协议适配、场景自动化DSL，结合AI生成设备适配层和自动化脚本，支持用户可视化配置。
 - **成效**：支持设备类型从5种扩展到50+，用户自定义场景数提升10倍，平台兼容性和扩展性显著增强。
 
@@ -1279,7 +1276,7 @@ A: 可通过GitHub Issues、社区讨论区或邮件联系官方团队，企业�
 ### 1. 长期目标
 
 - 打造全球领先的形式化软件工程自动化平台，服务各类企业、开发者和行业组织。
-- 持续扩展行业模型库，覆盖更多垂直领域（如医疗、能源、政务、教育等）。
+- 持续扩展行业模型库，覆盖更多垂直领域（如AI基础设施、云原生、物联网、Web3等）。
 - 推动AI与形式化方法深度融合，实现更智能的自动化设计、验证与优化。
 - 建立开放的插件与扩展生态，支持第三方模型、生成器、验证器接入。
 
