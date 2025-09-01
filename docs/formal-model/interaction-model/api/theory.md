@@ -2,15 +2,15 @@
 
 ## 概念定义
 
-API建模理论是一种形式化建模方法，用于描述和管理应用程序编程接口(API)的结构、行为、契约和交互。它通过接口定义、协议规范、数据模型、安全策略等方式，实现API的标准化设计和自动化管理。
+API建模理论是一种形式化建模方法，用于描述、设计和验证应用程序编程接口（API）。它通过接口定义、数据模型、协议规范、安全策略等方式，实现API的标准化设计、文档化和治理。
 
 ### 核心特征
 
-1. **接口规范化**：统一的API接口定义标准
-2. **协议标准化**：标准化的通信协议和格式
-3. **契约管理**：API契约的版本管理和兼容性
-4. **安全建模**：API安全策略和访问控制
-5. **文档自动化**：自动化的API文档生成
+1. **接口定义**：API端点、方法、参数、响应的标准化定义
+2. **数据模型**：请求/响应数据结构的规范化建模
+3. **协议规范**：HTTP、GraphQL、gRPC等协议的标准实现
+4. **安全策略**：认证、授权、加密等安全机制的集成
+5. **版本管理**：API版本控制和向后兼容性管理
 
 ## 理论基础
 
@@ -19,45 +19,45 @@ API建模理论是一种形式化建模方法，用于描述和管理应用程�
 API建模基于以下理论：
 
 ```text
-APIModel = (Interface, Protocol, Data, Security, Documentation)
+APIModel = (InterfaceDefinition, DataModel, ProtocolSpecification, SecurityPolicy, VersionManagement)
 ```
 
 其中：
 
-- Interface：接口定义（端点、方法、参数、响应）
-- Protocol：协议规范（HTTP、gRPC、GraphQL、WebSocket）
-- Data：数据模型（请求数据、响应数据、错误数据）
-- Security：安全策略（认证、授权、加密、审计）
-- Documentation：文档规范（API文档、示例、测试）
+- InterfaceDefinition：接口定义（端点、方法、参数、响应）
+- DataModel：数据模型（请求模型、响应模型、错误模型）
+- ProtocolSpecification：协议规范（HTTP、GraphQL、gRPC、WebSocket）
+- SecurityPolicy：安全策略（认证、授权、加密、审计）
+- VersionManagement：版本管理（版本控制、兼容性、迁移）
 
 ### API设计层次理论
 
 ```yaml
 # API设计层次
 api_design_hierarchy:
-  interface_layer:
-    - "端点定义"
-    - "方法规范"
-    - "参数设计"
-    - "响应格式"
+  conceptual_layer:
+    - "业务概念"
+    - "领域模型"
+    - "用例分析"
+    - "用户故事"
     
-  protocol_layer:
-    - "通信协议"
-    - "数据格式"
-    - "传输机制"
-    - "错误处理"
-    
-  data_layer:
+  logical_layer:
+    - "接口设计"
     - "数据模型"
-    - "验证规则"
-    - "序列化格式"
-    - "版本管理"
+    - "协议选择"
+    - "安全策略"
     
-  security_layer:
-    - "认证机制"
-    - "授权策略"
-    - "加密传输"
-    - "访问控制"
+  physical_layer:
+    - "实现规范"
+    - "部署配置"
+    - "监控告警"
+    - "文档生成"
+    
+  operational_layer:
+    - "版本管理"
+    - "变更控制"
+    - "性能优化"
+    - "故障处理"
 ```
 
 ## 核心组件
@@ -66,965 +66,1044 @@ api_design_hierarchy:
 
 ```yaml
 # 接口定义
-interface_definitions:
-  - name: "user_management_api"
-    description: "用户管理API"
-    version: "v1.0.0"
-    base_url: "https://api.example.com/v1"
-    
-    endpoints:
-      - name: "get_users"
-        description: "获取用户列表"
-        method: "GET"
-        path: "/users"
-        parameters:
-          - name: "page"
-            type: "integer"
-            required: false
-            default: 1
-            description: "页码"
-          - name: "size"
-            type: "integer"
-            required: false
-            default: 10
-            description: "每页大小"
-          - name: "status"
-            type: "string"
-            required: false
-            enum: ["active", "inactive", "all"]
-            description: "用户状态"
-        responses:
-          - code: 200
-            description: "成功"
-            schema: "UserList"
-          - code: 400
-            description: "参数错误"
-            schema: "ErrorResponse"
-          - code: 401
-            description: "未授权"
-            schema: "ErrorResponse"
-          - code: 500
-            description: "服务器错误"
-            schema: "ErrorResponse"
-            
-      - name: "create_user"
-        description: "创建用户"
-        method: "POST"
-        path: "/users"
-        request_body:
-          schema: "CreateUserRequest"
-          required: true
-          description: "用户创建请求"
-        responses:
-          - code: 201
-            description: "创建成功"
-            schema: "User"
-          - code: 400
-            description: "请求数据错误"
-            schema: "ErrorResponse"
-          - code: 409
-            description: "用户已存在"
-            schema: "ErrorResponse"
-            
-      - name: "get_user_by_id"
-        description: "根据ID获取用户"
-        method: "GET"
-        path: "/users/{id}"
-        parameters:
-          - name: "id"
-            type: "string"
-            required: true
-            in: "path"
-            description: "用户ID"
-        responses:
-          - code: 200
-            description: "成功"
-            schema: "User"
-          - code: 404
-            description: "用户不存在"
-            schema: "ErrorResponse"
-            
-      - name: "update_user"
-        description: "更新用户信息"
-        method: "PUT"
-        path: "/users/{id}"
-        parameters:
-          - name: "id"
-            type: "string"
-            required: true
-            in: "path"
-            description: "用户ID"
-        request_body:
-          schema: "UpdateUserRequest"
-          required: true
-          description: "用户更新请求"
-        responses:
-          - code: 200
-            description: "更新成功"
-            schema: "User"
-          - code: 404
-            description: "用户不存在"
-            schema: "ErrorResponse"
-            
-      - name: "delete_user"
-        description: "删除用户"
-        method: "DELETE"
-        path: "/users/{id}"
-        parameters:
-          - name: "id"
-            type: "string"
-            required: true
-            in: "path"
-            description: "用户ID"
-        responses:
-          - code: 204
-            description: "删除成功"
-          - code: 404
-            description: "用户不存在"
-            schema: "ErrorResponse"
+interface_definition_models:
+  - name: "endpoint_definition"
+    description: "端点定义"
+    structure:
+      - name: "path"
+        description: "路径"
+        type: "String"
+        example: "/api/v1/users"
+        
+      - name: "method"
+        description: "HTTP方法"
+        type: "HTTPMethod"
+        values: ["GET", "POST", "PUT", "DELETE", "PATCH"]
+        
+      - name: "operation_id"
+        description: "操作ID"
+        type: "String"
+        example: "getUserById"
+        
+      - name: "summary"
+        description: "操作摘要"
+        type: "String"
+        example: "根据ID获取用户信息"
+        
+      - name: "description"
+        description: "详细描述"
+        type: "String"
+        
+  - name: "parameter_definition"
+    description: "参数定义"
+    structure:
+      - name: "name"
+        description: "参数名"
+        type: "String"
+        
+      - name: "in"
+        description: "参数位置"
+        type: "ParameterLocation"
+        values: ["path", "query", "header", "cookie"]
+        
+      - name: "required"
+        description: "是否必需"
+        type: "Boolean"
+        
+      - name: "schema"
+        description: "参数模式"
+        type: "Schema"
+        
+      - name: "description"
+        description: "参数描述"
+        type: "String"
+        
+  - name: "response_definition"
+    description: "响应定义"
+    structure:
+      - name: "status_code"
+        description: "状态码"
+        type: "Integer"
+        example: 200
+        
+      - name: "description"
+        description: "响应描述"
+        type: "String"
+        
+      - name: "content"
+        description: "响应内容"
+        type: "MediaType"
+        
+      - name: "headers"
+        description: "响应头"
+        type: "Map<String, Header>"
 ```
 
 ### 数据模型定义
 
 ```yaml
 # 数据模型定义
-data_model_definitions:
-  - name: "user_models"
-    description: "用户相关数据模型"
-    
-    models:
-      - name: "User"
-        description: "用户模型"
-        properties:
-          - name: "id"
-            type: "string"
-            format: "uuid"
-            description: "用户唯一标识符"
-            example: "123e4567-e89b-12d3-a456-426614174000"
-            
-          - name: "username"
-            type: "string"
-            min_length: 3
-            max_length: 50
-            pattern: "^[a-zA-Z0-9_]+$"
-            description: "用户名"
-            example: "john_doe"
-            
-          - name: "email"
-            type: "string"
-            format: "email"
-            description: "邮箱地址"
-            example: "john.doe@example.com"
-            
-          - name: "full_name"
-            type: "string"
-            max_length: 100
-            description: "全名"
-            example: "John Doe"
-            
-          - name: "status"
-            type: "string"
-            enum: ["active", "inactive", "suspended"]
-            default: "active"
-            description: "用户状态"
-            
-          - name: "created_at"
-            type: "string"
-            format: "date-time"
-            description: "创建时间"
-            example: "2023-01-01T12:00:00Z"
-            
-          - name: "updated_at"
-            type: "string"
-            format: "date-time"
-            description: "更新时间"
-            example: "2023-01-01T12:00:00Z"
-            
-      - name: "CreateUserRequest"
-        description: "创建用户请求"
-        properties:
-          - name: "username"
-            type: "string"
-            required: true
-            min_length: 3
-            max_length: 50
-            pattern: "^[a-zA-Z0-9_]+$"
-            description: "用户名"
-            
-          - name: "email"
-            type: "string"
-            required: true
-            format: "email"
-            description: "邮箱地址"
-            
-          - name: "password"
-            type: "string"
-            required: true
-            min_length: 8
-            description: "密码"
-            
-          - name: "full_name"
-            type: "string"
-            required: false
-            max_length: 100
-            description: "全名"
-            
-      - name: "UpdateUserRequest"
-        description: "更新用户请求"
-        properties:
-          - name: "email"
-            type: "string"
-            required: false
-            format: "email"
-            description: "邮箱地址"
-            
-          - name: "full_name"
-            type: "string"
-            required: false
-            max_length: 100
-            description: "全名"
-            
-          - name: "status"
-            type: "string"
-            required: false
-            enum: ["active", "inactive", "suspended"]
-            description: "用户状态"
-            
-      - name: "UserList"
-        description: "用户列表"
-        properties:
-          - name: "data"
-            type: "array"
-            items: "User"
-            description: "用户列表"
-            
-          - name: "pagination"
-            type: "PaginationInfo"
-            description: "分页信息"
-            
-      - name: "PaginationInfo"
-        description: "分页信息"
-        properties:
-          - name: "page"
-            type: "integer"
-            description: "当前页码"
-            
-          - name: "size"
-            type: "integer"
-            description: "每页大小"
-            
-          - name: "total"
-            type: "integer"
-            description: "总记录数"
-            
-          - name: "pages"
-            type: "integer"
-            description: "总页数"
-            
-      - name: "ErrorResponse"
-        description: "错误响应"
-        properties:
-          - name: "error"
-            type: "string"
-            description: "错误代码"
-            example: "VALIDATION_ERROR"
-            
-          - name: "message"
-            type: "string"
-            description: "错误消息"
-            example: "Invalid input parameters"
-            
-          - name: "details"
-            type: "array"
-            items: "ValidationError"
-            description: "详细错误信息"
-            
-      - name: "ValidationError"
-        description: "验证错误"
-        properties:
-          - name: "field"
-            type: "string"
-            description: "字段名"
-            
-          - name: "message"
-            type: "string"
-            description: "错误消息"
+data_model_models:
+  - name: "schema_definition"
+    description: "模式定义"
+    structure:
+      - name: "type"
+        description: "数据类型"
+        type: "DataType"
+        values: ["object", "array", "string", "number", "integer", "boolean", "null"]
+        
+      - name: "properties"
+        description: "属性定义"
+        type: "Map<String, Schema>"
+        
+      - name: "required"
+        description: "必需属性"
+        type: "Array<String>"
+        
+      - name: "additional_properties"
+        description: "附加属性"
+        type: "Boolean|Schema"
+        
+  - name: "media_type_definition"
+    description: "媒体类型定义"
+    structure:
+      - name: "content_type"
+        description: "内容类型"
+        type: "String"
+        example: "application/json"
+        
+      - name: "schema"
+        description: "数据模式"
+        type: "Schema"
+        
+      - name: "example"
+        description: "示例数据"
+        type: "Any"
+        
+      - name: "encoding"
+        description: "编码信息"
+        type: "Map<String, Encoding>"
 ```
 
 ### 协议规范模型
 
 ```yaml
 # 协议规范定义
-protocol_specifications:
-  - name: "http_protocol"
+protocol_specification_models:
+  - name: "http_specification"
     description: "HTTP协议规范"
-    
-    protocol:
-      - name: "http_methods"
-        description: "HTTP方法"
-        methods:
-          - name: "GET"
-            description: "获取资源"
-            idempotent: true
-            safe: true
-            cacheable: true
-            
-          - name: "POST"
-            description: "创建资源"
-            idempotent: false
-            safe: false
-            cacheable: false
-            
-          - name: "PUT"
-            description: "更新资源"
-            idempotent: true
-            safe: false
-            cacheable: false
-            
-          - name: "DELETE"
-            description: "删除资源"
-            idempotent: true
-            safe: false
-            cacheable: false
-            
-          - name: "PATCH"
-            description: "部分更新资源"
-            idempotent: false
-            safe: false
-            cacheable: false
-            
-      - name: "http_status_codes"
-        description: "HTTP状态码"
-        codes:
-          - name: "2xx_success"
-            description: "成功状态码"
-            codes:
-              - code: 200
-                description: "OK"
-              - code: 201
-                description: "Created"
-              - code: 204
-                description: "No Content"
-                
-          - name: "4xx_client_error"
-            description: "客户端错误状态码"
-            codes:
-              - code: 400
-                description: "Bad Request"
-              - code: 401
-                description: "Unauthorized"
-              - code: 403
-                description: "Forbidden"
-              - code: 404
-                description: "Not Found"
-              - code: 409
-                description: "Conflict"
-              - code: 422
-                description: "Unprocessable Entity"
-                
-          - name: "5xx_server_error"
-            description: "服务器错误状态码"
-            codes:
-              - code: 500
-                description: "Internal Server Error"
-              - code: 502
-                description: "Bad Gateway"
-              - code: 503
-                description: "Service Unavailable"
-                
-      - name: "http_headers"
-        description: "HTTP头部"
-        headers:
-          - name: "content_type"
-            description: "内容类型"
-            examples:
-              - "application/json"
-              - "application/xml"
-              - "text/plain"
-              
-          - name: "authorization"
-            description: "授权头部"
-            examples:
-              - "Bearer <token>"
-              - "Basic <credentials>"
-              
-          - name: "accept"
-            description: "接受的内容类型"
-            examples:
-              - "application/json"
-              - "application/xml"
-              
-  - name: "grpc_protocol"
+    structure:
+      - name: "version"
+        description: "HTTP版本"
+        type: "String"
+        example: "1.1"
+        
+      - name: "methods"
+        description: "支持的方法"
+        type: "Array<HTTPMethod>"
+        
+      - name: "status_codes"
+        description: "状态码定义"
+        type: "Map<Integer, String>"
+        
+      - name: "headers"
+        description: "标准头部"
+        type: "Array<String>"
+        
+  - name: "graphql_specification"
+    description: "GraphQL协议规范"
+    structure:
+      - name: "schema"
+        description: "GraphQL模式"
+        type: "GraphQLSchema"
+        
+      - name: "queries"
+        description: "查询定义"
+        type: "Array<Query>"
+        
+      - name: "mutations"
+        description: "变更定义"
+        type: "Array<Mutation>"
+        
+      - name: "subscriptions"
+        description: "订阅定义"
+        type: "Array<Subscription>"
+        
+  - name: "grpc_specification"
     description: "gRPC协议规范"
-    
-    protocol:
+    structure:
       - name: "service_definition"
         description: "服务定义"
-        syntax: "protobuf"
-        features:
-          - "强类型"
-          - "代码生成"
-          - "双向流"
-          - "拦截器"
-          
-      - name: "message_types"
-        description: "消息类型"
-        types:
-          - "unary"
-          - "server_streaming"
-          - "client_streaming"
-          - "bidirectional_streaming"
-          
-  - name: "graphql_protocol"
-    description: "GraphQL协议规范"
-    
-    protocol:
-      - name: "query_language"
-        description: "查询语言"
-        features:
-          - "声明式查询"
-          - "类型系统"
-          - "内省"
-          - "实时订阅"
-          
-      - name: "schema_definition"
-        description: "模式定义"
-        components:
-          - "类型定义"
-          - "字段定义"
-          - "参数定义"
-          - "指令定义"
-```
-
-### 安全策略模型
-
-```yaml
-# 安全策略定义
-security_policy_definitions:
-  - name: "authentication_policies"
-    description: "认证策略"
-    
-    policies:
-      - name: "oauth2_authentication"
-        description: "OAuth 2.0认证"
-        flow: "authorization_code"
-        scopes:
-          - "read"
-          - "write"
-          - "admin"
-        token_types:
-          - "access_token"
-          - "refresh_token"
-          - "id_token"
-          
-      - name: "jwt_authentication"
-        description: "JWT认证"
-        algorithm: "RS256"
-        claims:
-          - "sub"
-          - "iss"
-          - "exp"
-          - "iat"
-          - "aud"
-        token_lifetime: "1h"
+        type: "Service"
         
-      - name: "api_key_authentication"
-        description: "API密钥认证"
-        key_location: "header"
-        key_name: "X-API-Key"
-        key_format: "uuid"
+      - name: "message_definitions"
+        description: "消息定义"
+        type: "Array<Message>"
         
-  - name: "authorization_policies"
-    description: "授权策略"
-    
-    policies:
-      - name: "role_based_access_control"
-        description: "基于角色的访问控制"
-        roles:
-          - name: "admin"
-            permissions:
-              - "user:read"
-              - "user:write"
-              - "user:delete"
-              - "system:admin"
-              
-          - name: "user"
-            permissions:
-              - "user:read"
-              - "user:write"
-              
-          - name: "guest"
-            permissions:
-              - "user:read"
-              
-      - name: "resource_based_access_control"
-        description: "基于资源的访问控制"
-        resources:
-          - name: "users"
-            actions:
-              - "read"
-              - "write"
-              - "delete"
-            conditions:
-              - "owner_only"
-              - "admin_override"
-              
-  - name: "security_headers"
-    description: "安全头部"
-    
-    headers:
-      - name: "content_security_policy"
-        description: "内容安全策略"
-        value: "default-src 'self'"
-        
-      - name: "strict_transport_security"
-        description: "严格传输安全"
-        value: "max-age=31536000; includeSubDomains"
-        
-      - name: "x_frame_options"
-        description: "X-Frame-Options"
-        value: "DENY"
-        
-      - name: "x_content_type_options"
-        description: "X-Content-Type-Options"
-        value: "nosniff"
+      - name: "streaming_types"
+        description: "流类型"
+        type: "Array<StreamingType>"
+        values: ["unary", "server_streaming", "client_streaming", "bidirectional_streaming"]
 ```
 
 ## 国际标准对标
 
-### API设计标准
+### OpenAPI规范
 
-#### OpenAPI (Swagger)
+#### OpenAPI 3.0/3.1标准
 
-- **版本**：OpenAPI 3.1
-- **标准**：OpenAPI Specification
-- **核心概念**：API Specification、Schema、Paths、Components
+- **标准**：OpenAPI Specification 3.0, OpenAPI Specification 3.1
+- **核心概念**：API文档、接口定义、数据模式、安全方案
+- **理论基础**：RESTful API设计、JSON Schema、HTTP协议
 - **工具支持**：Swagger UI、Swagger Editor、OpenAPI Generator
 
-#### GraphQL
+#### OpenAPI核心组件
 
-- **版本**：GraphQL 2021
-- **标准**：GraphQL Specification
-- **核心概念**：Schema、Query、Mutation、Subscription
-- **工具支持**：Apollo Server、GraphQL Yoga、Prisma
+```yaml
+# OpenAPI核心组件
+openapi_components:
+  info:
+    title: "User Management API"
+    version: "1.0.0"
+    description: "用户管理API"
+    
+  servers:
+    - url: "https://api.example.com/v1"
+      description: "生产环境"
+    - url: "https://staging-api.example.com/v1"
+      description: "测试环境"
+      
+  paths:
+    /users:
+      get:
+        summary: "获取用户列表"
+        operationId: "getUsers"
+        parameters:
+          - name: "page"
+            in: "query"
+            schema:
+              type: "integer"
+              default: 1
+          - name: "size"
+            in: "query"
+            schema:
+              type: "integer"
+              default: 20
+        responses:
+          "200":
+            description: "成功"
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/UserList"
+                  
+    /users/{id}:
+      get:
+        summary: "根据ID获取用户"
+        operationId: "getUserById"
+        parameters:
+          - name: "id"
+            in: "path"
+            required: true
+            schema:
+              type: "string"
+        responses:
+          "200":
+            description: "成功"
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/User"
+          "404":
+            description: "用户不存在"
+            
+  components:
+    schemas:
+      User:
+        type: "object"
+        properties:
+          id:
+            type: "string"
+            format: "uuid"
+          name:
+            type: "string"
+          email:
+            type: "string"
+            format: "email"
+          created_at:
+            type: "string"
+            format: "date-time"
+        required: ["id", "name", "email"]
+        
+      UserList:
+        type: "object"
+        properties:
+          data:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/User"
+          pagination:
+            $ref: "#/components/schemas/Pagination"
+            
+    securitySchemes:
+      bearerAuth:
+        type: "http"
+        scheme: "bearer"
+        bearerFormat: "JWT"
+```
 
-#### gRPC
+### AsyncAPI规范
 
-- **版本**：gRPC 1.50+
-- **标准**：gRPC Protocol
-- **核心概念**：Protocol Buffers、Service Definition、Streaming
-- **工具支持**：gRPC Tools、Protobuf Compiler
+#### AsyncAPI 2.0/3.0标准
 
-### API安全标准
+- **标准**：AsyncAPI Specification 2.0, AsyncAPI Specification 3.0
+- **核心概念**：事件驱动API、消息定义、通道规范、异步通信
+- **理论基础**：事件驱动架构、消息队列、发布订阅模式
+- **工具支持**：AsyncAPI Generator、AsyncAPI Studio、AsyncAPI CLI
 
-#### OAuth 2.0
+#### AsyncAPI核心组件
 
-- **版本**：OAuth 2.1
-- **标准**：RFC 9116
-- **核心概念**：Authorization Flows、Scopes、Tokens
-- **工具支持**：OAuth Libraries、Identity Providers
+```yaml
+# AsyncAPI核心组件
+asyncapi_components:
+  asyncapi: "2.6.0"
+  info:
+    title: "Order Management Events"
+    version: "1.0.0"
+    description: "订单管理事件API"
+    
+  servers:
+    production:
+      url: "kafka://kafka.example.com:9092"
+      protocol: "kafka"
+      description: "生产环境Kafka集群"
+      
+  channels:
+    order/created:
+      publish:
+        summary: "订单创建事件"
+        operationId: "orderCreated"
+        message:
+          $ref: "#/components/messages/OrderCreated"
+          
+    order/updated:
+      subscribe:
+        summary: "订单更新事件"
+        operationId: "orderUpdated"
+        message:
+          $ref: "#/components/messages/OrderUpdated"
+          
+    order/cancelled:
+      publish:
+        summary: "订单取消事件"
+        operationId: "orderCancelled"
+        message:
+          $ref: "#/components/messages/OrderCancelled"
+          
+  components:
+    messages:
+      OrderCreated:
+        payload:
+          type: "object"
+          properties:
+            order_id:
+              type: "string"
+              format: "uuid"
+            customer_id:
+              type: "string"
+            total_amount:
+              type: "number"
+            items:
+              type: "array"
+              items:
+                $ref: "#/components/schemas/OrderItem"
+            created_at:
+              type: "string"
+              format: "date-time"
+          required: ["order_id", "customer_id", "total_amount"]
+          
+      OrderUpdated:
+        payload:
+          type: "object"
+          properties:
+            order_id:
+              type: "string"
+              format: "uuid"
+            status:
+              type: "string"
+              enum: ["processing", "shipped", "delivered"]
+            updated_at:
+              type: "string"
+              format: "date-time"
+          required: ["order_id", "status"]
+          
+    schemas:
+      OrderItem:
+        type: "object"
+        properties:
+          product_id:
+            type: "string"
+          quantity:
+            type: "integer"
+          price:
+            type: "number"
+        required: ["product_id", "quantity", "price"]
+```
 
-#### OpenID Connect
+### GraphQL规范
 
-- **版本**：OpenID Connect 1.0
-- **标准**：OpenID Connect Specification
-- **核心概念**：ID Token、UserInfo、Discovery
-- **工具支持**：OpenID Connect Libraries
+#### GraphQL标准
 
-#### JWT (JSON Web Token)
+- **标准**：GraphQL Specification, GraphQL Schema Definition Language (SDL)
+- **核心概念**：查询语言、类型系统、解析器、订阅
+- **理论基础**：类型系统、查询优化、数据获取
+- **工具支持**：GraphQL Playground、Apollo Studio、GraphQL Code Generator
 
-- **版本**：JWT RFC 7519
-- **标准**：RFC 7519
-- **核心概念**：Claims、Signing、Encryption
-- **工具支持**：JWT Libraries
+#### GraphQL核心组件
 
-### API文档标准
+```graphql
+# GraphQL模式定义
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  profile: Profile
+  orders: [Order!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
 
-#### RAML (RESTful API Modeling Language)
+type Profile {
+  id: ID!
+  avatar: String
+  bio: String
+  preferences: JSON
+}
 
-- **版本**：RAML 1.0
-- **标准**：RAML Specification
-- **核心概念**：API Modeling、Documentation、Testing
-- **工具支持**：RAML Tools、API Designer
+type Order {
+  id: ID!
+  user: User!
+  items: [OrderItem!]!
+  totalAmount: Float!
+  status: OrderStatus!
+  createdAt: DateTime!
+}
 
-#### API Blueprint
+type OrderItem {
+  id: ID!
+  product: Product!
+  quantity: Int!
+  price: Float!
+}
 
-- **版本**：API Blueprint 1A9
-- **标准**：API Blueprint Specification
-- **核心概念**：API Documentation、Mock Server、Testing
-- **工具支持**：API Blueprint Tools
+type Product {
+  id: ID!
+  name: String!
+  description: String
+  price: Float!
+  category: Category!
+}
+
+type Category {
+  id: ID!
+  name: String!
+  products: [Product!]!
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+scalar DateTime
+scalar JSON
+
+type Query {
+  user(id: ID!): User
+  users(first: Int, after: String): UserConnection!
+  product(id: ID!): Product
+  products(categoryId: ID, first: Int, after: String): ProductConnection!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): CreateUserPayload!
+  updateUser(id: ID!, input: UpdateUserInput!): UpdateUserPayload!
+  deleteUser(id: ID!): DeleteUserPayload!
+  
+  createOrder(input: CreateOrderInput!): CreateOrderPayload!
+  updateOrderStatus(id: ID!, status: OrderStatus!): UpdateOrderPayload!
+}
+
+type Subscription {
+  orderStatusChanged(orderId: ID!): Order!
+  userCreated: User!
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  name: String
+  email: String
+}
+
+input CreateOrderInput {
+  userId: ID!
+  items: [OrderItemInput!]!
+}
+
+input OrderItemInput {
+  productId: ID!
+  quantity: Int!
+}
+
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+```
+
+### gRPC规范
+
+#### gRPC标准
+
+- **标准**：gRPC Protocol Buffers, gRPC-Web
+- **核心概念**：服务定义、消息类型、流式通信、代码生成
+- **理论基础**：Protocol Buffers、HTTP/2、流式传输
+- **工具支持**：gRPC CLI、gRPC Gateway、gRPC-Web
+
+#### gRPC核心组件
+
+```protobuf
+// gRPC服务定义
+syntax = "proto3";
+
+package user.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// 用户服务定义
+service UserService {
+  // 获取用户信息
+  rpc GetUser(GetUserRequest) returns (User);
+  
+  // 创建用户
+  rpc CreateUser(CreateUserRequest) returns (User);
+  
+  // 更新用户
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+  
+  // 删除用户
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+  
+  // 流式获取用户列表
+  rpc ListUsers(ListUsersRequest) returns (stream User);
+  
+  // 双向流式聊天
+  rpc Chat(stream ChatMessage) returns (stream ChatMessage);
+}
+
+// 消息定义
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  UserStatus status = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message UpdateUserRequest {
+  string user_id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message DeleteUserRequest {
+  string user_id = 1;
+}
+
+message ListUsersRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  string filter = 3;
+}
+
+message ChatMessage {
+  string user_id = 1;
+  string message = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+enum UserStatus {
+  USER_STATUS_UNSPECIFIED = 0;
+  USER_STATUS_ACTIVE = 1;
+  USER_STATUS_INACTIVE = 2;
+  USER_STATUS_SUSPENDED = 3;
+}
+```
 
 ## 著名大学课程对标
 
-### 软件工程课程
+### API设计课程
 
 #### MIT 6.170 - Software Studio
 
-- **课程内容**：软件设计、架构、API设计
-- **API建模相关**：API设计、接口规范、服务架构
-- **实践项目**：API设计工具
-- **相关技术**：OpenAPI、GraphQL、gRPC
+- **课程内容**：软件工程、API设计、Web开发
+- **API相关**：RESTful API设计、API文档、API测试
+- **实践项目**：Web应用开发、API实现、前端集成
+- **相关技术**：Node.js、Express、React、MongoDB
 
-#### Stanford CS210 - Software Engineering
+#### Stanford CS142 - Web Applications
 
-- **课程内容**：软件工程、系统设计、API开发
-- **API建模相关**：API开发、接口设计、服务集成
-- **实践项目**：API管理系统
-- **相关技术**：REST APIs、Microservices
+- **课程内容**：Web应用开发、前端框架、后端API
+- **API相关**：API设计模式、数据模型、安全机制
+- **实践项目**：全栈Web应用、API开发、前端集成
+- **相关技术**：JavaScript、React、Node.js、数据库
 
 #### CMU 15-413 - Software Engineering
 
-- **课程内容**：软件工程、分布式系统、API设计
-- **API建模相关**：分布式API、服务设计、接口规范
-- **实践项目**：分布式API系统
-- **相关技术**：gRPC、Microservices
-
-### 网络课程
-
-#### MIT 6.033 - Computer System Engineering
-
-- **课程内容**：系统工程、网络协议、API设计
-- **API建模相关**：网络API、协议设计、系统集成
-- **实践项目**：网络API系统
-- **相关技术**：HTTP、Web APIs
-
-#### Stanford CS144 - Introduction to Computer Networking
-
-- **课程内容**：计算机网络、协议设计、API开发
-- **API建模相关**：网络API、协议规范、接口设计
-- **实践项目**：网络API工具
-- **相关技术**：TCP/IP、HTTP、Web APIs
+- **课程内容**：软件工程、系统设计、API开发
+- **API相关**：API架构设计、微服务、分布式系统
+- **实践项目**：大型软件系统、API设计、系统集成
+- **相关技术**：Java、Spring、Docker、Kubernetes
 
 ## 工程实践
 
 ### API设计模式
 
-#### RESTful API模式
+#### RESTful API设计
 
 ```yaml
-# RESTful API模式
-restful_api_pattern:
-  description: "RESTful API设计模式"
-  principles:
-    - name: "资源导向"
-      description: "以资源为中心设计API"
-      examples:
-        - "/users"
-        - "/users/{id}"
-        - "/users/{id}/orders"
+# RESTful API设计模式
+restful_api_patterns:
+  resource_based_design:
+    description: "基于资源的设计"
+    principles:
+      - "使用名词而非动词"
+      - "使用HTTP方法表示操作"
+      - "使用状态码表示结果"
+    example: |
+      # 用户资源
+      GET    /api/v1/users          # 获取用户列表
+      POST   /api/v1/users          # 创建用户
+      GET    /api/v1/users/{id}     # 获取特定用户
+      PUT    /api/v1/users/{id}     # 更新用户
+      DELETE /api/v1/users/{id}     # 删除用户
+      
+      # 用户订单资源
+      GET    /api/v1/users/{id}/orders     # 获取用户订单
+      POST   /api/v1/users/{id}/orders     # 创建用户订单
+      
+  versioning_strategy:
+    description: "版本控制策略"
+    strategies:
+      - name: "URL版本控制"
+        example: "/api/v1/users"
+        benefits: ["清晰明确", "易于理解"]
+        drawbacks: ["URL冗长", "版本管理复杂"]
         
-    - name: "HTTP方法语义"
-      description: "使用HTTP方法表示操作"
-      methods:
-        - "GET: 获取资源"
-        - "POST: 创建资源"
-        - "PUT: 更新资源"
-        - "DELETE: 删除资源"
+      - name: "Header版本控制"
+        example: "Accept: application/vnd.api+json;version=1"
+        benefits: ["URL简洁", "向后兼容"]
+        drawbacks: ["不够直观", "调试困难"]
         
-    - name: "无状态"
-      description: "API调用不依赖服务器状态"
-      benefits:
-        - "可扩展性"
-        - "可靠性"
-        - "简单性"
-        
-    - name: "统一接口"
-      description: "统一的接口设计"
-      features:
-        - "标准HTTP方法"
-        - "标准状态码"
-        - "标准头部"
-        
-  benefits:
-    - "简单易用"
-    - "标准化"
-    - "可缓存"
-    - "无状态"
-    
-  use_cases:
-    - "Web API"
-    - "移动API"
-    - "第三方集成"
+      - name: "参数版本控制"
+        example: "/api/users?version=1"
+        benefits: ["简单易用", "灵活"]
+        drawbacks: ["不够标准", "文档复杂"]
 ```
 
-#### GraphQL API模式
+#### GraphQL API设计
 
 ```yaml
-# GraphQL API模式
-graphql_api_pattern:
-  description: "GraphQL API设计模式"
-  features:
-    - name: "声明式查询"
-      description: "客户端声明需要的数据"
-      benefits:
-        - "减少网络请求"
-        - "避免过度获取"
-        - "类型安全"
-        
-    - name: "强类型系统"
-      description: "基于类型系统的API"
-      features:
-        - "类型定义"
-        - "类型检查"
-        - "内省"
-        
-    - name: "单一端点"
-      description: "所有查询通过单一端点"
-      benefits:
-        - "简化客户端"
-        - "统一接口"
-        - "版本管理"
-        
-  benefits:
-    - "灵活查询"
-    - "类型安全"
-    - "实时更新"
-    - "强类型"
-    
-  use_cases:
-    - "复杂数据查询"
-    - "移动应用"
-    - "实时应用"
+# GraphQL API设计模式
+graphql_api_patterns:
+  schema_design:
+    description: "模式设计"
+    principles:
+      - "类型优先设计"
+      - "字段命名清晰"
+      - "避免过度嵌套"
+    example: |
+      type User {
+        id: ID!
+        name: String!
+        email: String!
+        profile: Profile
+        orders: [Order!]!
+      }
+      
+      type Profile {
+        id: ID!
+        avatar: String
+        bio: String
+      }
+      
+      type Order {
+        id: ID!
+        items: [OrderItem!]!
+        totalAmount: Float!
+        status: OrderStatus!
+      }
+      
+  resolver_patterns:
+    description: "解析器模式"
+    patterns:
+      - name: "数据加载器模式"
+        description: "使用DataLoader避免N+1查询"
+        example: |
+          const userLoader = new DataLoader(async (userIds) => {
+            const users = await User.findByIds(userIds);
+            return userIds.map(id => users.find(u => u.id === id));
+          });
+          
+      - name: "字段级解析"
+        description: "按需加载字段数据"
+        example: |
+          const resolvers = {
+            User: {
+              orders: async (user, args, context) => {
+                return await Order.findByUserId(user.id);
+              }
+            }
+          };
 ```
 
-#### gRPC API模式
+#### gRPC API设计
 
 ```yaml
-# gRPC API模式
-grpc_api_pattern:
-  description: "gRPC API设计模式"
-  features:
-    - name: "强类型定义"
-      description: "基于Protocol Buffers"
-      benefits:
-        - "类型安全"
-        - "代码生成"
-        - "向后兼容"
+# gRPC API设计模式
+grpc_api_patterns:
+  service_design:
+    description: "服务设计"
+    principles:
+      - "服务粒度适中"
+      - "方法命名清晰"
+      - "消息结构合理"
+    example: |
+      service UserService {
+        // 获取单个用户
+        rpc GetUser(GetUserRequest) returns (User);
         
-    - name: "多种通信模式"
-      description: "支持多种通信模式"
-      modes:
-        - "Unary"
-        - "Server Streaming"
-        - "Client Streaming"
-        - "Bidirectional Streaming"
+        // 批量获取用户
+        rpc BatchGetUsers(BatchGetUsersRequest) returns (BatchGetUsersResponse);
         
-    - name: "高性能"
-      description: "基于HTTP/2的高性能"
-      benefits:
-        - "多路复用"
-        - "头部压缩"
-        - "二进制传输"
+        // 流式获取用户列表
+        rpc ListUsers(ListUsersRequest) returns (stream User);
         
-  benefits:
-    - "高性能"
-    - "强类型"
-    - "代码生成"
-    - "多语言支持"
-    
-  use_cases:
-    - "微服务通信"
-    - "高性能API"
-    - "实时通信"
+        // 双向流式通信
+        rpc Chat(stream ChatMessage) returns (stream ChatMessage);
+      }
+      
+  message_design:
+    description: "消息设计"
+    principles:
+      - "使用标准类型"
+      - "字段编号稳定"
+      - "向后兼容"
+    example: |
+      message User {
+        string id = 1;
+        string name = 2;
+        string email = 3;
+        UserStatus status = 4;
+        google.protobuf.Timestamp created_at = 5;
+        google.protobuf.Timestamp updated_at = 6;
+        
+        // 保留字段编号用于未来扩展
+        reserved 7 to 10;
+      }
 ```
 
-### API实现模式
+### API安全模式
 
-#### API网关模式
+#### 认证模式
 
 ```yaml
-# API网关模式
-api_gateway_pattern:
-  description: "API网关设计模式"
-  components:
-    - name: "路由"
-      description: "请求路由"
-      features:
-        - "路径路由"
-        - "负载均衡"
-        - "服务发现"
-        
-    - name: "认证授权"
-      description: "认证和授权"
-      features:
-        - "身份验证"
-        - "权限控制"
-        - "令牌验证"
-        
-    - name: "限流熔断"
-      description: "限流和熔断"
-      features:
-        - "请求限流"
-        - "熔断保护"
-        - "降级处理"
-        
-    - name: "监控日志"
-      description: "监控和日志"
-      features:
-        - "请求监控"
-        - "性能监控"
-        - "日志记录"
+# API认证模式
+api_authentication_patterns:
+  jwt_authentication:
+    description: "JWT认证"
+    implementation: |
+      # JWT Token结构
+      {
+        "header": {
+          "alg": "HS256",
+          "typ": "JWT"
+        },
+        "payload": {
+          "sub": "user123",
+          "iss": "api.example.com",
+          "exp": 1640995200,
+          "iat": 1640908800
+        },
+        "signature": "HMACSHA256(base64UrlEncode(header) + '.' + base64UrlEncode(payload), secret)"
+      }
+      
+  oauth2_authentication:
+    description: "OAuth 2.0认证"
+    flows:
+      - name: "授权码流程"
+        description: "适用于Web应用"
+        steps:
+          - "用户访问应用"
+          - "重定向到授权服务器"
+          - "用户授权"
+          - "返回授权码"
+          - "应用交换访问令牌"
+          
+      - name: "客户端凭证流程"
+        description: "适用于服务间通信"
+        steps:
+          - "客户端直接请求访问令牌"
+          - "使用客户端ID和密钥"
+          - "返回访问令牌"
+          
+  api_key_authentication:
+    description: "API密钥认证"
+    implementation: |
+      # 请求头方式
+      Authorization: ApiKey your-api-key-here
+      
+      # 查询参数方式
+      GET /api/users?api_key=your-api-key-here
+      
+      # 自定义头部方式
+      X-API-Key: your-api-key-here
 ```
 
-#### API版本管理模式
+#### 授权模式
 
 ```yaml
-# API版本管理模式
-api_versioning_pattern:
-  description: "API版本管理设计模式"
-  strategies:
-    - name: "URL版本"
-      description: "在URL中包含版本号"
-      examples:
-        - "/v1/users"
-        - "/v2/users"
-      benefits:
-        - "清晰明确"
-        - "易于理解"
-      drawbacks:
-        - "URL污染"
-        - "维护复杂"
-        
-    - name: "头部版本"
-      description: "在HTTP头部中指定版本"
-      examples:
-        - "Accept: application/vnd.api+json;version=1"
-      benefits:
-        - "URL清洁"
-        - "灵活控制"
-      drawbacks:
-        - "不够直观"
-        - "客户端复杂"
-        
-    - name: "内容协商"
-      description: "通过内容类型协商版本"
-      examples:
-        - "Accept: application/vnd.company.users-v1+json"
-      benefits:
-        - "标准化"
-        - "向后兼容"
-      drawbacks:
-        - "复杂"
-        - "学习成本高"
+# API授权模式
+api_authorization_patterns:
+  rbac_authorization:
+    description: "基于角色的访问控制"
+    implementation: |
+      # 角色定义
+      roles:
+        - name: "admin"
+          permissions: ["read:all", "write:all", "delete:all"]
+        - name: "user"
+          permissions: ["read:own", "write:own"]
+        - name: "guest"
+          permissions: ["read:public"]
+          
+      # 权限检查
+      function checkPermission(user, resource, action) {
+        const userRole = getUserRole(user);
+        const requiredPermission = `${action}:${resource}`;
+        return userRole.permissions.includes(requiredPermission);
+      }
+      
+  abac_authorization:
+    description: "基于属性的访问控制"
+    implementation: |
+      # 策略定义
+      policies:
+        - name: "time_based_access"
+          condition: "current_time >= '09:00' && current_time <= '17:00'"
+          action: "allow"
+          
+        - name: "location_based_access"
+          condition: "user.location == 'office'"
+          action: "allow"
+          
+        - name: "resource_owner_access"
+          condition: "user.id == resource.owner_id"
+          action: "allow"
+          
+  scope_based_authorization:
+    description: "基于作用域的授权"
+    implementation: |
+      # 作用域定义
+      scopes:
+        - "read:users"      # 读取用户信息
+        - "write:users"     # 修改用户信息
+        - "delete:users"    # 删除用户
+        - "read:orders"     # 读取订单信息
+        - "write:orders"    # 修改订单信息
+        - "admin:all"       # 管理员权限
 ```
 
-## 最佳实践
-
-### API设计原则
-
-1. **一致性**：API设计应该保持一致
-2. **简洁性**：API应该简洁易用
-3. **可扩展性**：支持未来的扩展
-4. **向后兼容**：保持向后兼容性
-
-### API安全原则
-
-1. **认证授权**：实施适当的认证和授权
-2. **数据加密**：加密敏感数据
-3. **输入验证**：验证所有输入
-4. **审计日志**：记录安全事件
-
-### API文档原则
-
-1. **完整性**：文档应该完整
-2. **准确性**：文档应该准确
-3. **可读性**：文档应该易读
-4. **示例丰富**：提供丰富的示例
-
-## 应用案例
+## 应用案例分析
 
 ### 微服务API设计
 
 ```yaml
-# 微服务API设计
-microservice_api_design:
-  description: "微服务架构中的API设计"
-  components:
-    - name: "服务API"
-      description: "各个微服务的API"
-      services:
-        - "用户服务API"
-        - "订单服务API"
-        - "支付服务API"
-        - "通知服务API"
+# 微服务API设计案例
+microservice_api_case:
+  scenario: "电商微服务架构"
+  services:
+    - name: "user_service"
+      description: "用户服务"
+      api_spec: "openapi"
+      endpoints:
+        - "GET /api/v1/users"
+        - "POST /api/v1/users"
+        - "GET /api/v1/users/{id}"
+        - "PUT /api/v1/users/{id}"
+        - "DELETE /api/v1/users/{id}"
+      events:
+        - "user.created"
+        - "user.updated"
+        - "user.deleted"
         
-    - name: "API网关"
-      description: "统一的API入口"
-      features:
-        - "路由转发"
-        - "认证授权"
-        - "限流熔断"
-        - "监控日志"
+    - name: "product_service"
+      description: "产品服务"
+      api_spec: "openapi"
+      endpoints:
+        - "GET /api/v1/products"
+        - "POST /api/v1/products"
+        - "GET /api/v1/products/{id}"
+        - "PUT /api/v1/products/{id}"
+        - "DELETE /api/v1/products/{id}"
+      events:
+        - "product.created"
+        - "product.updated"
+        - "product.deleted"
         
-    - name: "服务发现"
-      description: "服务注册和发现"
-      features:
-        - "服务注册"
-        - "服务发现"
-        - "健康检查"
-        - "负载均衡"
+    - name: "order_service"
+      description: "订单服务"
+      api_spec: "openapi"
+      endpoints:
+        - "GET /api/v1/orders"
+        - "POST /api/v1/orders"
+        - "GET /api/v1/orders/{id}"
+        - "PUT /api/v1/orders/{id}"
+        - "DELETE /api/v1/orders/{id}"
+      events:
+        - "order.created"
+        - "order.updated"
+        - "order.cancelled"
         
-    - name: "配置管理"
-      description: "API配置管理"
-      features:
-        - "配置中心"
-        - "动态配置"
-        - "配置版本"
-        - "配置审计"
+  api_gateway:
+    name: "api_gateway"
+    description: "API网关"
+    features:
+      - "路由转发"
+      - "负载均衡"
+      - "认证授权"
+      - "限流熔断"
+      - "监控日志"
+      
+  event_bus:
+    name: "event_bus"
+    description: "事件总线"
+    technology: "Apache Kafka"
+    events:
+      - "user.created"
+      - "user.updated"
+      - "product.created"
+      - "order.created"
+      - "order.updated"
 ```
 
-### 移动应用API设计
+### 实时通信API设计
 
 ```yaml
-# 移动应用API设计
-mobile_api_design:
-  description: "移动应用专用的API设计"
-  considerations:
-    - name: "网络优化"
-      description: "优化网络传输"
-      strategies:
-        - "数据压缩"
-        - "增量同步"
-        - "缓存策略"
-        - "离线支持"
-        
-    - name: "性能优化"
-      description: "优化API性能"
-      strategies:
-        - "响应时间优化"
-        - "并发处理"
-        - "资源优化"
-        - "CDN使用"
-        
-    - name: "用户体验"
-      description: "优化用户体验"
-      strategies:
-        - "快速响应"
-        - "错误处理"
-        - "重试机制"
-        - "进度反馈"
-        
-    - name: "安全考虑"
-      description: "移动端安全"
-      strategies:
-        - "证书固定"
-        - "数据加密"
-        - "安全存储"
-        - "越狱检测"
+# 实时通信API设计案例
+realtime_api_case:
+  scenario: "实时聊天应用"
+  technologies:
+    - "WebSocket"
+    - "GraphQL Subscriptions"
+    - "gRPC Streaming"
+    
+  websocket_api:
+    description: "WebSocket API"
+    endpoints:
+      - "ws://api.example.com/chat"
+      - "ws://api.example.com/notifications"
+    events:
+      - "message.sent"
+      - "message.received"
+      - "user.online"
+      - "user.offline"
+      
+  graphql_subscriptions:
+    description: "GraphQL订阅"
+    schema: |
+      type Subscription {
+        messageReceived(roomId: ID!): Message!
+        userStatusChanged(userId: ID!): UserStatus!
+        typingIndicator(roomId: ID!): TypingIndicator!
+      }
+      
+  grpc_streaming:
+    description: "gRPC流式通信"
+    service: |
+      service ChatService {
+        rpc SendMessage(stream ChatMessage) returns (stream ChatMessage);
+        rpc JoinRoom(JoinRoomRequest) returns (stream RoomEvent);
+        rpc TypingIndicator(stream TypingEvent) returns (stream TypingEvent);
+      }
 ```
+
+## 最佳实践
+
+### 设计最佳实践
+
+1. **一致性原则**：保持API设计的一致性
+2. **简洁性原则**：设计简洁易用的API
+3. **向后兼容性**：确保API的向后兼容性
+4. **文档完整性**：提供完整的API文档
+
+### 实施最佳实践
+
+1. **版本管理**：建立完善的版本管理策略
+2. **安全优先**：将安全作为首要考虑因素
+3. **性能优化**：持续优化API性能
+4. **监控告警**：建立完善的监控和告警机制
+
+### 维护最佳实践
+
+1. **变更管理**：建立API变更管理流程
+2. **测试覆盖**：保持高测试覆盖率
+3. **文档更新**：及时更新API文档
+4. **用户反馈**：收集和处理用户反馈
 
 ## 相关概念
 
-- [契约建模](../contract/theory.md)
-- [消息建模](../message/theory.md)
-- [协议建模](../protocol/theory.md)
-- [交互建模](../theory.md)
+- [交互建模理论](theory.md)
+- [契约建模](contract/theory.md)
+- [消息建模](message/theory.md)
+- [协议建模](protocol/theory.md)
 
 ## 参考文献
 
-1. Fielding, R. T. (2000). "Architectural Styles and the Design of Network-based Software Architectures"
-2. Newman, S. (2021). "Building Microservices: Designing Fine-Grained Systems"
+1. OpenAPI Specification (2021). "OpenAPI Specification 3.1.0"
+2. AsyncAPI Specification (2022). "AsyncAPI Specification 2.6.0"
 3. GraphQL Foundation (2021). "GraphQL Specification"
-4. Google (2023). "gRPC Documentation"
-5. OpenAPI Initiative (2021). "OpenAPI Specification"
-6. Hardt, D. (2012). "The OAuth 2.0 Authorization Framework"
+4. gRPC Documentation (2023). "gRPC Protocol Buffers"
+5. Fielding, R. T. (2000). "Architectural Styles and the Design of Network-based Software Architectures"

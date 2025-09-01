@@ -23,6 +23,7 @@ DataMigration = (Mapping, Transformation, Validation, Loading, Rollback)
 ```
 
 其中：
+
 - Mapping：数据映射（字段映射、关系映射、约束映射）
 - Transformation：数据转换（格式转换、类型转换、业务转换）
 - Validation：数据验证（完整性验证、一致性验证、质量验证）
