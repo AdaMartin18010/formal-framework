@@ -9,19 +9,24 @@
 ### 2.1 形式化验证的定义
 
 #### 2.1.1 形式化验证的基本概念
+
 形式化验证是使用严格的数学方法证明系统满足其规格说明的过程。
 
 **形式化定义**：
+
 ```text
 FormalVerification = (Specification, Model, Proof, Verification)
 ```
+
 其中：
+
 - `Specification` 是系统规格说明
 - `Model` 是系统模型
 - `Proof` 是形式化证明
 - `Verification` 是验证结果
 
 #### 2.1.2 形式化验证的特点
+
 - **数学严谨性**：基于严格的数学逻辑
 - **完备性**：能够证明所有性质
 - **自动化**：支持自动化验证工具
@@ -30,15 +35,19 @@ FormalVerification = (Specification, Model, Proof, Verification)
 ### 2.2 验证方法分类
 
 #### 2.2.1 定理证明
+
 使用逻辑推理证明系统性质。
 
 #### 2.2.2 模型检查
+
 通过穷举搜索验证系统性质。
 
 #### 2.2.3 抽象解释
+
 通过抽象分析系统行为。
 
 #### 2.2.4 类型检查
+
 通过类型系统验证程序正确性。
 
 ## 3. 在形式化建模中的应用
@@ -46,6 +55,7 @@ FormalVerification = (Specification, Model, Proof, Verification)
 ### 3.1 模型正确性验证
 
 #### 3.1.1 语法正确性
+
 验证模型的语法正确性：
 
 ```text
@@ -53,6 +63,7 @@ SyntaxCorrectness = ∀m : Model • ValidSyntax(m)
 ```
 
 #### 3.1.2 语义正确性
+
 验证模型的语义正确性：
 
 ```text
@@ -60,6 +71,7 @@ SemanticCorrectness = ∀m : Model • ValidSemantics(m)
 ```
 
 #### 3.1.3 一致性验证
+
 验证模型间的一致性：
 
 ```text
@@ -69,6 +81,7 @@ ModelConsistency = ∀m1, m2 : Models • Consistent(m1, m2)
 ### 3.2 系统性质验证
 
 #### 3.2.1 安全性验证
+
 验证系统的安全性质：
 
 ```text
@@ -76,6 +89,7 @@ SafetyVerification = ∀s : SystemState • Safe(s)
 ```
 
 #### 3.2.2 活性验证
+
 验证系统的活性性质：
 
 ```text
@@ -83,6 +97,7 @@ LivenessVerification = ∀s : SystemState • Eventually(Good(s))
 ```
 
 #### 3.2.3 公平性验证
+
 验证系统的公平性质：
 
 ```text
@@ -92,6 +107,7 @@ FairnessVerification = ∀p : Process • FairlyScheduled(p)
 ### 3.3 转换正确性验证
 
 #### 3.3.1 语义保持验证
+
 验证转换保持语义：
 
 ```text
@@ -100,6 +116,7 @@ SemanticPreservation = ∀m : Model •
 ```
 
 #### 3.3.2 性质保持验证
+
 验证转换保持性质：
 
 ```text
@@ -112,6 +129,7 @@ PropertyPreservation = ∀m : Model; p : Property •
 ### 4.1 Z Notation规格
 
 #### 4.1.1 基本验证定义
+
 ```z
 [Specification, Model, Property, Proof]
 FormalVerification ::= specification : Specification
@@ -125,6 +143,7 @@ FormalVerification ::= specification : Specification
 ```
 
 #### 4.1.2 验证操作规格
+
 ```z
 VerifyProperty : FormalVerification × Property → Bool
 ∀ fv : FormalVerification; p : Property •
@@ -138,10 +157,12 @@ GenerateProof : FormalVerification × Property → Proof
 ### 4.2 验证公理
 
 #### 4.2.1 正确性公理
+
 - **规格正确性**：`∀spec : Specification • ValidSpecification(spec)`
 - **模型正确性**：`∀model : Model • ValidModel(model)`
 
 #### 4.2.2 验证公理
+
 - **验证完备性**：`∀p : Property • Verifiable(p)`
 - **证明正确性**：`∀proof : Proof • CorrectProof(proof)`
 
@@ -150,6 +171,7 @@ GenerateProof : FormalVerification × Property → Proof
 ### 5.1 形式化模型验证
 
 #### 5.1.1 数学模型验证
+
 验证数学模型的正确性：
 
 ```text
@@ -157,6 +179,7 @@ MathematicalModelVerification = (MathModel, MathematicalProperties) → Verifica
 ```
 
 #### 5.1.2 逻辑模型验证
+
 验证逻辑模型的正确性：
 
 ```text
@@ -166,6 +189,7 @@ LogicalModelVerification = (LogicModel, LogicalProperties) → VerificationResul
 ### 5.2 转换验证
 
 #### 5.2.1 模型转换验证
+
 验证模型转换的正确性：
 
 ```text
@@ -173,6 +197,7 @@ ModelTransformationVerification = (SourceModel, TargetModel, TransformationRules
 ```
 
 #### 5.2.2 代码生成验证
+
 验证代码生成的正确性：
 
 ```text
@@ -182,6 +207,7 @@ CodeGenerationVerification = (Model, GeneratedCode, GenerationRules) → Verific
 ### 5.3 系统验证
 
 #### 5.3.1 并发系统验证
+
 验证并发系统的正确性：
 
 ```text
@@ -189,6 +215,7 @@ ConcurrentSystemVerification = (ConcurrentModel, ConcurrencyProperties) → Veri
 ```
 
 #### 5.3.2 实时系统验证
+
 验证实时系统的正确性：
 
 ```text
@@ -200,6 +227,7 @@ RealTimeSystemVerification = (RealTimeModel, TimingProperties) → VerificationR
 ### 6.1 定理证明
 
 #### 6.1.1 自然演绎
+
 使用自然演绎规则进行证明：
 
 ```text
@@ -211,6 +239,7 @@ NaturalDeduction = {
 ```
 
 #### 6.1.2 归结证明
+
 使用归结规则进行证明：
 
 ```text
@@ -224,6 +253,7 @@ ResolutionProof = {
 ### 6.2 模型检查
 
 #### 6.2.1 状态空间搜索
+
 通过搜索状态空间验证性质：
 
 ```text
@@ -235,6 +265,7 @@ StateSpaceSearch = {
 ```
 
 #### 6.2.2 抽象模型检查
+
 使用抽象模型进行验证：
 
 ```text
@@ -248,6 +279,7 @@ AbstractModelChecking = {
 ### 6.3 抽象解释
 
 #### 6.3.1 抽象域
+
 定义抽象解释的抽象域：
 
 ```text
@@ -259,6 +291,7 @@ AbstractDomain = {
 ```
 
 #### 6.3.2 抽象函数
+
 定义抽象和具体域之间的映射：
 
 ```text
@@ -273,6 +306,7 @@ AbstractionFunction = {
 ### 7.1 定理证明器
 
 #### 7.1.1 交互式证明器
+
 ```python
 class InteractiveProver:
     def __init__(self, axioms, rules):
@@ -303,6 +337,7 @@ class InteractiveProver:
 ```
 
 #### 7.1.2 自动证明器
+
 ```python
 class AutomatedProver:
     def __init__(self, axioms, rules, strategies):
@@ -338,6 +373,7 @@ class AutomatedProver:
 ### 7.2 模型检查器
 
 #### 7.2.1 显式模型检查器
+
 ```python
 class ExplicitModelChecker:
     def __init__(self, model, properties):
@@ -376,6 +412,7 @@ class ExplicitModelChecker:
 ```
 
 #### 7.2.2 符号模型检查器
+
 ```python
 class SymbolicModelChecker:
     def __init__(self, model, properties):
@@ -412,6 +449,7 @@ class SymbolicModelChecker:
 ### 7.3 抽象解释器
 
 #### 7.3.1 抽象解释引擎
+
 ```python
 class AbstractInterpreter:
     def __init__(self, abstract_domain, transfer_functions):
@@ -458,11 +496,13 @@ class AbstractInterpreter:
 ### 8.1 验证的形式性质
 
 #### 8.1.1 正确性
+
 - **规格正确性**：规格准确描述系统行为
 - **模型正确性**：模型正确实现规格
 - **证明正确性**：证明逻辑正确
 
 #### 8.1.2 完备性
+
 - **验证完备性**：能够验证所有重要性质
 - **证明完备性**：能够证明所有真命题
 - **工具完备性**：工具支持所有验证方法
@@ -470,6 +510,7 @@ class AbstractInterpreter:
 ### 8.2 验证的计算性质
 
 #### 8.2.1 复杂度
+
 验证操作的复杂度：
 
 ```text
@@ -481,6 +522,7 @@ Complexity = {
 ```
 
 #### 8.2.2 可扩展性
+
 验证系统的可扩展性：
 
 ```text
@@ -496,6 +538,7 @@ Scalability = {
 ### 9.1 归纳证明
 
 #### 9.1.1 结构归纳
+
 对于递归定义的结构，使用结构归纳：
 
 ```text
@@ -504,6 +547,7 @@ StructuralInduction = ∀x • P(x) ⇔
 ```
 
 #### 9.1.2 数学归纳
+
 对于自然数，使用数学归纳：
 
 ```text
@@ -514,6 +558,7 @@ MathematicalInduction = ∀n • P(n) ⇔
 ### 9.2 构造性证明
 
 #### 9.2.1 算法构造
+
 通过构造算法证明存在性：
 
 ```text
@@ -522,6 +567,7 @@ AlgorithmicConstruction = ∀spec • ∃algorithm •
 ```
 
 #### 9.2.2 反例构造
+
 通过构造反例证明否定性：
 
 ```text
@@ -533,6 +579,7 @@ CounterExampleConstruction = ¬P ⇔ ∃x • ¬P(x)
 ### 10.1 软件验证
 
 #### 10.1.1 程序正确性验证
+
 验证程序的正确性：
 
 ```text
@@ -540,6 +587,7 @@ ProgramCorrectnessVerification = (Program, Specification) → VerificationResult
 ```
 
 #### 10.1.2 算法验证
+
 验证算法的正确性：
 
 ```text
@@ -549,6 +597,7 @@ AlgorithmVerification = (Algorithm, AlgorithmSpecification) → VerificationResu
 ### 10.2 硬件验证
 
 #### 10.2.1 电路验证
+
 验证数字电路的正确性：
 
 ```text
@@ -556,6 +605,7 @@ CircuitVerification = (Circuit, CircuitSpecification) → VerificationResult
 ```
 
 #### 10.2.2 协议验证
+
 验证通信协议的正确性：
 
 ```text
@@ -565,6 +615,7 @@ ProtocolVerification = (Protocol, ProtocolSpecification) → VerificationResult
 ### 10.3 系统验证
 
 #### 10.3.1 安全系统验证
+
 验证安全系统的正确性：
 
 ```text
@@ -572,6 +623,7 @@ SecuritySystemVerification = (SecuritySystem, SecurityProperties) → Verificati
 ```
 
 #### 10.3.2 实时系统验证
+
 验证实时系统的正确性：
 
 ```text
@@ -583,17 +635,21 @@ RealTimeSystemVerification = (RealTimeSystem, TimingProperties) → Verification
 ### 11.1 形式化方法标准
 
 #### 11.1.1 Z Notation
+
 形式化规格语言标准，支持定理证明。
 
 #### 11.1.2 VDM
+
 维也纳开发方法标准，支持形式化验证。
 
 ### 11.2 验证标准
 
 #### 11.2.1 IEEE 1850
+
 属性规格语言标准，支持模型检查。
 
 #### 11.2.2 ISO/IEC 15408
+
 通用标准，支持安全系统验证。
 
 ## 12. 大学课程参考
@@ -601,11 +657,13 @@ RealTimeSystemVerification = (RealTimeSystem, TimingProperties) → Verification
 ### 12.1 本科课程
 
 #### 12.1.1 形式化方法
+
 - 形式化规格
 - 形式化验证
 - 定理证明
 
 #### 12.1.2 软件工程
+
 - 软件验证
 - 程序正确性
 - 测试理论
@@ -613,11 +671,13 @@ RealTimeSystemVerification = (RealTimeSystem, TimingProperties) → Verification
 ### 12.2 研究生课程
 
 #### 12.2.1 形式化验证
+
 - 验证理论
 - 模型检查
 - 定理证明
 
 #### 12.2.2 程序分析
+
 - 静态分析
 - 动态分析
 - 抽象解释
