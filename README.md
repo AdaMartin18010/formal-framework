@@ -4,6 +4,22 @@
 
 本项目致力于研究推理和探索形式化模型方案：以形式化模型为基础，自动化生成软件工程项目的绝大部分设计与实现。
 
+### 项目重新定位与国际对标（Knowledge-first）
+
+- **定位**：本项目首先是一个“跨行业、以形式化方法为核心的知识梳理与论证推理框架”。在统一的理论范式下，系统性对齐学术与工业知识，并以可验证、可追溯的方式沉淀标准化产物。
+- **范围**：覆盖通用形式化模型与跨行业理论模型（AI 基础设施、云原生、物联网、金融、Web3 等），提供从概念→公理/类型系统→方法论→案例→映射→度量的全链路文档体系。
+- **产出物**：
+  - 术语与概念对齐表（Glossary/Mapping）
+  - 理论论证与可证明性要点（theory.md 系列）
+  - DSL 草案与递归扩展模板（dsl-draft.md 系列）
+  - 跨行业映射矩阵与对标报告（industry-model/*/）
+  - 质量与评审基线（引用与评审标准、完成度定义）
+- **对标来源（持续更新）**：
+  - 国际百科与标准：Wikipedia（Formalisms/SE/PL/Distributed Systems 等主题入口）、OMG/ISO、CNCF、NIST
+  - 名校课程：MIT/Stanford/CMU/UW/ETH/清华/上交 等软件工程、编程语言、形式化方法、分布式系统课程大纲与教材
+  - 行业成熟应用：Kubernetes、Istio、Prometheus、TensorFlow/MLflow、Open Banking、PCI-DSS 等
+- **方法与验收**：采用“来源可追溯 + 术语对齐 + 结构化维度对比 + 专家评审”的流程。参见 `docs/CITATION_STANDARDS.md`、`docs/CODE_REVIEW_GUIDE.md`、`docs/EXPERT_REVIEW_SYSTEM.md`、`docs/QUALITY_STANDARDS.md`。
+
 ### 核心愿景
 
 构建一个基于形式化模型的软件工程自动化平台，通过领域专用语言（DSL）和AI技术，实现从需求到代码的全流程自动化生成，大幅提升软件开发效率和质量。
