@@ -138,7 +138,7 @@ type VerificationAttribute = {
 
 ### 1. 定理证明模型 (Theorem Proving Model)
 
-#### 元模型定义
+#### 定理证明元模型定义
 
 ```text
 TheoremProvingMetaModel = {
@@ -220,7 +220,7 @@ ProofAssistant = (type, language, tactics, libraries, automation, verification)
 
 ### 2. 模型检查模型 (Model Checking Model)
 
-#### 元模型定义
+#### 模型检查元模型定义
 
 ```text
 ModelCheckingMetaModel = {
@@ -302,7 +302,7 @@ CheckingAlgorithm = (type, approach, complexity, memory, optimization, scalabili
 
 ### 3. 抽象解释模型 (Abstract Interpretation Model)
 
-#### 元模型定义
+#### 抽象解释元模型定义
 
 ```text
 AbstractInterpretationMetaModel = {
@@ -384,7 +384,7 @@ FixedPointComputation = (type, algorithm, convergence, precision, efficiency, te
 
 ### 4. 类型检查模型 (Type Checking Model)
 
-#### 元模型定义
+#### 类型检查元模型定义
 
 ```text
 TypeCheckingMetaModel = {
@@ -466,7 +466,7 @@ TypeSafety = (type, property, proof, verification, implementation, testing)
 
 ### 5. 静态分析模型 (Static Analysis Model)
 
-#### 元模型定义
+#### 静态分析元模型定义
 
 ```text
 StaticAnalysisMetaModel = {
@@ -548,7 +548,7 @@ AnalysisFramework = (type, lattice, transfer, meet, initialization, termination)
 
 ### 6. 动态分析模型 (Dynamic Analysis Model)
 
-#### 元模型定义
+#### 动态分析元模型定义
 
 ```text
 DynamicAnalysisMetaModel = {

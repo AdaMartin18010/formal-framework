@@ -138,7 +138,7 @@ type QualityAttribute = {
 
 ### 1. 质量标准模型 (Quality Standards Model)
 
-#### 元模型定义
+#### 质量标准元模型定义
 
 ```text
 QualityStandardsMetaModel = {
@@ -220,7 +220,7 @@ TechnicalQualityStandard = (type, technology, specification, implementation, tes
 
 ### 2. 质量度量模型 (Quality Metrics Model)
 
-#### 元模型定义
+#### 质量度量元模型定义
 
 ```text
 QualityMetricsMetaModel = {
@@ -302,7 +302,7 @@ SecurityQualityMetric = (type, measurement, threshold, target, actual, variance)
 
 ### 3. 质量改进模型 (Quality Improvement Model)
 
-#### 元模型定义
+#### 质量改进元模型定义
 
 ```text
 QualityImprovementMetaModel = {
