@@ -1,13 +1,13 @@
----
+# 测试元模型数学形式化 (Testing Meta-model Mathematical Formalization)
+
+```text
 id: TESTING_META_MODEL_MATHEMATICAL_FORMALIZATION
 title: 测试元模型数学形式化
 level: L2
 domain: D08
 version: V1.0
 status: draft
----
-
-# 测试元模型数学形式化 (Testing Meta-model Mathematical Formalization)
+```
 
 ## 1. 概述
 

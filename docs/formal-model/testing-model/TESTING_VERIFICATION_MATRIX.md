@@ -1,17 +1,18 @@
----
+# 测试验证矩阵 (Testing Verification Matrix)
+
+```text
 id: TESTING_VERIFICATION_MATRIX
 title: 测试验证矩阵
 level: L2
 domain: D08
 version: V1.0
 status: draft
----
-
-# 测试验证矩阵 (Testing Verification Matrix)
+```
 
 ## 1. 概述
 
-本文档建立了测试元模型的完整验证矩阵，包括功能验证、性能验证、安全验证、兼容性验证和集成验证。通过系统化的验证方法，确保测试元模型的正确性、完整性和一致性。
+本文档建立了测试元模型的完整验证矩阵，包括功能验证、性能验证、安全验证、兼容性验证和集成验证。
+通过系统化的验证方法，确保测试元模型的正确性、完整性和一致性。
 
 ## 2. 验证矩阵结构
 

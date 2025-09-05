@@ -1,13 +1,13 @@
----
+# 多线程多任务推进100%完成报告 (Multi-threaded Multi-task 100% Completion Report)
+
+```text
 id: MULTI_THREADED_MULTI_TASK_100_PERCENT_COMPLETION_REPORT
 title: 多线程多任务推进100%完成报告
 level: L2
 domain: D08
 version: V1.0
 status: completed
----
-
-# 多线程多任务推进100%完成报告 (Multi-threaded Multi-task 100% Completion Report)
+```
 
 ## 🎉 项目完成声明
 

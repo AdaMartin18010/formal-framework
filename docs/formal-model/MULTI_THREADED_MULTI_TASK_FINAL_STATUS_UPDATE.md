@@ -1,13 +1,13 @@
----
+# 多线程多任务推进最终状态更新 (Multi-threaded Multi-task Final Status Update)
+
+```text
 id: MULTI_THREADED_MULTI_TASK_FINAL_STATUS_UPDATE
 title: 多线程多任务推进最终状态更新
 level: L2
 domain: D08
 version: V1.0
 status: completed
----
-
-# 多线程多任务推进最终状态更新 (Multi-threaded Multi-task Final Status Update)
+```
 
 ## 🎯 当前推进状态总览
 

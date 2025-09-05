@@ -1,17 +1,18 @@
----
+# 端到端集成测试框架 (End-to-End Integration Testing Framework)
+
+```text
 id: END_TO_END_INTEGRATION_TESTING
 title: 端到端集成测试框架
 level: L2
 domain: D08
 version: V1.0
 status: draft
----
-
-# 端到端集成测试框架 (End-to-End Integration Testing Framework)
+```
 
 ## 1. 概述
 
-本文档建立了测试元模型的端到端集成测试框架，包括系统级测试、跨组件集成测试、性能压力测试和故障恢复测试。通过完整的端到端测试验证，确保整个测试系统的稳定性和可靠性。
+本文档建立了测试元模型的端到端集成测试框架，包括系统级测试、跨组件集成测试、性能压力测试和故障恢复测试。
+通过完整的端到端测试验证，确保整个测试系统的稳定性和可靠性。
 
 ## 2. 端到端测试架构
 

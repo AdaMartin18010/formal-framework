@@ -1,17 +1,18 @@
----
+# 多线程测试架构优化 (Multi-threaded Testing Architecture Optimization)
+
+```text
 id: MULTI_THREADED_TESTING_ARCHITECTURE
 title: 多线程测试架构优化
 level: L2
 domain: D08
 version: V1.0
 status: draft
----
-
-# 多线程测试架构优化 (Multi-threaded Testing Architecture Optimization)
+```
 
 ## 1. 概述
 
-本文档描述了测试元模型的多线程架构优化方案，包括任务调度算法、线程池管理、负载均衡策略和性能优化机制。通过多线程并行处理，显著提升测试执行效率和系统吞吐量。
+本文档描述了测试元模型的多线程架构优化方案，包括任务调度算法、线程池管理、负载均衡策略和性能优化机制。
+通过多线程并行处理，显著提升测试执行效率和系统吞吐量。
 
 ## 2. 架构设计原则
 
