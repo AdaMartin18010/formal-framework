@@ -251,6 +251,54 @@ coverage:
         missing_methods: []
 ```
 
+#### 覆盖度度量与约束求解（增强）
+
+> 目的：用约束求解（CSP/SAT/SMT）方式为覆盖空洞自动生成最小用例集。
+
+形式化抽象：
+
+```text
+Given CFG = (N, E), branch set B ⊆ E
+Select tests T = {t_i} minimizing |T|
+Subject to: ∀ b ∈ B, ∃ t ∈ T s.t. executes(t, b)
+```
+
+约束建模片段（示意）：
+
+```smt
+; 对每个分支 b_j 定义布尔谓词 Covered_bj
+(assert (forall ((b Branch)) (=> (InB b) (exists ((t Test)) (Exec t b)))))
+; 最小化测试数量可通过 MaxSMT 或迭代加深求解
+```
+
+实施建议：
+
+- 使用 Z3/OR-Tools 将路径条件编码为约束，自动生成满足覆盖的输入
+- 与 `ValidationMetaModel` 的门禁绑定：若覆盖 < 阈值，自动触发CSP生成候选用例并回写 `tests/`
+- 报告输出：`coverage_report.md` 标注未覆盖分支与对应生成用例
+
+### 对齐的不变式（与 L2_D08 / L3）
+
+```text
+// 覆盖门禁（与 L2T2 对齐）
+Invariant T_CoverageGate:
+  Coverage.statement ≥ θ_stmt ∧ Coverage.branch ≥ θ_branch ∧ Coverage.mutation ≥ θ_mut
+
+// flaky 上限（与 L2T3 对齐）
+Invariant T_FlakyBound:
+  flaky_rate(TestSuite) ≤ ε
+
+// 性能 SLA（与 L2T4 对齐）
+Invariant T_LatencySLA:
+  latency_p99(service) ≤ SLA_p99(service)
+
+// 回归保护（与 L2T5 对齐）
+Invariant T_RegressionSafety:
+  changed(requirements) ⇒ exists(regression_suite)
+```
+
+> 映射参考：`docs/formal-model/alignment-L2-L3-matrix.md#2.7-测试（D08）`
+
 ### 性能测试模型
 
 ```yaml

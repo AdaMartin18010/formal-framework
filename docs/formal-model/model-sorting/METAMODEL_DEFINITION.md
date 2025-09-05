@@ -1095,6 +1095,73 @@ Proof: {
 - 元模型必须支持行业最佳实践
 - 元模型必须具有良好的互操作性
 
+### 4. L2/L3 对齐与质量门禁引用
+
+```yaml
+alignment_and_gates:
+  references:
+    l2_documents:
+      - "docs/L2_D01_交互元模型.md"
+      - "docs/L2_D02_数据元模型.md"
+      - "docs/L2_D03_功能元模型.md"
+      - "docs/L2_D04_运行时元模型.md"
+      - "docs/L2_D05_部署元模型.md"
+      - "docs/L2_D06_监控元模型.md"
+      - "docs/L2_D08_测试元模型.md"
+    l3_mapping: "docs/formal-model/alignment-L2-L3-matrix.md"
+    community_gates: "docs/community-framework.md#33-文档质量门禁与-l2-对齐"
+    implementation_flow: "docs/implementation-guide.md#84-l2-文档质量门禁与提交流程与社区对齐"
+  enforced_gates:
+    structure_consistency: true
+    l3_alignment_section: true
+    invariants_presence: ">= 3 per model"
+    mapping_section_fixed_position: "第 4 节"
+    lint_and_links_valid: true
+```
+
+---
+
+## 附录A：术语与符号约定（Terms & Notations）
+
+- 符号集合 `Σ`：统一采用希腊大写表示集合，小写表示元素；集合操作遵循集合论常用记号，幂集记为 `𝒫(X)`。
+- 规则集合 `Γ / R`：`Γ` 约定为语法规则集，`R` 为推理/变换规则集；优先级与结合性使用 `prec(·)、assoc(·)` 记号。
+- 解释/语义 `I / ⟦·⟧`：`I` 表示解释函数；语义括号采用 `⟦ term ⟧_I` 表示在解释 `I` 下的语义。
+- 约束/不变式 `C / Inv`：约束以一阶逻辑表达式书写，默认自由变元在上下文 `Ctx` 中量化；不变式以 `Inv_i` 编号。
+- 关系与映射：函数使用 `f: A → B`，偏函数 `f: A ⇀ B`；关系子集 `R ⊆ A × B`；自然变换以 `η: F ⇒ G` 书写。
+- 证据与证明义务：证明义务以 `PO#n` 编号，证据采用 `⊢` 记号，如 `Γ ⊢ φ`。
+
+> 约定目的：降低跨文档歧义，统一元模型与推理表达，方便自动化校验工具解析。
+
+## 附录B：一致性约束（Consistency Constraints）
+
+为确保各元模型之间及其内部定义的一致性，规定如下需在校验阶段强制检查的约束（部分）：
+
+1. 语法-语义一致性（S-Sem Consistency）
+   - 约束：`∀ r ∈ Γ, wellTyped(r) ∧ totalSemantics(r)`
+   - 说明：每条语法规则可进行类型化并具有全定义语义映射。
+
+2. 模型-约束闭合性（Model Closure）
+   - 约束：`∀ m ∈ ModelSet, ∀ c ∈ m.constraints, satisfiable(c)`
+   - 说明：模型内的所有约束可满足（可满足性检查），避免内在矛盾。
+
+3. 跨层映射守恒（Layer Mapping Preservation）
+   - 约束：`F: CIM→PIM→PSM` 组合映射保持结构与语义：`preserveStructure(F) ∧ preserveSemantics(F)`
+   - 说明：从概念到平台到实现的映射不得破坏关键结构与语义不变式。
+
+4. 版本与演进单调性（Version Monotonicity）
+   - 约束：`v_i < v_j ⇒ Compat(v_i, v_j) ∨ Migratable(v_i, v_j)`
+   - 说明：高版本相对低版本需向后兼容或提供可验证迁移。
+
+5. 证明义务覆盖率（PO Coverage）
+   - 约束：`Coverage(PO) ≥ 95%`（度量可在 `VerificationMetaModel` 中配置）
+   - 说明：关键不变式、跨模型映射、转换规则均需对应证明义务。
+
+6. 引用与来源可追溯性（Traceability）
+   - 约束：`∀ 定义/定理/规则, ∃ 引用 ≥ 1 ∧ credibility ≥ 门限`
+   - 说明：与 `docs/CITATION_STANDARDS.md` 一致，确保陈述可溯源。
+
+> 实施：将以上约束接入 `VerificationMetaModel` 的 `ConstraintValidator` 与 `InvariantValidator`，并在 CI 中出具报告。
+
 ## 总结
 
 通过系统性的元模型定义，我们建立了基于坚实理论基础的层次化元模型体系。每个元模型都有明确的结构定义、形式化规范和关系映射，元模型间的关系通过图论和范畴论进行了严格定义，元模型的正确性通过逻辑和类型论进行了证明。

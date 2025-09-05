@@ -1,5 +1,0 @@
-route:
-  receiver: 'dev-null'
-
-receivers:
-  - name: 'dev-null'

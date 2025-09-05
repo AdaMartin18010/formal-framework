@@ -619,3 +619,66 @@ Proof: {
 通过系统性的核心概念模型梳理，我们建立了基于坚实理论基础的形式化模型体系。每个模型都有明确的元模型定义、形式化规范和理论应用，模型间的关系通过图论和范畴论进行了严格定义，模型的正确性通过逻辑和类型论进行了证明。
 
 这个梳理为后续的功能模型梳理和元模型定义奠定了坚实的基础，确保了整个formal-model框架的理论完整性和实践可行性。
+
+### L2/L3 对齐与质量门禁引用
+
+```yaml
+alignment_and_gates:
+  references:
+    l2_documents:
+      - "docs/L2_D01_交互元模型.md"
+      - "docs/L2_D02_数据元模型.md"
+      - "docs/L2_D03_功能元模型.md"
+      - "docs/L2_D04_运行时元模型.md"
+      - "docs/L2_D05_部署元模型.md"
+      - "docs/L2_D06_监控元模型.md"
+      - "docs/L2_D08_测试元模型.md"
+    l3_mapping: "docs/formal-model/alignment-L2-L3-matrix.md"
+    community_gates: "docs/community-framework.md#33-文档质量门禁与-l2-对齐"
+    implementation_flow: "docs/implementation-guide.md#84-l2-文档质量门禁与提交流程与社区对齐"
+  enforced_gates:
+    structure_consistency: true
+    l3_alignment_section: true
+    invariants_presence: ">= 3 per model"
+    mapping_section_fixed_position: "第 4 节"
+    lint_and_links_valid: true
+```
+
+---
+
+## 跨模型追踪矩阵（Cross-Model Traceability Matrix）
+
+> 目的：建立核心概念→功能→实现→验证→行业的可追踪链路，支撑一致性校验与影响分析。
+
+矩阵视图（示意）：
+
+```markdown
+| 源/目标 | AST | DSL | MDE | Verification | Reasoning | Industry |
+|---|---|---|---|---|---|---|
+| AST | - | 语法产生式↔节点类型 | 模型到模型映射（树到模型） | 结构不变式 | 模式匹配规则 | 代码生成/解析适配 |
+| DSL | 语法树生成 | - | 语言到模型映射 | 类型/语义规则验证 | 规则引擎集成 | 行业DSL对齐 |
+| MDE | AST到模型 | 模型到文本 | - | 转换正确性 | 变换策略 | 行业模型映射 |
+| Verification | 结构断言 | 语义断言 | 转换断言 | - | 证明策略 | 合规/安全验证 |
+| Reasoning | 模式推理 | 规则推理 | 变换推理 | 证明辅助 | - | 行业规则迁移 |
+| Industry | 解析适配 | 术语/接口映射 | 模型落地 | 合规门禁 | 规则本地化 | - |
+```
+
+关键追踪关系（子集）：
+
+- 语法一致性：`AST.NodeTypes ↔ DSL.Grammar.NonTerminals`
+- 语义一致性：`DSL.Semantics ⟦·⟧` 与 `Verification.Properties` 的断言对应
+- 转换守恒：`MDE.Transformations` 保持 `Invariant` 与 `Constraint`
+- 证明义务：`Verification.Proofs` 覆盖 `CoreConcept Invariants`
+- 行业对齐：`Industry.Mapping` 链接 `DSL/Lexicon` 与行业术语表
+
+影响分析规则（示例）：
+
+```text
+Change(AST.NodeType X)
+  ⇒ Impact(DSL.Grammar where produces(X))
+  ⇒ Impact(MDE.M2M rules referencing X)
+  ⇒ Impact(Verification.Invariants over X)
+  ⇒ Impact(Industry.Parsers mapping X)
+```
+
+度量与门禁：在 CI 中生成 Traceability Report，要求核心关系覆盖率 ≥ 90%，断链项计为门禁失败。

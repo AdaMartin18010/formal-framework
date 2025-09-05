@@ -1388,6 +1388,26 @@ development_tools:
       - "Test Monitor"
 ```
 
+### 质量门禁与对齐（与 L2_D08 / L3 对齐）
+
+```yaml
+quality_gates_alignment:
+  coverage_gates:
+    statement: ">= 80%"  # 对齐 L2 Invariant L2T2 θ_stmt
+    branch: ">= 70%"     # 对齐 L2 Invariant L2T2 θ_branch
+    mutation: ">= 60%"   # 对齐 L2 Invariant L2T2 θ_mut
+  flaky_bound:
+    flaky_rate_suite: "<= 2%"  # 对齐 L2 Invariant L2T3
+  latency_sla:
+    p99: "<= SLA_p99(service)" # 对齐 L2 Invariant L2T4
+  regression_safety:
+    requirement_change_requires_regression_suite: true # 对齐 L2 Invariant L2T5
+references:
+  l2: "docs/L2_D08_测试元模型.md"
+  l3: "docs/L3_D08_测试标准模型.md"
+  alignment_matrix: "docs/formal-model/alignment-L2-L3-matrix.md#2.7-测试（D08）"
+```
+
 ### 执行引擎
 
 ```yaml

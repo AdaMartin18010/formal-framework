@@ -1,9 +1,0 @@
-global:
-  scrape_interval: 15s
-
-scrape_configs:
-  - job_name: 'demo-api'
-    static_configs:
-      - targets: ['host.docker.internal:8080'] # 或本地端口转发后地址
-rule_files:
-  - alerts.yaml

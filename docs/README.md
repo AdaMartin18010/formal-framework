@@ -1,5 +1,12 @@
 # Formal Framework 总览与导航
 
+> 全局导航（快速入口）
+>
+> - L2 元模型速达：`docs/L2_D01_交互元模型.md` · `docs/L2_D02_数据元模型.md` · `docs/L2_D03_功能元模型.md` · `docs/L2_D04_运行时元模型.md` · `docs/L2_D05_部署元模型.md` · `docs/L2_D06_监控元模型.md` · `docs/L2_D08_测试元模型.md`
+> - L3 标准模型索引：`docs/L3_D01_交互标准模型.md` · `docs/L3_D02_数据标准模型.md` · `docs/L3_D04_运行时标准模型.md` · `docs/L3_D05_部署标准模型.md` · `docs/L3_D06_监控标准模型.md` · `docs/L3_D07_控制调度标准模型.md` · `docs/L3_D08_测试标准模型.md` · `docs/L3_D09_CICD标准模型.md` · `docs/L3_D10_分布式模式标准模型.md`
+> - 行业模型导航：`docs/industry-model/README.md`（见各行业目录顶层 `README.md/theory.md`）
+> - 质量与流程：`docs/community-framework.md` · `docs/implementation-guide.md` · `docs/formal-model/alignment-L2-L3-matrix.md`
+
 ## 目录（Table of Contents）
 
 - [Formal Framework 总览与导航](#formal-framework-总览与导航)
@@ -209,6 +216,18 @@ Formal Framework 致力于构建“梳理—论证—推理—形式化—跨行
 - **每个模型均包含 DSL 草案（dsl-draft.md）与理论文档（theory.md），支持递归扩展与行业映射**
 
 ---
+
+### 1.1 L2 快速导航
+
+- `docs/L2_D01_交互元模型.md`
+- `docs/L2_D02_数据元模型.md`
+- `docs/L2_D03_功能元模型.md`
+- `docs/L2_D04_运行时元模型.md`
+- `docs/L2_D05_部署元模型.md`
+- `docs/L2_D06_监控元模型.md`
+- `docs/L2_D08_测试元模型.md`
+
+> 门禁与提交流程请参考：`docs/community-framework.md` 第 3.3/3.4 与 `docs/implementation-guide.md` 第 8.4
 
 ## 2. 各模型关系与递归扩展路径
 
@@ -695,6 +714,15 @@ def generate_feature_table(features):
 | Mermaid           | 一种文本化流程图/结构图描述语言                               |
 
 ---
+
+> 术语表片段（可复制用作各子文档起始占位）
+>
+> ```markdown
+> | 术语/缩写 | 定义 | 引用/来源 |
+> |---|---|---|
+> | 概念A | 简要定义 | 参考文献/标准链接 |
+> | 概念B | 简要定义 | 参考文献/标准链接 |
+> ```
 
 ## 15. 参考文献与延伸阅读
 

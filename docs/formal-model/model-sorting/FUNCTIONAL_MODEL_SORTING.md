@@ -903,3 +903,128 @@ Proof: {
 通过系统性的功能模型梳理，我们建立了基于坚实理论基础的功能模型体系。每个功能模型都有明确的元模型定义、形式化规范和功能接口，功能间的关系通过图论和范畴论进行了严格定义，功能的正确性通过逻辑和类型论进行了证明。
 
 这个梳理为后续的元模型定义奠定了坚实的基础，确保了整个formal-model框架的功能完整性和实践可行性。
+
+### L2/L3 对齐与质量门禁引用
+
+```yaml
+alignment_and_gates:
+  references:
+    l2_documents:
+      - "docs/L2_D01_交互元模型.md"
+      - "docs/L2_D02_数据元模型.md"
+      - "docs/L2_D03_功能元模型.md"
+      - "docs/L2_D04_运行时元模型.md"
+      - "docs/L2_D05_部署元模型.md"
+      - "docs/L2_D06_监控元模型.md"
+      - "docs/L2_D08_测试元模型.md"
+    l3_mapping: "docs/formal-model/alignment-L2-L3-matrix.md"
+    community_gates: "docs/community-framework.md#33-文档质量门禁与-l2-对齐"
+    implementation_flow: "docs/implementation-guide.md#84-l2-文档质量门禁与提交流程与社区对齐"
+  enforced_gates:
+    structure_consistency: true
+    l3_alignment_section: true
+    invariants_presence: ">= 3 per model"
+    mapping_section_fixed_position: "第 4 节"
+    lint_and_links_valid: true
+```
+
+---
+
+## 附录：从需求到状态机到规则引擎（端到端流水线示例）
+
+目标：给出一条可验证的最小闭环路径，将自然语言需求映射为状态机与规则集，并形成可验证用例。
+
+1) 需求片段（NL → 结构化）
+
+```markdown
+需求R1：当订单金额>1000，且用户信用评分≥700，则需经理审核；否则自动通过。
+```
+
+结构化需求（示意）：
+
+```yaml
+requirements:
+  - id: R1
+    conditions:
+      - field: order.amount
+        op: ">"
+        value: 1000
+      - field: user.credit_score
+        op: ">="
+        value: 700
+    outcome: require_manager_approval
+```
+
+1.1) 状态机（State Machine）
+
+```yaml
+state_machine:
+  name: OrderApproval
+  states: [Created, AutoApproved, PendingManager, Rejected]
+  initial: Created
+  transitions:
+    - from: Created
+      to: PendingManager
+      on: Evaluate
+      guard: require_manager_approval
+    - from: Created
+      to: AutoApproved
+      on: Evaluate
+      guard: not(require_manager_approval)
+```
+
+1.2) 规则引擎（Rule Engine）
+
+```yaml
+rules:
+  - id: REQ_R1
+    when:
+      all:
+        - fact: order.amount
+          operator: ">"
+          value: 1000
+        - fact: user.credit_score
+          operator: ">="
+          value: 700
+    then:
+      set: require_manager_approval
+      value: true
+```
+
+1.3) 一致性与验证要点
+
+- 语义一致性：`rules` 计算出的布尔谓词与 `state_machine.transitions.guard` 一致。
+- 完备性：给定输入域划分（分段条件），所有分段均有状态转移定义。
+- 不变式：`AutoApproved ⇒ ¬PendingManager`，状态互斥；`Created` 仅在 `Evaluate` 下离开。
+
+1.4) 伪代码（组合执行）
+
+```python
+def evaluate(order, user):
+    require_manager = (order.amount > 1000) and (user.credit_score >= 700)
+    if require_manager:
+        return "PendingManager"
+    return "AutoApproved"
+```
+
+1.5) 覆盖用例（最小集）
+
+```yaml
+tests:
+  - name: high_amount_high_score
+    order: { amount: 1200 }
+    user: { credit_score: 720 }
+    expect_state: PendingManager
+  - name: high_amount_low_score
+    order: { amount: 1200 }
+    user: { credit_score: 650 }
+    expect_state: AutoApproved
+  - name: low_amount_any_score
+    order: { amount: 300 }
+    user: { credit_score: 800 }
+    expect_state: AutoApproved
+```
+
+度量：要求分支覆盖与条件覆盖均达到 100%，并在 CI 中与 `ValidationMetaModel` 对齐生成报告。
+
+<!-- EOF -->

@@ -24,6 +24,14 @@
 
 构建一个基于形式化模型的软件工程自动化平台，通过领域专用语言（DSL）和AI技术，实现从需求到代码的全流程自动化生成，大幅提升软件开发效率和质量。
 
+### 近期增强（v1-expansion-2024-12-19）
+
+- 新增发布说明：`RELEASE_NOTES.md`
+- L3 标准模型全面增强：交互、数据、运行时、部署、监控、控制调度、测试、CI/CD、分布式模式
+- 新增/强化：理论集成框架（docs/formal-model/theory-enhancement/theory-integration-framework.md）、验证工具框架（docs/formal-model/verification-tools.md）
+- 汇总报告：`docs/FINAL_COMPREHENSIVE_SUMMARY.md`
+- L2↔L3 对齐映射总表：`docs/formal-model/alignment-L2-L3-matrix.md`
+
 ### 核心研究方向
 
 1. **形式化模型核心**：以形式化模型为核心，探索自动化生成软件工程设计与实现的可行性。
@@ -556,6 +564,14 @@ formal-framework/
 ## 使用指南
 
 ### 快速开始
+
+> 快速上手路线图
+>
+> 1) 先读 `docs/README.md` 把握整体模型关系与导航
+> 2) 选一个核心模型（如 `formal-model/functional-model/`），先读 `dsl-draft.md` 再读 `theory.md`
+> 3) 在 `industry-model/` 找到对应行业的 `theory.md` 看对齐关系
+> 4) 按实现指南 `docs/implementation-guide.md` 运行最小闭环（生成→验证→报告）
+> 5) 按贡献指南提交增量（参考 `CONTRIBUTING.md` 与 `docs/community-framework.md`）
 
 #### 1. 环境准备
 
@@ -1104,6 +1120,12 @@ workflow:
 - **调试工具**：Chrome DevTools, Postman, Insomnia
 - **版本控制**：Git, GitHub, GitLab
 - **项目管理**：Jira, Trello, Asana
+
+> 贡献入口与参考：
+>
+> - 贡献指南：`CONTRIBUTING.md`
+> - 社区协作与门禁：`docs/community-framework.md`
+> - 实施与工作流：`docs/implementation-guide.md`
 
 ## 贡献指南
 
