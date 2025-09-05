@@ -1,0 +1,333 @@
+# 正式验证框架Helm Chart默认值
+
+# 全局配置
+global:
+  imageRegistry: ghcr.io/formal-framework
+  imageTag: latest
+  imagePullSecrets: []
+  storageClass: ""
+
+# 应用配置
+app:
+  name: formal-framework-app
+  replicaCount: 3
+  
+  image:
+    repository: app
+    pullPolicy: IfNotPresent
+    tag: ""
+  
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+      - host: api.formal-framework.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
+  
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  
+  env:
+    NODE_ENV: production
+    LOG_LEVEL: info
+    API_BASE_URL: https://api.formal-framework.com
+
+# 验证服务配置
+verification:
+  name: formal-framework-verification
+  replicaCount: 1
+  
+  image:
+    repository: verification
+    pullPolicy: IfNotPresent
+    tag: ""
+  
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+  
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  
+  env:
+    TARGET_URL: http://formal-framework-app-service:80
+    CHECK_INTERVAL: 60
+
+# 数据库配置
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "password"
+    username: "postgres"
+    password: "password"
+    database: "formal_framework"
+  
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: ""
+    
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+
+# Redis配置
+redis:
+  enabled: true
+  auth:
+    enabled: false
+  
+  master:
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+    
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+# 监控配置
+monitoring:
+  prometheus:
+    enabled: true
+    server:
+      persistentVolume:
+        enabled: true
+        size: 20Gi
+        storageClass: ""
+      
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1Gi
+        requests:
+          cpu: 250m
+          memory: 512Mi
+      
+      retention: "200h"
+      
+      service:
+        type: ClusterIP
+        port: 9090
+  
+  grafana:
+    enabled: true
+    adminPassword: "admin"
+    
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ""
+    
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    
+    service:
+      type: ClusterIP
+      port: 3000
+    
+    dashboards:
+      default:
+        formal-framework:
+          gnetId: 1860
+          revision: 1
+          datasource: Prometheus
+
+# 告警配置
+alertmanager:
+  enabled: true
+  
+  config:
+    global:
+      smtp_smarthost: 'localhost:587'
+      smtp_from: 'alerts@formal-framework.com'
+    
+    route:
+      group_by: ['alertname']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 1h
+      receiver: 'web.hook'
+    
+    receivers:
+    - name: 'web.hook'
+      webhook_configs:
+      - url: 'http://localhost:5001/'
+        send_resolved: true
+  
+  persistentVolume:
+    enabled: true
+    size: 2Gi
+    storageClass: ""
+  
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# 网络策略配置
+networkPolicy:
+  enabled: true
+  
+  ingress:
+    enabled: true
+    rules:
+      - from:
+          - namespaceSelector:
+              matchLabels:
+                name: ingress-nginx
+        ports:
+          - protocol: TCP
+            port: 80
+  
+  egress:
+    enabled: true
+    rules:
+      - to:
+          - namespaceSelector:
+              matchLabels:
+                name: postgres
+        ports:
+          - protocol: TCP
+            port: 5432
+      - to:
+          - namespaceSelector:
+              matchLabels:
+                name: redis
+        ports:
+          - protocol: TCP
+            port: 6379
+
+# 服务网格配置
+serviceMesh:
+  enabled: false
+  istio:
+    enabled: false
+    version: "1.19.0"
+
+# 安全配置
+security:
+  podSecurityPolicy:
+    enabled: false
+  
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+  
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 1000
+
+# 备份配置
+backup:
+  enabled: false
+  
+  schedule: "0 2 * * *"  # 每天凌晨2点
+  retention: "7d"
+  
+  postgresql:
+    enabled: true
+    destination: "s3://backup-bucket/postgresql"
+  
+  redis:
+    enabled: true
+    destination: "s3://backup-bucket/redis"
+
+# 日志配置
+logging:
+  level: info
+  format: json
+  
+  elasticsearch:
+    enabled: false
+    url: "http://elasticsearch:9200"
+    index: "formal-framework"
+  
+  fluentd:
+    enabled: false
+    image:
+      repository: fluent/fluentd
+      tag: "v1.16-debian-1"
+
+# 测试配置
+testing:
+  enabled: false
+  
+  loadTest:
+    enabled: false
+    duration: "5m"
+    users: 100
+    rampUp: "1m"
+  
+  chaos:
+    enabled: false
+    experiments:
+      - name: "pod-failure"
+        type: "pod-failure"
+        duration: "2m"
+
+# 开发配置
+development:
+  enabled: false
+  
+  hotReload:
+    enabled: false
+  
+  debug:
+    enabled: false
+    port: 9229
+  
+  localStorage:
+    enabled: false
+    size: 1Gi

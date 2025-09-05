@@ -1,0 +1,292 @@
+{
+  "standards": {
+    "ieee_830": {
+      "name": "IEEE 830-1998 Software Requirements Specifications",
+      "type": "ieee",
+      "version": "1998",
+      "description": "软件需求规格说明标准",
+      "url": "https://standards.ieee.org/standard/830-1998.html",
+      "categories": ["documentation", "requirements"],
+      "applicable_domains": ["software_development", "system_engineering"]
+    },
+    "ieee_1012": {
+      "name": "IEEE 1012-2016 Software Verification and Validation",
+      "type": "ieee",
+      "version": "2016",
+      "description": "软件验证和确认标准",
+      "url": "https://standards.ieee.org/standard/1012-2016.html",
+      "categories": ["verification", "validation", "testing"],
+      "applicable_domains": ["software_development", "quality_assurance"]
+    },
+    "iso_26262": {
+      "name": "ISO 26262 Functional Safety",
+      "type": "iso",
+      "version": "2018",
+      "description": "汽车功能安全标准",
+      "url": "https://www.iso.org/standard/68383.html",
+      "categories": ["safety", "automotive", "functional_safety"],
+      "applicable_domains": ["automotive", "safety_critical_systems"]
+    },
+    "iso_27001": {
+      "name": "ISO 27001 Information Security Management",
+      "type": "iso",
+      "version": "2013",
+      "description": "信息安全管理体系标准",
+      "url": "https://www.iso.org/standard/54534.html",
+      "categories": ["security", "information_management"],
+      "applicable_domains": ["information_security", "risk_management"]
+    },
+    "nist_sp_800": {
+      "name": "NIST SP 800-53 Security Controls",
+      "type": "nist",
+      "version": "2020",
+      "description": "信息安全控制标准",
+      "url": "https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final",
+      "categories": ["security", "controls", "compliance"],
+      "applicable_domains": ["cybersecurity", "government", "critical_infrastructure"]
+    },
+    "nist_framework": {
+      "name": "NIST Cybersecurity Framework",
+      "type": "nist",
+      "version": "1.1",
+      "description": "网络安全框架",
+      "url": "https://www.nist.gov/cyberframework",
+      "categories": ["cybersecurity", "framework", "risk_management"],
+      "applicable_domains": ["cybersecurity", "risk_management", "governance"]
+    },
+    "iec_61508": {
+      "name": "IEC 61508 Functional Safety",
+      "type": "iec",
+      "version": "2010",
+      "description": "电气/电子/可编程电子安全相关系统的功能安全",
+      "url": "https://www.iec.ch/functionalsafety",
+      "categories": ["functional_safety", "safety_integrity"],
+      "applicable_domains": ["industrial_automation", "safety_critical_systems"]
+    },
+    "iec_62443": {
+      "name": "IEC 62443 Industrial Communication Networks",
+      "type": "iec",
+      "version": "2018",
+      "description": "工业通信网络安全标准",
+      "url": "https://www.iec.ch/cybersecurity",
+      "categories": ["industrial_security", "network_security"],
+      "applicable_domains": ["industrial_automation", "ot_security"]
+    },
+    "itu_x_800": {
+      "name": "ITU-T X.800 Security Architecture",
+      "type": "itu",
+      "version": "1991",
+      "description": "开放系统互连安全架构",
+      "url": "https://www.itu.int/rec/T-REC-X.800",
+      "categories": ["security_architecture", "osi_security"],
+      "applicable_domains": ["telecommunications", "network_security"]
+    },
+    "w3c_webappsec": {
+      "name": "W3C Web Application Security",
+      "type": "w3c",
+      "version": "2021",
+      "description": "Web应用安全标准",
+      "url": "https://www.w3.org/TR/webappsec/",
+      "categories": ["web_security", "application_security"],
+      "applicable_domains": ["web_development", "application_security"]
+    },
+    "oasis_saml": {
+      "name": "OASIS SAML Security Assertion Markup Language",
+      "type": "oasis",
+      "version": "2.0",
+      "description": "安全断言标记语言标准",
+      "url": "https://www.oasis-open.org/standards#samlv2.0",
+      "categories": ["identity_management", "authentication"],
+      "applicable_domains": ["identity_management", "single_sign_on"]
+    }
+  },
+  "compliance_thresholds": {
+    "full": 0.95,
+    "partial": 0.75,
+    "minimal": 0.50,
+    "non_compliant": 0.0
+  },
+  "check_categories": {
+    "documentation": {
+      "name": "文档合规性",
+      "description": "检查文档的完整性和规范性",
+      "weight": 0.2
+    },
+    "process": {
+      "name": "流程合规性",
+      "description": "检查开发和管理流程的合规性",
+      "weight": 0.25
+    },
+    "technical": {
+      "name": "技术合规性",
+      "description": "检查技术实现的合规性",
+      "weight": 0.3
+    },
+    "security": {
+      "name": "安全合规性",
+      "description": "检查安全措施的合规性",
+      "weight": 0.15
+    },
+    "quality": {
+      "name": "质量合规性",
+      "description": "检查质量保证措施的合规性",
+      "weight": 0.1
+    }
+  },
+  "verification_methods": {
+    "document_review": {
+      "name": "文档审查",
+      "description": "通过审查文档来验证合规性",
+      "automated": false,
+      "requires_human": true
+    },
+    "traceability_analysis": {
+      "name": "可追溯性分析",
+      "description": "分析需求到实现的可追溯性",
+      "automated": true,
+      "requires_human": false
+    },
+    "safety_analysis": {
+      "name": "安全分析",
+      "description": "进行功能安全分析",
+      "automated": false,
+      "requires_human": true
+    },
+    "asil_verification": {
+      "name": "ASIL等级验证",
+      "description": "验证安全完整性等级的确定",
+      "automated": true,
+      "requires_human": true
+    },
+    "security_assessment": {
+      "name": "安全评估",
+      "description": "评估安全控制措施的有效性",
+      "automated": false,
+      "requires_human": true
+    },
+    "data_protection_audit": {
+      "name": "数据保护审计",
+      "description": "审计数据保护措施的实施",
+      "automated": true,
+      "requires_human": true
+    }
+  },
+  "evidence_types": {
+    "requirements_document": {
+      "name": "需求文档",
+      "description": "软件需求规格说明文档",
+      "format": ["pdf", "docx", "md"],
+      "required": true
+    },
+    "traceability_matrix": {
+      "name": "可追溯性矩阵",
+      "description": "需求到设计、实现、测试的可追溯性矩阵",
+      "format": ["xlsx", "csv", "json"],
+      "required": true
+    },
+    "hazard_analysis": {
+      "name": "危险分析",
+      "description": "功能安全危险分析报告",
+      "format": ["pdf", "docx"],
+      "required": true
+    },
+    "risk_assessment": {
+      "name": "风险评估",
+      "description": "安全风险评估报告",
+      "format": ["pdf", "docx"],
+      "required": true
+    },
+    "safety_goals": {
+      "name": "安全目标",
+      "description": "功能安全目标定义",
+      "format": ["pdf", "docx", "json"],
+      "required": true
+    },
+    "asil_analysis": {
+      "name": "ASIL分析",
+      "description": "安全完整性等级分析",
+      "format": ["pdf", "docx", "json"],
+      "required": true
+    },
+    "verification_plan": {
+      "name": "验证计划",
+      "description": "功能安全验证计划",
+      "format": ["pdf", "docx"],
+      "required": true
+    },
+    "test_results": {
+      "name": "测试结果",
+      "description": "功能安全测试结果",
+      "format": ["pdf", "xlsx", "json"],
+      "required": true
+    },
+    "access_control_policy": {
+      "name": "访问控制策略",
+      "description": "访问控制策略文档",
+      "format": ["pdf", "docx"],
+      "required": true
+    },
+    "user_management": {
+      "name": "用户管理",
+      "description": "用户管理流程和记录",
+      "format": ["pdf", "docx", "json"],
+      "required": true
+    },
+    "audit_logs": {
+      "name": "审计日志",
+      "description": "系统访问和操作审计日志",
+      "format": ["log", "csv", "json"],
+      "required": true
+    },
+    "encryption_policy": {
+      "name": "加密策略",
+      "description": "数据加密策略文档",
+      "format": ["pdf", "docx"],
+      "required": true
+    },
+    "data_classification": {
+      "name": "数据分类",
+      "description": "数据分类和标记策略",
+      "format": ["pdf", "docx", "json"],
+      "required": true
+    },
+    "backup_procedures": {
+      "name": "备份程序",
+      "description": "数据备份和恢复程序",
+      "format": ["pdf", "docx"],
+      "required": true
+    }
+  },
+  "reporting": {
+    "formats": ["json", "html", "pdf", "xml"],
+    "templates": {
+      "executive_summary": "executive-summary-template.html",
+      "detailed_report": "detailed-report-template.html",
+      "compliance_matrix": "compliance-matrix-template.html"
+    },
+    "sections": [
+      "executive_summary",
+      "compliance_overview",
+      "detailed_findings",
+      "recommendations",
+      "evidence_attachments"
+    ]
+  },
+  "integration": {
+    "ci_cd": {
+      "enabled": true,
+      "trigger_events": ["pull_request", "merge", "release"],
+      "failure_threshold": 0.8
+    },
+    "monitoring": {
+      "enabled": true,
+      "check_frequency": "daily",
+      "alert_threshold": 0.7
+    },
+    "notifications": {
+      "email": true,
+      "slack": true,
+      "webhook": true
+    }
+  }
+}

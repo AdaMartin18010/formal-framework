@@ -1,0 +1,188 @@
+{
+  "system": {
+    "name": "正式验证框架认证体系",
+    "version": "1.0.0",
+    "admin_email": "admin@formal-framework.org",
+    "website": "https://certificates.formal-framework.org"
+  },
+  "levels": {
+    "foundation": {
+      "name": "基础认证",
+      "name_en": "Foundation Certification",
+      "color": "#4CAF50",
+      "icon": "🌱",
+      "description": "掌握正式验证的基本概念和工具使用",
+      "pass_score": 80,
+      "validity_months": 24
+    },
+    "intermediate": {
+      "name": "进阶认证",
+      "name_en": "Intermediate Certification", 
+      "color": "#2196F3",
+      "icon": "🚀",
+      "description": "深入理解形式化方法，能够独立完成复杂验证任务",
+      "pass_score": 85,
+      "validity_months": 36
+    },
+    "expert": {
+      "name": "专家认证",
+      "name_en": "Expert Certification",
+      "color": "#FF9800",
+      "icon": "⭐",
+      "description": "具备专家级理论水平和实践能力，能够指导他人",
+      "pass_score": 90,
+      "validity_months": 48
+    },
+    "master": {
+      "name": "大师认证",
+      "name_en": "Master Certification",
+      "color": "#9C27B0",
+      "icon": "👑",
+      "description": "在正式验证领域具有卓越贡献和影响力",
+      "pass_score": 95,
+      "validity_months": 60
+    }
+  },
+  "assessment": {
+    "foundation": {
+      "theory_exam": {
+        "duration_minutes": 90,
+        "question_count": 50,
+        "pass_score": 80,
+        "topics": [
+          "形式化方法基础",
+          "命题逻辑和谓词逻辑",
+          "模型检查基础",
+          "定理证明基础",
+          "验证工具使用"
+        ]
+      },
+      "practical_assessment": {
+        "case_count": 3,
+        "time_limit_hours": 8,
+        "evaluation_criteria": [
+          "模型设计正确性",
+          "验证过程完整性",
+          "结果分析准确性",
+          "文档规范性"
+        ]
+      }
+    },
+    "intermediate": {
+      "theory_exam": {
+        "duration_minutes": 120,
+        "question_count": 60,
+        "pass_score": 85,
+        "topics": [
+          "高级形式化方法",
+          "时序逻辑",
+          "并发系统验证",
+          "抽象解释",
+          "工具集成"
+        ]
+      },
+      "practical_assessment": {
+        "case_count": 5,
+        "time_limit_hours": 16,
+        "evaluation_criteria": [
+          "复杂系统建模",
+          "多工具协同使用",
+          "性能优化",
+          "创新性解决方案"
+        ]
+      },
+      "community_contribution": {
+        "min_contributions": 3,
+        "types": [
+          "代码贡献",
+          "文档改进",
+          "问题解答",
+          "案例分享"
+        ]
+      }
+    },
+    "expert": {
+      "theory_exam": {
+        "duration_minutes": 150,
+        "question_count": 80,
+        "pass_score": 90,
+        "topics": [
+          "前沿理论研究",
+          "复杂系统架构",
+          "工具开发",
+          "标准制定",
+          "教学指导"
+        ]
+      },
+      "practical_assessment": {
+        "case_count": 10,
+        "time_limit_hours": 24,
+        "evaluation_criteria": [
+          "创新性研究",
+          "工具开发能力",
+          "团队协作",
+          "知识传授"
+        ]
+      },
+      "research_requirement": {
+        "paper_count": 1,
+        "conference_level": "international",
+        "review_process": "peer_review"
+      }
+    },
+    "master": {
+      "evaluation_criteria": [
+        "理论贡献",
+        "实践影响",
+        "学术声誉",
+        "行业影响",
+        "人才培养"
+      ],
+      "requirements": {
+        "papers": {
+          "min_count": 3,
+          "quality_level": "high",
+          "impact_factor": "significant"
+        },
+        "tools": {
+          "development": true,
+          "adoption": "widespread"
+        },
+        "mentoring": {
+          "min_students": 5,
+          "success_rate": 0.8
+        }
+      }
+    }
+  },
+  "certificate": {
+    "template": {
+      "background": "certificate-bg.png",
+      "logo": "formal-framework-logo.png",
+      "font_family": "Arial",
+      "colors": {
+        "primary": "#2E7D32",
+        "secondary": "#1976D2",
+        "accent": "#FF9800"
+      }
+    },
+    "security": {
+      "digital_signature": true,
+      "qr_code": true,
+      "verification_url": true,
+      "blockchain_record": false
+    }
+  },
+  "notifications": {
+    "email_templates": {
+      "certification_started": "certification-started.html",
+      "certification_passed": "certification-passed.html",
+      "certification_failed": "certification-failed.html",
+      "certification_expiring": "certification-expiring.html"
+    },
+    "reminders": {
+      "expiry_warning_days": [90, 30, 7],
+      "renewal_reminder_days": [60, 30, 14, 7]
+    }
+  }
+}

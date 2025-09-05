@@ -1,0 +1,343 @@
+{
+  "test_generation": {
+    "strategies": {
+      "random": {
+        "enabled": true,
+        "test_count": 100,
+        "parameter_ranges": {
+          "string_length": [1, 100],
+          "numeric_range": [-1000, 1000],
+          "array_size": [1, 50]
+        },
+        "weight": 1.0
+      },
+      "boundary_value": {
+        "enabled": true,
+        "test_count": 20,
+        "boundary_offset": 1,
+        "weight": 1.5
+      },
+      "equivalence_class": {
+        "enabled": true,
+        "test_count": 30,
+        "class_count": 5,
+        "weight": 1.2
+      },
+      "state_transition": {
+        "enabled": true,
+        "test_count": 50,
+        "max_transitions": 10,
+        "weight": 1.3
+      },
+      "pairwise": {
+        "enabled": true,
+        "test_count": 25,
+        "strength": 2,
+        "weight": 1.1
+      },
+      "mutation": {
+        "enabled": true,
+        "test_count": 40,
+        "mutation_rate": 0.1,
+        "weight": 0.8
+      }
+    },
+    "parameter_types": {
+      "string": {
+        "generation_methods": ["random", "boundary", "pattern"],
+        "patterns": ["email", "url", "uuid", "phone"],
+        "special_values": ["", "null", "undefined", "very_long_string"]
+      },
+      "integer": {
+        "generation_methods": ["random", "boundary", "equivalence"],
+        "special_values": [0, -1, 1, 2147483647, -2147483648]
+      },
+      "float": {
+        "generation_methods": ["random", "boundary", "equivalence"],
+        "precision": 2,
+        "special_values": [0.0, -0.0, 1.0, -1.0, 3.14159]
+      },
+      "boolean": {
+        "generation_methods": ["random", "all_values"],
+        "values": [true, false]
+      },
+      "array": {
+        "generation_methods": ["random", "boundary", "equivalence"],
+        "element_types": ["string", "integer", "float", "boolean"],
+        "size_ranges": [0, 100]
+      },
+      "object": {
+        "generation_methods": ["random", "template"],
+        "templates": ["user", "product", "order", "payment"]
+      }
+    }
+  },
+  "execution": {
+    "max_parallel_tests": 10,
+    "default_timeout": 30,
+    "retry_count": 3,
+    "execution_window": {
+      "start_hour": 0,
+      "end_hour": 23,
+      "timezone": "UTC"
+    },
+    "resource_limits": {
+      "max_memory_mb": 1024,
+      "max_cpu_percent": 80,
+      "max_disk_usage_mb": 100
+    },
+    "scheduling": {
+      "enabled": true,
+      "cron_expression": "0 2 * * *",
+      "timezone": "UTC"
+    }
+  },
+  "analysis": {
+    "coverage_threshold": 0.8,
+    "performance_threshold": 5.0,
+    "failure_analysis": true,
+    "trend_analysis": true,
+    "statistical_analysis": {
+      "enabled": true,
+      "confidence_level": 0.95,
+      "significance_level": 0.05
+    },
+    "anomaly_detection": {
+      "enabled": true,
+      "threshold": 2.0,
+      "window_size": 10
+    }
+  },
+  "reporting": {
+    "formats": ["json", "html", "pdf", "markdown"],
+    "include_metrics": true,
+    "include_coverage": true,
+    "include_trends": true,
+    "include_recommendations": true,
+    "templates": {
+      "executive_summary": "executive-summary-template.html",
+      "detailed_report": "detailed-report-template.html",
+      "technical_report": "technical-report-template.html"
+    },
+    "delivery": {
+      "email": {
+        "enabled": true,
+        "recipients": ["test-team@company.com"],
+        "subject_template": "自动化测试报告 - {date}"
+      },
+      "slack": {
+        "enabled": true,
+        "webhook_url": "https://hooks.slack.com/services/...",
+        "channel": "#testing"
+      },
+      "webhook": {
+        "enabled": true,
+        "url": "https://api.company.com/test-reports",
+        "method": "POST"
+      }
+    }
+  },
+  "components": {
+    "verification_engine": {
+      "endpoint": "/api/v1/verify",
+      "health_check": "/health",
+      "expected_response_time": 5.0,
+      "test_parameters": [
+        {
+          "name": "model",
+          "type": "string",
+          "required": true,
+          "description": "模型文件路径或内容"
+        },
+        {
+          "name": "timeout",
+          "type": "integer",
+          "required": false,
+          "default": 30,
+          "min": 1,
+          "max": 300,
+          "description": "验证超时时间（秒）"
+        },
+        {
+          "name": "verbose",
+          "type": "boolean",
+          "required": false,
+          "default": false,
+          "description": "是否输出详细信息"
+        }
+      ]
+    },
+    "constraint_solver": {
+      "endpoint": "/api/v1/solve",
+      "health_check": "/health",
+      "expected_response_time": 10.0,
+      "test_parameters": [
+        {
+          "name": "constraints",
+          "type": "array",
+          "required": true,
+          "description": "约束条件列表"
+        },
+        {
+          "name": "variables",
+          "type": "object",
+          "required": true,
+          "description": "变量定义"
+        },
+        {
+          "name": "solver_type",
+          "type": "string",
+          "required": false,
+          "default": "z3",
+          "options": ["z3", "cvc4", "yices"],
+          "description": "求解器类型"
+        }
+      ]
+    },
+    "model_checker": {
+      "endpoint": "/api/v1/check",
+      "health_check": "/health",
+      "expected_response_time": 15.0,
+      "test_parameters": [
+        {
+          "name": "model",
+          "type": "string",
+          "required": true,
+          "description": "模型定义"
+        },
+        {
+          "name": "properties",
+          "type": "array",
+          "required": true,
+          "description": "要检查的属性列表"
+        },
+        {
+          "name": "algorithm",
+          "type": "string",
+          "required": false,
+          "default": "dfs",
+          "options": ["dfs", "bfs", "random"],
+          "description": "搜索算法"
+        }
+      ]
+    }
+  },
+  "test_data": {
+    "models": [
+      {
+        "name": "simple_state_machine",
+        "file": "test_data/models/simple_state_machine.json",
+        "description": "简单的状态机模型",
+        "complexity": "low"
+      },
+      {
+        "name": "complex_system",
+        "file": "test_data/models/complex_system.json",
+        "description": "复杂的系统模型",
+        "complexity": "high"
+      },
+      {
+        "name": "concurrent_model",
+        "file": "test_data/models/concurrent_model.json",
+        "description": "并发模型",
+        "complexity": "medium"
+      }
+    ],
+    "constraints": [
+      {
+        "name": "basic_constraints",
+        "file": "test_data/constraints/basic_constraints.json",
+        "description": "基础约束条件",
+        "complexity": "low"
+      },
+      {
+        "name": "complex_constraints",
+        "file": "test_data/constraints/complex_constraints.json",
+        "description": "复杂约束条件",
+        "complexity": "high"
+      },
+      {
+        "name": "performance_constraints",
+        "file": "test_data/constraints/performance_constraints.json",
+        "description": "性能约束条件",
+        "complexity": "medium"
+      }
+    ],
+    "properties": [
+      {
+        "name": "safety_properties",
+        "file": "test_data/properties/safety_properties.json",
+        "description": "安全属性",
+        "type": "safety"
+      },
+      {
+        "name": "liveness_properties",
+        "file": "test_data/properties/liveness_properties.json",
+        "description": "活性属性",
+        "type": "liveness"
+      },
+      {
+        "name": "fairness_properties",
+        "file": "test_data/properties/fairness_properties.json",
+        "description": "公平性属性",
+        "type": "fairness"
+      }
+    ]
+  },
+  "quality_gates": {
+    "enabled": true,
+    "criteria": {
+      "success_rate": {
+        "threshold": 0.8,
+        "weight": 0.3
+      },
+      "execution_time": {
+        "threshold": 5.0,
+        "weight": 0.2
+      },
+      "coverage": {
+        "threshold": 0.7,
+        "weight": 0.3
+      },
+      "stability": {
+        "threshold": 0.9,
+        "weight": 0.2
+      }
+    },
+    "failure_actions": {
+      "notify_team": true,
+      "stop_pipeline": false,
+      "retry_automatically": true,
+      "escalate_after_retries": 3
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics": {
+      "execution_time": true,
+      "memory_usage": true,
+      "cpu_usage": true,
+      "disk_usage": true,
+      "network_usage": true
+    },
+    "alerts": {
+      "execution_time_exceeded": {
+        "threshold": 10.0,
+        "enabled": true
+      },
+      "memory_usage_high": {
+        "threshold": 0.8,
+        "enabled": true
+      },
+      "failure_rate_high": {
+        "threshold": 0.3,
+        "enabled": true
+      }
+    },
+    "dashboards": {
+      "executive": "executive-dashboard.json",
+      "technical": "technical-dashboard.json",
+      "operational": "operational-dashboard.json"
+    }
+  }
+}
