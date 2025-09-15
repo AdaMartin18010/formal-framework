@@ -5,6 +5,53 @@
 
 ## 1. 行业模型递归完善自动化执行计划（核心机制摘要）
 
+### 0. 行业案例骨架（新增）
+
+为每个行业目录统一补充 3–5 个最小案例骨架（占位），采用统一段落：场景、术语对齐、结构与约束、接口/DSL 片段、验证与度量、证据与引用。
+
+模板：
+
+```markdown
+    # <行业>-<子域> 案例骨架（占位）
+
+    ## 场景与目标
+    - 背景、边界、非目标
+
+    ## 术语与概念对齐（行业↔通用）
+    - 术语A ↔ 概念X（引用）
+
+    ## 结构与约束
+    - 对象/字段/约束/关系表；状态机/流程约束
+
+    ## 接口与 DSL 片段
+    ```yaml
+    # 片段示例（可留空）
+    ```
+
+    ## 验证与度量
+
+    - 正确性/一致性/性能/安全/合规 指标与用例
+
+    ## 证据与引用
+
+    - evidence:ID 列表；课程/标准/文档链接
+
+```
+
+建议优先补充行业：cloud-native、ai-infrastructure、finance、iot、web3。
+
+### 0.1 证据索引（新增）
+
+当前占位 evidence:* 索引（持续更新）：
+
+- cloud-native: CN-K8S-BASE · CN-ISTIO-TRAFFIC · CN-ARGO-GITOPS · CN-OBS-OTEL
+- ai-infrastructure: AI-SERVING-VERSIONS · AI-FEAST-CONSISTENCY · AI-PIPELINE-KF
+- finance: FIN-PAY-GW · FIN-TRADE-MATCH · FIN-RISK-REALTIME
+- iot: IOT-DEVICE-ACCESS · IOT-EDGE-RT · IOT-DATA-COLLECT
+- web3: W3-CONSENSUS-POS · W3-SC-VERIFY · W3-CROSS-CHAIN
+
+> 证据条目模板：`docs/TEMPLATE_证据条目.md`
+
 ### 1.1 行业内容递归完善与自动化工具
 
 - 定期自动扫描各行业模型、子领域、案例、映射、FAQ等内容，生成内容空白与薄弱点清单。

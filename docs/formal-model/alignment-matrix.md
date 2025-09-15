@@ -17,6 +17,15 @@
 | IEEE 830 | 1998 | 软件需求规范 | L2_D03_功能元模型 | ✅ 已对齐 |
 | IEEE 1012 | 2016 | 软件验证与确认 | L2_D08_测试元模型 | ✅ 已对齐 |
 
+补充条目（待证据）：
+
+| 标准 | 版本 | 对齐内容 | 形式化框架映射 | 验证状态 |
+|------|------|----------|----------------|----------|
+| ISO/IEC 12207 | 2017 | 软件生命周期过程 | L3_D09_CICD/流程 · docs/practice-guides/methodology | ⏳ 待证据（evidence:STD-12207） |
+| ISO/IEC/IEEE 15288 | 2015 | 系统生命周期过程 | L2_D05_部署 · L2_D04_运行时 | ⏳ 待证据（evidence:STD-15288） |
+| ISO/IEC 27001 | 2022 | 信息安全管理 | L2_D05_部署/配置安全 · L2_D06_监控/审计 | ⏳ 待证据（evidence:STD-27001） |
+| ISO/IEC 42010（原IEEE 1471演进） | 2011 | 架构描述 | L3 交互/运行时/部署 · 架构视图 | ⏳ 待证据（evidence:STD-42010） |
+
 ### 2.2 分布式系统标准
 
 | 标准 | 版本 | 对齐内容 | 形式化框架映射 | 验证状态 |
@@ -28,6 +37,14 @@
 | W3C SOAP | 2007 | 简单对象访问协议 | L2_D01_交互元模型 | ✅ 已对齐 |
 | REST API | 2008 | 表述性状态转移 | L3_D01_交互标准模型 | ✅ 已对齐 |
 
+补充条目（待证据）：
+
+| 标准 | 版本 | 对齐内容 | 形式化框架映射 | 验证状态 |
+|------|------|----------|----------------|----------|
+| OpenAPI 3.1 | 2021 | API 契约规范 | L3_D01_交互标准模型/Contract | ⏳ 待证据（evidence:STD-OAS31） |
+| AsyncAPI 2.x | 2022 | 事件/消息驱动API | L3_D01_交互/Message/Protocol | ⏳ 待证据（evidence:STD-ASYNCAPI） |
+| OCI Image/Runtime | 持续 | 容器镜像/运行时 | L2_D04_运行时 · 部署/供应链 | ⏳ 待证据（evidence:STD-OCI） |
+
 ### 2.3 形式化方法标准
 
 | 标准 | 版本 | 对齐内容 | 形式化框架映射 | 验证状态 |
@@ -36,6 +53,13 @@
 | ISO/IEC 15476 | 2006 | 统一建模语言 | L2_元模型体系 | ✅ 已对齐 |
 | ISO/IEC 19505 | 2012 | 对象管理组标准 | L2_D03_功能元模型 | ✅ 已对齐 |
 | ISO/IEC 19507 | 2012 | 对象约束语言 | L2_D02_数据元模型 | ✅ 已对齐 |
+
+补充条目（待证据）：
+
+| 标准 | 版本 | 对齐内容 | 形式化框架映射 | 验证状态 |
+|------|------|----------|----------------|----------|
+| TLA+ 参考规范 | 持续 | 行为时序逻辑 | theory-enhancement/formal-verification-theory.md | ⏳ 待证据（evidence:STD-TLA+） |
+| Alloy 语言与分析 | 持续 | 关系逻辑建模 | theory-enhancement/domain-specific-language-theory.md | ⏳ 待证据（evidence:STD-ALLOY） |
 
 ## 3. 著名大学课程对齐矩阵
 
@@ -53,6 +77,14 @@
 | CMU | 15-312 编程语言基础 | 形式化语义、类型论 | formal-model/theory-enhancement | ✅ 已对齐 |
 | Berkeley | CS 162 操作系统 | 系统调用、进程管理 | L2_D04_运行时元模型 | ✅ 已对齐 |
 | Berkeley | CS 294 分布式系统 | 容错、一致性 | L3_D10_分布式模式标准模型 | ✅ 已对齐 |
+
+补充课程（待证据）：
+
+| 大学 | 课程 | 对齐内容 | 形式化框架映射 | 验证状态 |
+|------|------|----------|----------------|----------|
+| ETH Zürich | Distributed Systems | 扩展一致性/容错 | L3_D10 · evidence:COURSE-ETH-DS | ⏳ 待证据 |
+| CMU | 15-213 CSAPP | 体系结构/系统 | L2_D04 运行时 · 资源模型 | ⏳ 待证据（COURSE-CSAPP） |
+| Stanford | CS255 安全 | 应用安全/密码实践 | L2_D05 部署/合规/安全 | ⏳ 待证据（COURSE-CS255） |
 
 ### 3.2 形式化方法课程
 
@@ -76,6 +108,17 @@
 | Prometheus | SoundCloud | 监控、指标收集 | L2_D06_监控元模型 | ✅ 已对齐 |
 | Grafana | Grafana Labs | 可视化、仪表板 | L2_D06_监控元模型 | ✅ 已对齐 |
 | Helm | CNCF | 包管理、应用部署 | L2_D05_部署元模型 | ✅ 已对齐 |
+
+补充条目（待证据）：
+
+| 技术/系统 | 组织 | 对齐内容 | 形式化框架映射 | 验证状态 |
+|-----------|------|----------|----------------|----------|
+| ArgoCD (GitOps) | CNCF | 期望状态/同步/门禁 | L3_D05 部署标准模型/GitOps | ⏳ 待证据（evidence:CN-ARGO） |
+| OpenTelemetry | CNCF | Trace/Metric/Log 语义 | L3_D06 监控标准模型 | ⏳ 待证据（evidence:CN-OTEL） |
+| MLflow | Databricks | 实验/模型/注册表 | L4_D93_AI ↔ L2/L3 对齐 | ⏳ 待证据（evidence:AI-MLFLOW） |
+| Kubeflow | 社区 | 训练/流水线 | L4_D93_AI ↔ L3_D09 | ⏳ 待证据（evidence:AI-KF） |
+
+> 注：所有“待证据”条目需在行业/标准/课程文档中补充 `evidence:*` 编号，采用 `docs/TEMPLATE_证据条目.md` 统一模板。
 
 ### 4.2 分布式数据库
 
@@ -211,3 +254,10 @@ AlignmentQualityMetrics = {
 4. **标准兼容**：符合国际标准和规范
 
 这种全面的对齐策略为形式化框架的持续发展和广泛应用奠定了坚实的基础。
+
+---
+
+附：证据索引跳转
+
+- 行业证据索引：`docs/industry-model/README.md` → “0.1 证据索引”
+- 证据条目模板：`docs/TEMPLATE_证据条目.md`

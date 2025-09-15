@@ -1,8 +1,10 @@
-# 形式化框架 - 软件工程自动化构建平台
+# 形式化框架 - 软件工程知识规范与模型设计平台
+
+> 重要：项目已完成重新定位（Knowledge-first）。本仓库以“技术知识、规范、模型设计”为核心，聚焦梳理-论证-推理-形式化-跨行业映射，不再以技术实现与代码生成作为近期目标。详见：`docs/README_REPOSITIONED.md`、`docs/PROJECT_COMPREHENSIVE_ANALYSIS.md`、`docs/IMPROVEMENT_IMPLEMENTATION_PLAN.md`。
 
 ## 项目概述
 
-本项目致力于研究推理和探索形式化模型方案：以形式化模型为基础，自动化生成软件工程项目的绝大部分设计与实现。
+本项目致力于以形式化方法为核心，构建软件工程领域“知识规范与模型设计”的统一体系：在统一的理论范式下，系统性对齐学术与工业知识，并以可验证、可追溯的方式沉淀标准化产物与跨行业映射。
 
 ### 项目重新定位与国际对标（Knowledge-first）
 
@@ -20,9 +22,13 @@
   - 行业成熟应用：Kubernetes、Istio、Prometheus、TensorFlow/MLflow、Open Banking、PCI-DSS 等
 - **方法与验收**：采用“来源可追溯 + 术语对齐 + 结构化维度对比 + 专家评审”的流程。参见 `docs/CITATION_STANDARDS.md`、`docs/CODE_REVIEW_GUIDE.md`、`docs/EXPERT_REVIEW_SYSTEM.md`、`docs/QUALITY_STANDARDS.md`。
 
-### 核心愿景
+### 核心愿景（定位更新）
 
-构建一个基于形式化模型的软件工程自动化平台，通过领域专用语言（DSL）和AI技术，实现从需求到代码的全流程自动化生成，大幅提升软件开发效率和质量。
+构建一个以形式化方法为骨架的“知识规范与模型设计”平台：
+
+- 知识标准化：统一术语、结构化维度与引用规范
+- 模型规范化：从概念→类型/公理→方法论→接口/DSL→验证/度量→案例
+- 跨行业映射：云原生、AI 基础设施、物联网、金融、Web3 等的系统化对齐
 
 ### 近期增强（v1-expansion-2024-12-19）
 
@@ -46,7 +52,18 @@
 10. **CI/CD模型**（流水线、阶段、触发、质量门禁等）——结合AI，自动化设计与实现。
 11. **分布式模式模型**（容错、一致性、负载均衡、服务发现等）——结合AI，自动化设计与实现。
 
-## 技术架构
+## 文档与导航
+
+- 重新定位说明：`docs/README_REPOSITIONED.md`
+- 全面分析报告：`docs/PROJECT_COMPREHENSIVE_ANALYSIS.md`
+- 改进实施计划：`docs/IMPROVEMENT_IMPLEMENTATION_PLAN.md`
+- 总览与导航：`docs/README.md`
+
+---
+
+以下为历史“实现导向”内容（存档中），将逐步迁移为实现中立的接口/DSL与标准对齐说明：
+
+## 技术架构（历史存档，逐步知识化）
 
 ### 整体架构
 
@@ -94,7 +111,7 @@
 - **最佳实践**：行业最佳实践集成
 - **扩展机制**：自定义模型扩展支持
 
-## 实现方案
+## 实现方案（历史存档，逐步知识化）
 
 ### 阶段一：基础框架（当前阶段）
 
@@ -603,7 +620,7 @@ api:
           schema: "UserList"
 ```
 
-#### 3. 生成代码
+#### 3. 生成代码（历史示例，非近期目标）
 
 ```bash
 # 生成Spring Boot代码
@@ -613,7 +630,7 @@ formal-framework generate --model api-model.yaml --target spring-boot
 formal-framework generate --model api-model.yaml --target django
 ```
 
-### 高级用法
+### 高级用法（历史示例，非近期目标）
 
 #### 1. 自定义DSL
 

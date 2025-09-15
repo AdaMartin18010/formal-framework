@@ -1,15 +1,21 @@
-# Formal Framework 总览与导航
+# Formal Framework 总览与导航（对齐重新定位：知识规范与模型设计）
 
 > 全局导航（快速入口）
 >
 > - L2 元模型速达：`docs/L2_D01_交互元模型.md` · `docs/L2_D02_数据元模型.md` · `docs/L2_D03_功能元模型.md` · `docs/L2_D04_运行时元模型.md` · `docs/L2_D05_部署元模型.md` · `docs/L2_D06_监控元模型.md` · `docs/L2_D08_测试元模型.md`
 > - L3 标准模型索引：`docs/L3_D01_交互标准模型.md` · `docs/L3_D02_数据标准模型.md` · `docs/L3_D04_运行时标准模型.md` · `docs/L3_D05_部署标准模型.md` · `docs/L3_D06_监控标准模型.md` · `docs/L3_D07_控制调度标准模型.md` · `docs/L3_D08_测试标准模型.md` · `docs/L3_D09_CICD标准模型.md` · `docs/L3_D10_分布式模式标准模型.md`
 > - 行业模型导航：`docs/industry-model/README.md`（见各行业目录顶层 `README.md/theory.md`）
+> - 行业案例库索引：
+>   - `docs/industry-model/cloud-native-architecture/README.md`
+>   - `docs/industry-model/ai-infrastructure-architecture/README.md`
+>   - `docs/industry-model/finance-architecture/README.md`
+>   - `docs/industry-model/iot-architecture/README.md`
+>   - `docs/industry-model/web3-architecture/README.md`
 > - 质量与流程：`docs/community-framework.md` · `docs/implementation-guide.md` · `docs/formal-model/alignment-L2-L3-matrix.md`
 
 ## 目录（Table of Contents）
 
-- [Formal Framework 总览与导航](#formal-framework-总览与导航)
+- [Formal Framework 总览与导航（对齐重新定位：知识规范与模型设计）](#formal-framework-总览与导航对齐重新定位知识规范与模型设计)
   - [目录（Table of Contents）](#目录table-of-contents)
   - [0. 项目愿景与重新定位](#0-项目愿景与重新定位)
     - [0.1 新项目愿景](#01-新项目愿景)
@@ -19,6 +25,7 @@
     - [0.2 核心价值](#02-核心价值)
     - [0.3 适用场景](#03-适用场景)
   - [1. 项目结构总览](#1-项目结构总览)
+    - [1.1 L2 快速导航](#11-l2-快速导航)
   - [2. 各模型关系与递归扩展路径](#2-各模型关系与递归扩展路径)
   - [3. 行业映射关系](#3-行业映射关系)
     - [3.1 跨行业理论模型索引与映射框架](#31-跨行业理论模型索引与映射框架)
