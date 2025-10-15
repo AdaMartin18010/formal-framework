@@ -1,5 +1,44 @@
 # 数据模型DSL设计 (Data Model DSL Design)
 
+## 目录（Table of Contents）
+
+- [数据模型DSL设计 (Data Model DSL Design)](#数据模型dsl设计-data-model-dsl-design)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概述](#概述)
+  - [设计原则](#设计原则)
+    - [核心原则](#核心原则)
+    - [设计模式](#设计模式)
+  - [DSL语法设计](#dsl语法设计)
+    - [基本语法结构](#基本语法结构)
+    - [数据类型定义](#数据类型定义)
+    - [关系类型定义](#关系类型定义)
+  - [实体建模设计](#实体建模设计)
+    - [基本实体](#基本实体)
+    - [复杂实体](#复杂实体)
+  - [关系建模设计](#关系建模设计)
+    - [基本关系](#基本关系)
+    - [复杂关系](#复杂关系)
+  - [约束建模设计](#约束建模设计)
+    - [基本约束](#基本约束)
+    - [高级约束](#高级约束)
+  - [索引建模设计](#索引建模设计)
+    - [基本索引](#基本索引)
+    - [高级索引](#高级索引)
+  - [完整示例](#完整示例)
+    - [电商数据模型](#电商数据模型)
+  - [工具链支持](#工具链支持)
+    - [开发工具](#开发工具)
+    - [代码生成器](#代码生成器)
+  - [最佳实践](#最佳实践)
+    - [设计最佳实践](#设计最佳实践)
+    - [性能最佳实践](#性能最佳实践)
+    - [维护最佳实践](#维护最佳实践)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概述
 
 数据模型DSL是一种专门用于描述和管理数据结构的领域特定语言。它提供声明式语法来定义实体、关系、约束、索引等数据模型组件，支持从概念模型到物理模型的完整数据建模过程。
@@ -1163,11 +1202,28 @@ code_generators:
 
 ## 相关概念
 
-- [数据建模理论](theory.md)
-- [实体建模](entity/theory.md)
-- [查询建模](query/theory.md)
-- [索引建模](index/theory.md)
-- [迁移建模](migration/theory.md)
+### 核心概念关联
+
+- [数据建模理论](theory.md) - 数据模型DSL基于数据建模理论设计
+- [抽象语法树](../core-concepts/abstract-syntax-tree.md) - AST为数据模型DSL提供结构化表示
+- [代码生成](../core-concepts/code-generation.md) - 代码生成实现数据模型DSL到数据库代码的转换
+- [模型转换](../core-concepts/model-transformation.md) - 模型转换实现数据模型DSL间的转换
+- [形式化建模](../core-concepts/formal-modeling.md) - 形式化建模为数据模型DSL提供理论基础
+- [自动推理](../core-concepts/automated-reasoning.md) - 自动推理用于数据模型DSL的智能处理
+- [递归建模](../core-concepts/recursive-modeling.md) - 递归建模支持数据模型DSL的层次化处理
+
+### 应用领域关联
+
+- [实体建模](entity/theory.md) - 实体建模是数据模型DSL的核心组成部分
+- [查询建模](query/theory.md) - 查询建模与数据模型DSL的查询功能关联
+- [索引建模](index/theory.md) - 索引建模与数据模型DSL的索引功能关联
+- [迁移建模](migration/theory.md) - 迁移建模与数据模型DSL的版本管理关联
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融数据模型DSL和交易系统数据建模
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI数据模型DSL和机器学习数据建模
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云数据模型DSL和分布式数据建模
 
 ## 参考文献
 

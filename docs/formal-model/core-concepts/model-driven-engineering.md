@@ -1,5 +1,57 @@
 # 模型驱动工程理论 (Model-Driven Engineering Theory)
 
+## 目录（Table of Contents）
+
+- [模型驱动工程理论 (Model-Driven Engineering Theory)](#模型驱动工程理论-model-driven-engineering-theory)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [模型驱动工程理论](#模型驱动工程理论)
+    - [模型驱动工程流程](#模型驱动工程流程)
+    - [模型驱动设计层次理论](#模型驱动设计层次理论)
+  - [核心组件](#核心组件)
+    - [元模型定义](#元模型定义)
+    - [模型转换定义](#模型转换定义)
+    - [代码生成模板](#代码生成模板)
+    - [模型验证规则](#模型验证规则)
+  - [国际标准对标](#国际标准对标)
+    - [模型驱动架构标准](#模型驱动架构标准)
+      - [OMG MDA (Model-Driven Architecture)](#omg-mda-model-driven-architecture)
+      - [OMG UML (Unified Modeling Language)](#omg-uml-unified-modeling-language)
+      - [OMG MOF (Meta-Object Facility)](#omg-mof-meta-object-facility)
+    - [模型转换标准](#模型转换标准)
+      - [OMG QVT (Query/View/Transformation)](#omg-qvt-queryviewtransformation)
+      - [ATL (Atlas Transformation Language)](#atl-atlas-transformation-language)
+      - [Xtend](#xtend)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [软件工程课程](#软件工程课程)
+      - [MIT 6.170 - Software Studio](#mit-6170---software-studio)
+      - [Stanford CS210 - Software Project Experience with Corporate Partners](#stanford-cs210---software-project-experience-with-corporate-partners)
+      - [CMU 15-413 - Software Engineering](#cmu-15-413---software-engineering)
+    - [编译器课程](#编译器课程)
+      - [MIT 6.035 - Computer Language Engineering](#mit-6035---computer-language-engineering)
+      - [Stanford CS143 - Compilers](#stanford-cs143---compilers)
+  - [工程实践](#工程实践)
+    - [MDE开发模式](#mde开发模式)
+      - [瀑布式MDE模式](#瀑布式mde模式)
+      - [敏捷MDE模式](#敏捷mde模式)
+    - [MDE工具链模式](#mde工具链模式)
+      - [集成开发环境](#集成开发环境)
+      - [持续集成流水线](#持续集成流水线)
+  - [最佳实践](#最佳实践)
+    - [MDE设计原则](#mde设计原则)
+    - [MDE开发原则](#mde开发原则)
+    - [MDE维护原则](#mde维护原则)
+  - [应用案例](#应用案例)
+    - [企业应用开发](#企业应用开发)
+    - [嵌入式系统开发](#嵌入式系统开发)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 模型驱动工程理论是一种软件开发方法论，通过抽象层次化的模型来驱动整个软件开发生命周期。它强调以模型为中心，通过模型转换、代码生成、模型验证等方式，实现从需求分析到代码实现的自动化过程。
@@ -29,6 +81,41 @@ MDE = (Models, Transformations, Metamodels, Tools, Processes)
 - Metamodels：元模型（模型的结构和约束定义）
 - Tools：工具（建模工具、转换引擎、验证工具）
 - Processes：过程（MDE开发流程和方法）
+
+### 模型驱动工程流程
+
+```mermaid
+flowchart TD
+    A[需求分析<br/>Requirements Analysis] --> B[业务模型构建<br/>Business Model Construction]
+    B --> C[平台无关模型<br/>Platform Independent Model]
+    C --> D[平台特定模型<br/>Platform Specific Model]
+    D --> E[代码生成<br/>Code Generation]
+    E --> F[模型验证<br/>Model Validation]
+    F --> G[系统部署<br/>System Deployment]
+    
+    H[模型层次<br/>Model Layers] --> I[计算无关模型<br/>CIM]
+    H --> J[平台无关模型<br/>PIM]
+    H --> K[平台特定模型<br/>PSM]
+    H --> L[代码模型<br/>Code Model]
+    
+    M[转换引擎<br/>Transformation Engine] --> N[模型转换<br/>Model Transformation]
+    M --> O[代码生成<br/>Code Generation]
+    M --> P[反向工程<br/>Reverse Engineering]
+    
+    Q[工具链<br/>Toolchain] --> R[建模工具<br/>Modeling Tools]
+    Q --> S[转换工具<br/>Transformation Tools]
+    Q --> T[验证工具<br/>Validation Tools]
+    
+    C --> H
+    D --> M
+    E --> Q
+    
+    style A fill:#e1f5fe
+    style G fill:#c8e6c9
+    style H fill:#fff3e0
+    style M fill:#f3e5f5
+    style Q fill:#fce4ec
+```
 
 ### 模型驱动设计层次理论
 
@@ -1110,10 +1197,27 @@ embedded_system_development:
 
 ## 相关概念
 
-- [模型转换](model-transformation.md)
-- [代码生成](code-generation.md)
-- [形式化验证](formal-verification.md)
-- [领域特定语言](domain-specific-language.md)
+### 核心概念关联
+
+- [模型转换](./model-transformation.md) - 模型转换是MDE的核心技术，实现模型间的自动转换
+- [代码生成](./code-generation.md) - 代码生成是MDE的重要应用，实现从模型到代码的自动生成
+- [形式化验证](./formal-verification.md) - 形式化验证为MDE提供模型验证和正确性保证
+- [领域特定语言](./domain-specific-language.md) - DSL为MDE提供领域特定的建模语言
+- [形式化建模](./formal-modeling.md) - 形式化建模为MDE提供理论基础
+- [递归建模](./recursive-modeling.md) - 递归建模支持MDE的层次化模型处理
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型驱动工程和数据库代码生成
+- [功能建模](../functional-model/theory.md) - 功能模型驱动工程和业务逻辑生成
+- [交互建模](../interaction-model/theory.md) - 交互模型驱动工程和接口代码生成
+- [运行时建模](../runtime-model/theory.md) - 运行时模型驱动工程和配置生成
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融业务模型驱动工程和交易系统生成
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型驱动工程和推理代码生成
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云配置模型驱动工程和部署代码生成
 
 ## 参考文献
 

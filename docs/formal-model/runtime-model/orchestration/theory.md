@@ -1089,9 +1089,9 @@ cloud_native_orchestration:
 
 ## 相关概念
 
-- [容器建模](container/theory.md)
-- [网络建模](network/theory.md)
-- [存储建模](storage/theory.md)
+- [容器建模](theory.md)
+- [网络建模](theory.md)
+- [存储建模](theory.md)
 - [运行时建模](../theory.md)
 
 ## 参考文献

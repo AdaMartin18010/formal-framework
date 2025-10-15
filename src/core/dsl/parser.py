@@ -21,8 +21,10 @@ class DSLType(Enum):
     RUNTIME = "runtime"
     DEPLOYMENT = "deployment"
     MONITORING = "monitoring"
+    CONTROL_SCHEDULING = "control_scheduling"
     TESTING = "testing"
     CICD = "cicd"
+    DISTRIBUTED_PATTERN = "distributed_pattern"
 
 @dataclass
 class DSLNode:
@@ -57,6 +59,49 @@ class BusinessLogicNode(DSLNode):
     output_schema: Dict[str, Any] = field(default_factory=dict)
     rules: List[Dict[str, Any]] = field(default_factory=list)
 
+@dataclass
+class WorkloadNode(DSLNode):
+    """工作负载节点"""
+    replicas: int = 1
+    resources: Dict[str, Any] = field(default_factory=dict)
+    strategy: str = "rolling"
+    health: Dict[str, Any] = field(default_factory=dict)
+    scaling: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class ServiceNode(DSLNode):
+    """服务节点"""
+    service_type: str = "ClusterIP"
+    ports: List[Dict[str, Any]] = field(default_factory=list)
+    selector: Dict[str, str] = field(default_factory=dict)
+    endpoints: List[str] = field(default_factory=list)
+
+@dataclass
+class MetricNode(DSLNode):
+    """指标节点"""
+    metric_type: str = "gauge"
+    unit: str = ""
+    labels: List[str] = field(default_factory=list)
+    collection: Dict[str, Any] = field(default_factory=dict)
+    storage: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class TestCaseNode(DSLNode):
+    """测试用例节点"""
+    priority: str = "medium"
+    preconditions: List[str] = field(default_factory=list)
+    steps: List[Dict[str, Any]] = field(default_factory=list)
+    expected_result: str = ""
+    tags: List[str] = field(default_factory=list)
+
+@dataclass
+class SchedulerNode(DSLNode):
+    """调度器节点"""
+    strategy: str = "fifo"
+    priority_algorithm: str = "static"
+    resource_pool: Dict[str, Any] = field(default_factory=dict)
+    load_balancing: Dict[str, Any] = field(default_factory=dict)
+
 class DSLParser:
     """DSL 解析器"""
     
@@ -65,7 +110,12 @@ class DSLParser:
         self.node_factories = {
             'endpoint': EndpointNode,
             'entity': EntityNode,
-            'business_logic': BusinessLogicNode
+            'business_logic': BusinessLogicNode,
+            'workload': WorkloadNode,
+            'service': ServiceNode,
+            'metric': MetricNode,
+            'test_case': TestCaseNode,
+            'scheduler': SchedulerNode
         }
     
     def parse(self, content: str, format_type: str = 'yaml') -> DSLNode:
@@ -154,6 +204,16 @@ class DSLParser:
             errors.extend(self._validate_entity(node))
         elif isinstance(node, BusinessLogicNode):
             errors.extend(self._validate_business_logic(node))
+        elif isinstance(node, WorkloadNode):
+            errors.extend(self._validate_workload(node))
+        elif isinstance(node, ServiceNode):
+            errors.extend(self._validate_service(node))
+        elif isinstance(node, MetricNode):
+            errors.extend(self._validate_metric(node))
+        elif isinstance(node, TestCaseNode):
+            errors.extend(self._validate_test_case(node))
+        elif isinstance(node, SchedulerNode):
+            errors.extend(self._validate_scheduler(node))
         
         # 递归验证子节点
         for child in node.children:
@@ -204,6 +264,72 @@ class DSLParser:
         
         if not logic.output_schema:
             errors.append(f"业务逻辑 {logic.name} 缺少输出模式")
+        
+        return errors
+    
+    def _validate_workload(self, workload: WorkloadNode) -> List[str]:
+        """验证工作负载节点"""
+        errors = []
+        
+        if workload.replicas < 0:
+            errors.append(f"工作负载 {workload.name} 副本数不能为负数")
+        
+        if not workload.resources:
+            errors.append(f"工作负载 {workload.name} 缺少资源配置")
+        
+        return errors
+    
+    def _validate_service(self, service: ServiceNode) -> List[str]:
+        """验证服务节点"""
+        errors = []
+        
+        if not service.ports:
+            errors.append(f"服务 {service.name} 缺少端口配置")
+        
+        if not service.selector:
+            errors.append(f"服务 {service.name} 缺少选择器配置")
+        
+        return errors
+    
+    def _validate_metric(self, metric: MetricNode) -> List[str]:
+        """验证指标节点"""
+        errors = []
+        
+        valid_types = ['counter', 'gauge', 'histogram', 'summary']
+        if metric.metric_type not in valid_types:
+            errors.append(f"指标 {metric.name} 类型无效: {metric.metric_type}")
+        
+        if not metric.collection:
+            errors.append(f"指标 {metric.name} 缺少收集配置")
+        
+        return errors
+    
+    def _validate_test_case(self, test_case: TestCaseNode) -> List[str]:
+        """验证测试用例节点"""
+        errors = []
+        
+        if not test_case.steps:
+            errors.append(f"测试用例 {test_case.name} 缺少测试步骤")
+        
+        if not test_case.expected_result:
+            errors.append(f"测试用例 {test_case.name} 缺少预期结果")
+        
+        valid_priorities = ['low', 'medium', 'high', 'critical']
+        if test_case.priority not in valid_priorities:
+            errors.append(f"测试用例 {test_case.name} 优先级无效: {test_case.priority}")
+        
+        return errors
+    
+    def _validate_scheduler(self, scheduler: SchedulerNode) -> List[str]:
+        """验证调度器节点"""
+        errors = []
+        
+        valid_strategies = ['fifo', 'priority', 'round_robin', 'weighted', 'custom']
+        if scheduler.strategy not in valid_strategies:
+            errors.append(f"调度器 {scheduler.name} 策略无效: {scheduler.strategy}")
+        
+        if not scheduler.resource_pool:
+            errors.append(f"调度器 {scheduler.name} 缺少资源池配置")
         
         return errors
 

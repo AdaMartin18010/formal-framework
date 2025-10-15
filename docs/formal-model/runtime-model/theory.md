@@ -59,6 +59,10 @@
     - [微服务架构](#微服务架构)
     - [无服务器架构](#无服务器架构)
   - [相关概念](#相关概念)
+  - [相关概念1](#相关概念1)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
   - [参考文献](#参考文献)
 
 ## 概念定义
@@ -1143,6 +1147,30 @@ serverless_case:
 - [网络建模](network/theory.md)
 - [编排建模](orchestration/theory.md)
 - [存储建模](storage/theory.md)
+
+## 相关概念1
+
+### 核心概念关联
+
+- [抽象语法树](../core-concepts/abstract-syntax-tree.md) - AST为运行时模型提供结构化表示
+- [代码生成](../core-concepts/code-generation.md) - 代码生成实现运行时模型到部署代码的转换
+- [模型转换](../core-concepts/model-transformation.md) - 模型转换实现运行时模型间的转换
+- [形式化建模](../core-concepts/formal-modeling.md) - 形式化建模为运行时模型提供理论基础
+- [自动推理](../core-concepts/automated-reasoning.md) - 自动推理用于运行时模型的智能处理
+- [递归建模](../core-concepts/recursive-modeling.md) - 递归建模支持运行时模型的层次化处理
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型与运行时模型的数据存储关联
+- [功能建模](../functional-model/theory.md) - 功能模型与运行时模型的业务逻辑关联
+- [交互建模](../interaction-model/theory.md) - 交互模型与运行时模型的网络通信关联
+- [测试建模](../testing-model/theory.md) - 测试模型与运行时模型的测试环境关联
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融运行时模型和交易系统部署
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI运行时模型和机器学习部署
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云服务运行时模型和容器化部署
 
 ## 参考文献
 

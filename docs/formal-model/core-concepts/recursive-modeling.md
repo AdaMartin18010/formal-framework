@@ -1,5 +1,54 @@
 # 递归建模理论 (Recursive Modeling Theory)
 
+## 目录（Table of Contents）
+
+- [递归建模理论 (Recursive Modeling Theory)](#递归建模理论-recursive-modeling-theory)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [递归建模理论](#递归建模理论)
+    - [递归建模流程](#递归建模流程)
+    - [递归设计层次理论](#递归设计层次理论)
+  - [核心组件](#核心组件)
+    - [递归结构模型](#递归结构模型)
+    - [递归转换模型](#递归转换模型)
+    - [递归验证模型](#递归验证模型)
+    - [递归优化模型](#递归优化模型)
+  - [国际标准对标](#国际标准对标)
+    - [递归理论标准](#递归理论标准)
+      - [递归函数理论](#递归函数理论)
+      - [类型理论](#类型理论)
+    - [编程语言标准](#编程语言标准)
+      - [函数式编程](#函数式编程)
+      - [面向对象编程](#面向对象编程)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [计算机科学课程](#计算机科学课程)
+      - [MIT 6.006 - Introduction to Algorithms](#mit-6006---introduction-to-algorithms)
+      - [Stanford CS161 - Design and Analysis of Algorithms](#stanford-cs161---design-and-analysis-of-algorithms)
+      - [CMU 15-150 - Principles of Functional Programming](#cmu-15-150---principles-of-functional-programming)
+    - [数学课程](#数学课程)
+      - [MIT 18.404 - Theory of Computation](#mit-18404---theory-of-computation)
+  - [工程实践](#工程实践)
+    - [递归设计模式](#递归设计模式)
+      - [分治模式](#分治模式)
+      - [动态规划模式](#动态规划模式)
+    - [递归实现模式](#递归实现模式)
+      - [尾递归模式](#尾递归模式)
+      - [记忆化模式](#记忆化模式)
+  - [最佳实践](#最佳实践)
+    - [递归设计原则](#递归设计原则)
+    - [递归实现原则](#递归实现原则)
+    - [递归优化原则](#递归优化原则)
+  - [应用案例](#应用案例)
+    - [算法实现](#算法实现)
+    - [数据结构实现](#数据结构实现)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 递归建模理论是一种形式化建模方法，用于描述和处理具有递归结构的数据和算法。它通过递归定义、递归转换、递归验证等方式，实现复杂结构的简化和自动化处理，支持自相似、分形、树形等递归结构的建模和分析。
@@ -29,6 +78,41 @@ RecursiveModel = (BaseCase, RecursiveCase, Transformation, Validation, Optimizat
 - Transformation：转换（递归结构的转换规则）
 - Validation：验证（递归结构的验证机制）
 - Optimization：优化（递归结构的优化策略）
+
+### 递归建模流程
+
+```mermaid
+flowchart TD
+    A[问题分析<br/>Problem Analysis] --> B[递归结构识别<br/>Recursive Structure Identification]
+    B --> C[基础情况定义<br/>Base Case Definition]
+    C --> D[递归情况定义<br/>Recursive Case Definition]
+    D --> E[递归结构建模<br/>Recursive Structure Modeling]
+    E --> F[递归转换设计<br/>Recursive Transformation Design]
+    F --> G[递归验证实现<br/>Recursive Validation Implementation]
+    G --> H[递归优化应用<br/>Recursive Optimization Application]
+    
+    I[递归类型<br/>Recursive Types] --> J[结构递归<br/>Structural Recursion]
+    I --> K[生成递归<br/>Generative Recursion]
+    I --> L[累积递归<br/>Accumulative Recursion]
+    
+    M[递归模式<br/>Recursive Patterns] --> N[分治模式<br/>Divide and Conquer]
+    M --> O[动态规划<br/>Dynamic Programming]
+    M --> P[回溯模式<br/>Backtracking]
+    
+    Q[递归优化<br/>Recursive Optimization] --> R[尾递归优化<br/>Tail Recursion]
+    Q --> S[记忆化<br/>Memoization]
+    Q --> T[迭代转换<br/>Iterative Conversion]
+    
+    E --> I
+    F --> M
+    H --> Q
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style I fill:#fff3e0
+    style M fill:#f3e5f5
+    style Q fill:#fce4ec
+```
 
 ### 递归设计层次理论
 
@@ -954,10 +1038,27 @@ recursive_data_structure_implementation:
 
 ## 相关概念
 
-- [抽象语法树](abstract-syntax-tree.md)
-- [模型转换](model-transformation.md)
-- [语义分析](semantic-analysis.md)
-- [自动推理](automated-reasoning.md)
+### 核心概念关联
+
+- [抽象语法树](./abstract-syntax-tree.md) - AST是递归建模的典型应用，具有递归的树形结构
+- [模型转换](./model-transformation.md) - 模型转换使用递归建模处理复杂结构的转换
+- [语义分析](./semantic-analysis.md) - 语义分析基于递归建模进行语法树的递归分析
+- [自动推理](./automated-reasoning.md) - 自动推理使用递归建模处理复杂推理过程
+- [形式化建模](./formal-modeling.md) - 形式化建模为递归建模提供理论基础
+- [代码生成](./code-generation.md) - 代码生成使用递归建模处理复杂代码结构
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型使用递归建模处理层次化数据结构
+- [功能建模](../functional-model/theory.md) - 功能模型使用递归建模处理复杂业务逻辑
+- [交互建模](../interaction-model/theory.md) - 交互模型使用递归建模处理嵌套接口结构
+- [运行时建模](../runtime-model/theory.md) - 运行时模型使用递归建模处理复杂配置结构
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融业务规则使用递归建模处理复杂决策树
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型使用递归建模处理神经网络结构
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云配置使用递归建模处理层次化部署结构
 
 ## 参考文献
 

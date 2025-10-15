@@ -243,9 +243,9 @@ Formal Model是一个基于形式化方法的通用建模体系，旨在为软�
 - **自动部署**：模型变更自动部署
 - **自动监控**：模型运行自动监控
 
-## 国际标准对标1
+## 国际标准对标
 
-### 建模标准1
+### 建模标准
 
 - **UML 2.5**：对象建模标准
 - **BPMN 2.0**：业务流程建模
@@ -286,7 +286,7 @@ Formal Model是一个基于形式化方法的通用建模体系，旨在为软�
 - **UC Berkeley CS169**：软件工程
 - **Harvard CS50**：计算机科学导论
 
-### 形式化方法1
+### 形式化方法
 
 - **MIT 6.042**：数学基础
 - **Stanford CS103**：数学基础
@@ -312,28 +312,28 @@ Formal Model是一个基于形式化方法的通用建模体系，旨在为软�
 
 ## 参考文献
 
-### 形式化方法2
+### 形式化方法（续）
 
 1. Abrial, J. R. (1996). "The B-Book: Assigning Programs to Meanings"
 2. Spivey, J. M. (1992). "The Z Notation: A Reference Manual"
 3. Jackson, D. (2006). "Software Abstractions: Logic, Language, and Analysis"
 4. Lamport, L. (2002). "Specifying Systems: The TLA+ Language and Tools for Hardware and Software Engineers"
 
-### 类型理论1
+### 类型理论
 
 1. Pierce, B. C. (2002). "Types and Programming Languages"
 2. Thompson, S. (1991). "Type Theory and Functional Programming"
 3. Nordström, B., Petersson, K., & Smith, J. M. (1990). "Programming in Martin-Löf's Type Theory"
 4. Univalent Foundations Program (2013). "Homotopy Type Theory: Univalent Foundations of Mathematics"
 
-### 建模语言1
+### 建模语言
 
 1. Fowler, M. (2003). "UML Distilled: A Brief Guide to the Standard Object Modeling Language"
 2. White, S. A., & Miers, D. (2008). "BPMN Modeling and Reference Guide"
 3. Friedenthal, S., Moore, A., & Steiner, R. (2014). "A Practical Guide to SysML"
 4. Lankhorst, M. (2017). "Enterprise Architecture at Work: Modelling, Communication and Analysis"
 
-### 软件工程1
+### 软件工程
 
 1. Gamma, E., et al. (1994). "Design Patterns: Elements of Reusable Object-Oriented Software"
 2. Martin, R. C. (2000). "Clean Code: A Handbook of Agile Software Craftsmanship"

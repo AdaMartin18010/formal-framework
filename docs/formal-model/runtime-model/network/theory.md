@@ -1059,9 +1059,9 @@ cloud_network_architecture:
 
 ## 相关概念
 
-- [容器建模](container/theory.md)
-- [编排建模](orchestration/theory.md)
-- [存储建模](storage/theory.md)
+- [容器建模](theory.md)
+- [编排建模](theory.md)
+- [存储建模](theory.md)
 - [运行时建模](../theory.md)
 
 ## 参考文献

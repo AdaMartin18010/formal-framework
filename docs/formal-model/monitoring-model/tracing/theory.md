@@ -780,7 +780,7 @@ tracing_analysis_pattern:
 
 - [监控建模](../theory.md)
 - [指标建模](../metrics/theory.md)
-- [日志建模](../logs/theory.md)
+- [日志建模](theory.md)
 - [告警建模](../alerting/theory.md)
 
 ## 参考文献

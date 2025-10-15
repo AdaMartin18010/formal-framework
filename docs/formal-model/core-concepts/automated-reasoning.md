@@ -1,5 +1,61 @@
 # 自动推理机制 (Automated Reasoning)
 
+## 目录（Table of Contents）
+
+- [自动推理机制 (Automated Reasoning)](#自动推理机制-automated-reasoning)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [逻辑推理理论](#逻辑推理理论)
+    - [自动推理流程](#自动推理流程)
+    - [推理类型理论](#推理类型理论)
+  - [核心组件](#核心组件)
+    - [知识表示模型](#知识表示模型)
+    - [推理引擎模型](#推理引擎模型)
+    - [推理策略模型](#推理策略模型)
+    - [机器学习集成模型](#机器学习集成模型)
+  - [国际标准对标](#国际标准对标)
+    - [逻辑编程标准](#逻辑编程标准)
+      - [Prolog](#prolog)
+      - [Datalog](#datalog)
+      - [Answer Set Programming (ASP)](#answer-set-programming-asp)
+    - [推理引擎标准](#推理引擎标准)
+      - [OWL (Web Ontology Language)](#owl-web-ontology-language)
+      - [RDF (Resource Description Framework)](#rdf-resource-description-framework)
+      - [SPARQL](#sparql)
+    - [形式化验证标准](#形式化验证标准)
+      - [SMT (Satisfiability Modulo Theories)](#smt-satisfiability-modulo-theories)
+      - [Model Checking](#model-checking)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [逻辑与推理课程](#逻辑与推理课程)
+      - [MIT 6.042 - Mathematics for Computer Science](#mit-6042---mathematics-for-computer-science)
+      - [Stanford CS103 - Mathematical Foundations of Computing](#stanford-cs103---mathematical-foundations-of-computing)
+      - [CMU 15-317 - Constructive Logic](#cmu-15-317---constructive-logic)
+    - [人工智能课程](#人工智能课程)
+      - [MIT 6.034 - Artificial Intelligence](#mit-6034---artificial-intelligence)
+      - [Stanford CS221 - Artificial Intelligence: Principles and Techniques](#stanford-cs221---artificial-intelligence-principles-and-techniques)
+      - [CMU 15-381 - Artificial Intelligence: Representation and Problem Solving](#cmu-15-381---artificial-intelligence-representation-and-problem-solving)
+  - [工程实践](#工程实践)
+    - [推理系统设计模式](#推理系统设计模式)
+      - [专家系统模式](#专家系统模式)
+      - [知识图谱推理模式](#知识图谱推理模式)
+    - [推理优化策略](#推理优化策略)
+      - [推理性能优化](#推理性能优化)
+      - [推理质量保证](#推理质量保证)
+  - [最佳实践](#最佳实践)
+    - [推理系统设计原则](#推理系统设计原则)
+    - [知识表示原则](#知识表示原则)
+    - [推理算法选择原则](#推理算法选择原则)
+  - [应用案例](#应用案例)
+    - [智能问答系统](#智能问答系统)
+    - [智能决策系统](#智能决策系统)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 自动推理机制是一种基于逻辑规则和算法实现自动化推理和决策的技术。
@@ -29,6 +85,41 @@ Reasoning = (Knowledge, Rules, Inference, Conclusion)
 - Rules：推理规则（逻辑规则、业务规则）
 - Inference：推理引擎（推理算法、策略）
 - Conclusion：推理结论（结果、置信度）
+
+### 自动推理流程
+
+```mermaid
+flowchart TD
+    A[知识库<br/>Knowledge Base] --> B[问题输入<br/>Problem Input]
+    B --> C[知识检索<br/>Knowledge Retrieval]
+    C --> D[规则匹配<br/>Rule Matching]
+    D --> E[推理执行<br/>Inference Execution]
+    E --> F[结果生成<br/>Result Generation]
+    F --> G[置信度评估<br/>Confidence Assessment]
+    G --> H[结果输出<br/>Result Output]
+    
+    I[推理引擎<br/>Inference Engine] --> J[演绎推理<br/>Deductive Reasoning]
+    I --> K[归纳推理<br/>Inductive Reasoning]
+    I --> L[类比推理<br/>Analogical Reasoning]
+    
+    M[知识表示<br/>Knowledge Representation] --> N[一阶逻辑<br/>First-Order Logic]
+    M --> O[描述逻辑<br/>Description Logic]
+    M --> P[规则系统<br/>Rule System]
+    
+    Q[机器学习集成<br/>ML Integration] --> R[神经网络<br/>Neural Networks]
+    Q --> S[决策树<br/>Decision Trees]
+    Q --> T[贝叶斯网络<br/>Bayesian Networks]
+    
+    C --> I
+    C --> M
+    E --> Q
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style I fill:#fff3e0
+    style M fill:#f3e5f5
+    style Q fill:#fce4ec
+```
 
 ### 推理类型理论
 
@@ -659,10 +750,27 @@ intelligent_decision_system:
 
 ## 相关概念
 
-- [形式化建模](./formal-modeling.md)
-- [形式化验证](./formal-verification.md)
-- [语义分析](./semantic-analysis.md)
-- [知识图谱](./knowledge-graph.md)
+### 核心概念关联
+
+- [形式化建模](./formal-modeling.md) - 形式化建模为自动推理提供基础模型
+- [形式化验证](./formal-verification.md) - 形式化验证使用自动推理进行模型验证
+- [语义分析](./semantic-analysis.md) - 语义分析基于自动推理进行语义理解
+- [知识图谱](./knowledge-graph.md) - 知识图谱为自动推理提供结构化知识
+- [抽象语法树](./abstract-syntax-tree.md) - AST为自动推理提供程序结构信息
+- [递归建模](./recursive-modeling.md) - 递归建模支持复杂推理结构的处理
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型推理和约束验证
+- [功能建模](../functional-model/theory.md) - 业务逻辑推理和规则验证
+- [交互建模](../interaction-model/theory.md) - API推理和协议验证
+- [运行时建模](../runtime-model/theory.md) - 运行时推理和状态验证
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融风控推理和合规验证
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型推理和性能优化
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云资源推理和调度优化
 
 ## 参考文献
 

@@ -1,5 +1,59 @@
 # 概念索引与关系 (Concept Index and Relationships)
 
+## 目录（Table of Contents）
+
+- [概念索引与关系 (Concept Index and Relationships)](#概念索引与关系-concept-index-and-relationships)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [概念索引理论](#概念索引理论)
+    - [概念关系图谱](#概念关系图谱)
+    - [概念分类体系](#概念分类体系)
+  - [核心组件](#核心组件)
+    - [概念定义模型](#概念定义模型)
+    - [关系定义模型](#关系定义模型)
+    - [分类体系模型](#分类体系模型)
+    - [交叉引用模型](#交叉引用模型)
+    - [知识图谱模型](#知识图谱模型)
+  - [国际标准对标](#国际标准对标)
+    - [知识组织标准](#知识组织标准)
+      - [SKOS (Simple Knowledge Organization System)](#skos-simple-knowledge-organization-system)
+      - [Dublin Core](#dublin-core)
+      - [ISO 25964](#iso-25964)
+    - [本体标准](#本体标准)
+      - [RDF (Resource Description Framework)](#rdf-resource-description-framework)
+      - [OWL (Web Ontology Language)](#owl-web-ontology-language)
+      - [SPARQL](#sparql)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [知识管理课程](#知识管理课程)
+      - [MIT 6.883 - Program Analysis](#mit-6883---program-analysis)
+      - [Stanford CS224W - Machine Learning with Graphs](#stanford-cs224w---machine-learning-with-graphs)
+      - [CMU 15-445 - Database Systems](#cmu-15-445---database-systems)
+    - [信息科学课程](#信息科学课程)
+      - [UC Berkeley INFO 202 - Information Organization and Retrieval](#uc-berkeley-info-202---information-organization-and-retrieval)
+      - [Harvard CS50 - Introduction to Computer Science](#harvard-cs50---introduction-to-computer-science)
+  - [工程实践](#工程实践)
+    - [概念索引设计模式](#概念索引设计模式)
+      - [层次索引模式](#层次索引模式)
+      - [分面索引模式](#分面索引模式)
+      - [关系索引模式](#关系索引模式)
+    - [概念索引实现模式](#概念索引实现模式)
+      - [索引构建模式](#索引构建模式)
+      - [索引查询模式](#索引查询模式)
+  - [最佳实践](#最佳实践)
+    - [概念索引设计原则](#概念索引设计原则)
+    - [关系定义原则](#关系定义原则)
+    - [索引维护原则](#索引维护原则)
+  - [应用案例](#应用案例)
+    - [知识管理系统](#知识管理系统)
+    - [智能推荐系统](#智能推荐系统)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 概念索引与关系是一种系统化的知识组织方法，用于建立formal-model领域中所有概念的分类体系、关系映射和交叉引用机制。它通过概念图谱、关系网络、知识本体等方式，实现形式化建模知识的结构化组织和智能检索。
@@ -29,6 +83,56 @@ ConceptIndex = (Concepts, Categories, Relations, References, Graph)
 - Relations：关系定义（关系类型、关系属性）
 - References：引用机制（交叉引用、链接）
 - Graph：知识图谱（节点、边、路径）
+
+### 概念关系图谱
+
+```mermaid
+graph TD
+    FM[形式化建模<br/>Formal Modeling] --> AST[抽象语法树<br/>Abstract Syntax Tree]
+    FM --> DSL[领域特定语言<br/>Domain Specific Language]
+    FM --> MT[模型转换<br/>Model Transformation]
+    
+    AST --> CG[代码生成<br/>Code Generation]
+    DSL --> CG
+    MT --> CG
+    
+    AR[自动推理<br/>Automated Reasoning] --> FV[形式化验证<br/>Formal Verification]
+    AR --> SA[语义分析<br/>Semantic Analysis]
+    AR --> KG[知识图谱<br/>Knowledge Graph]
+    
+    DM[数据建模<br/>Data Modeling] --> EM[实体建模<br/>Entity Modeling]
+    DM --> RM[关系建模<br/>Relation Modeling]
+    DM --> QM[查询建模<br/>Query Modeling]
+    
+    FM[功能建模<br/>Functional Modeling] --> BLM[业务逻辑建模<br/>Business Logic Modeling]
+    FM --> REM[规则引擎建模<br/>Rule Engine Modeling]
+    FM --> WM[工作流建模<br/>Workflow Modeling]
+    
+    IM[交互建模<br/>Interaction Modeling] --> APIM[API建模<br/>API Modeling]
+    IM --> CM[契约建模<br/>Contract Modeling]
+    IM --> MM[消息建模<br/>Message Modeling]
+    
+    RM[运行时建模<br/>Runtime Modeling] --> CM[容器建模<br/>Container Modeling]
+    RM --> NM[网络建模<br/>Network Modeling]
+    RM --> OM[编排建模<br/>Orchestration Modeling]
+    
+    DM --> TM[测试建模<br/>Testing Modeling]
+    FM --> TM
+    IM --> TM
+    
+    CICD[CI/CD建模<br/>CI/CD Modeling] --> DM
+    CICD --> TM
+    
+    DPM[分布式模式建模<br/>Distributed Pattern Modeling] --> RM
+    DPM --> IM
+    
+    style FM fill:#e1f5fe
+    style AR fill:#c8e6c9
+    style DM fill:#fff3e0
+    style FM fill:#f3e5f5
+    style IM fill:#fce4ec
+    style RM fill:#e8f5e8
+```
 
 ### 概念分类体系
 
@@ -950,10 +1054,27 @@ intelligent_recommendation_system:
 
 ## 相关概念
 
-- [形式化建模](./formal-modeling.md)
-- [抽象语法树](./abstract-syntax-tree.md)
-- [领域特定语言](./domain-specific-language.md)
-- [知识图谱](./knowledge-graph.md)
+### 核心概念关联
+
+- [形式化建模](./formal-modeling.md) - 概念索引为形式化建模提供知识组织基础
+- [抽象语法树](./abstract-syntax-tree.md) - AST为概念索引提供结构化表示
+- [领域特定语言](./domain-specific-language.md) - DSL为概念索引提供领域特定表达
+- [知识图谱](./knowledge-graph.md) - 知识图谱是概念索引的可视化实现
+- [自动推理](./automated-reasoning.md) - 自动推理用于概念关系的智能发现
+- [递归建模](./recursive-modeling.md) - 递归建模支持概念索引的层次化组织
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型概念索引和关系映射
+- [功能建模](../functional-model/theory.md) - 功能模型概念索引和业务逻辑映射
+- [交互建模](../interaction-model/theory.md) - 交互模型概念索引和接口映射
+- [运行时建模](../runtime-model/theory.md) - 运行时模型概念索引和配置映射
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融领域概念索引和业务术语映射
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI领域概念索引和技术栈映射
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云原生概念索引和架构模式映射
 
 ## 参考文献
 

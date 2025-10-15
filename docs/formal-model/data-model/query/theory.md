@@ -746,7 +746,7 @@ query_rewrite_pattern:
 
 - [数据建模](../theory.md)
 - [实体建模](../entity/theory.md)
-- [关系建模](../relationship/theory.md)
+- [关系建模](theory.md)
 - [数据模型](../theory.md)
 
 ## 参考文献

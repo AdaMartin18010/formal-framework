@@ -730,9 +730,9 @@ execution_engine:
 ## 相关概念
 
 - [数据建模理论](theory.md)
-- [实体建模](entity/theory.md)
-- [查询建模](query/theory.md)
-- [索引建模](index/theory.md)
+- [实体建模](theory.md)
+- [查询建模](theory.md)
+- [索引建模](theory.md)
 
 ## 参考文献
 

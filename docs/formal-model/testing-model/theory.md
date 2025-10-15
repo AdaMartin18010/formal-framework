@@ -13,6 +13,8 @@
     - [测试用例模型](#测试用例模型)
     - [断言模型](#断言模型)
     - [覆盖率模型](#覆盖率模型)
+      - [覆盖度度量与约束求解（增强）](#覆盖度度量与约束求解增强)
+    - [对齐的不变式（与 L2\_D08 / L3）](#对齐的不变式与-l2_d08--l3)
     - [性能测试模型](#性能测试模型)
   - [国际标准对标](#国际标准对标)
     - [测试框架标准](#测试框架标准)
@@ -44,6 +46,10 @@
     - [测试数据管理1](#测试数据管理1)
     - [测试执行策略](#测试执行策略)
   - [相关概念](#相关概念)
+  - [相关概念2](#相关概念2)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
   - [参考文献](#参考文献)
 
 ## 概念定义
@@ -626,6 +632,30 @@ continuous_testing:
 - [监控建模](../monitoring-model/theory.md)
 - [部署建模](../deployment-model/theory.md)
 - [运行时建模](../runtime-model/theory.md)
+
+## 相关概念2
+
+### 核心概念关联
+
+- [抽象语法树](../core-concepts/abstract-syntax-tree.md) - AST为测试模型提供结构化表示
+- [代码生成](../core-concepts/code-generation.md) - 代码生成实现测试模型到测试代码的转换
+- [模型转换](../core-concepts/model-transformation.md) - 模型转换实现测试模型间的转换
+- [形式化建模](../core-concepts/formal-modeling.md) - 形式化建模为测试模型提供理论基础
+- [自动推理](../core-concepts/automated-reasoning.md) - 自动推理用于测试模型的智能处理
+- [递归建模](../core-concepts/recursive-modeling.md) - 递归建模支持测试模型的层次化处理
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型与测试模型的测试数据关联
+- [功能建模](../functional-model/theory.md) - 功能模型与测试模型的业务逻辑测试关联
+- [交互建模](../interaction-model/theory.md) - 交互模型与测试模型的接口测试关联
+- [运行时建模](../runtime-model/theory.md) - 运行时模型与测试模型的测试环境关联
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融测试模型和交易系统测试
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI测试模型和机器学习测试
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云服务测试模型和容器化测试
 
 ## 参考文献
 

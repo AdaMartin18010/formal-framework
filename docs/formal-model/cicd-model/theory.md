@@ -42,11 +42,16 @@
     - [质量门禁设计](#质量门禁设计)
     - [部署策略](#部署策略)
   - [相关概念](#相关概念)
+  - [相关概念2](#相关概念2)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
   - [参考文献](#参考文献)
 
 ## 概念定义
 
-CI/CD模型是一种形式化建模方法，用于描述和管理持续集成与持续交付流程。它通过结构化的方式定义流水线、阶段、任务、触发条件和质量门禁，实现软件交付过程的自动化和标准化。
+CI/CD模型是一种形式化建模方法，用于描述和管理持续集成与持续交付流程。
+它通过结构化的方式定义流水线、阶段、任务、触发条件和质量门禁，实现软件交付过程的自动化和标准化。
 
 ### 核心特征
 
@@ -525,6 +530,30 @@ security_strategy:
 - [测试建模](../testing-model/theory.md)
 - [监控建模](../monitoring-model/theory.md)
 - [运行时建模](../runtime-model/theory.md)
+
+## 相关概念2
+
+### 核心概念关联
+
+- [抽象语法树](../core-concepts/abstract-syntax-tree.md) - AST为CI/CD模型提供结构化表示
+- [代码生成](../core-concepts/code-generation.md) - 代码生成实现CI/CD模型到流水线代码的转换
+- [模型转换](../core-concepts/model-transformation.md) - 模型转换实现CI/CD模型间的转换
+- [形式化建模](../core-concepts/formal-modeling.md) - 形式化建模为CI/CD模型提供理论基础
+- [自动推理](../core-concepts/automated-reasoning.md) - 自动推理用于CI/CD模型的智能处理
+- [递归建模](../core-concepts/recursive-modeling.md) - 递归建模支持CI/CD模型的层次化处理
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型与CI/CD模型的数据流水线关联
+- [功能建模](../functional-model/theory.md) - 功能模型与CI/CD模型的业务逻辑关联
+- [交互建模](../interaction-model/theory.md) - 交互模型与CI/CD模型的接口测试关联
+- [运行时建模](../runtime-model/theory.md) - 运行时模型与CI/CD模型的部署环境关联
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融CI/CD模型和交易系统部署
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI CI/CD模型和机器学习部署
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云服务CI/CD模型和容器化部署
 
 ## 参考文献
 

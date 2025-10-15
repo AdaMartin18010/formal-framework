@@ -514,7 +514,7 @@ alerting_strategy:
 
 ## 相关概念
 
-- [日志建模](../logs/theory.md)
+- [日志建模](theory.md)
 - [追踪建模](../tracing/theory.md)
 - [告警建模](../alerting/theory.md)
 - [监控建模](../theory.md)

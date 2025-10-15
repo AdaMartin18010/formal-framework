@@ -1,5 +1,52 @@
 # 多线程任务协调器 (Multi-threaded Task Coordinator)
 
+## 目录（Table of Contents）
+
+- [多线程任务协调器 (Multi-threaded Task Coordinator)](#多线程任务协调器-multi-threaded-task-coordinator)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [任务协调理论](#任务协调理论)
+    - [任务协调流程](#任务协调流程)
+    - [多线程协调架构](#多线程协调架构)
+  - [核心组件](#核心组件)
+    - [任务分解引擎](#任务分解引擎)
+    - [智能调度器](#智能调度器)
+    - [并行执行管理器](#并行执行管理器)
+  - [多线程并行处理](#多线程并行处理)
+    - [并行执行策略](#并行执行策略)
+    - [任务协调策略](#任务协调策略)
+  - [工程实践](#工程实践)
+    - [任务协调框架设计](#任务协调框架设计)
+    - [性能优化策略](#性能优化策略)
+  - [应用案例](#应用案例)
+    - [大规模模型并行处理](#大规模模型并行处理)
+    - [实时协作开发协调](#实时协作开发协调)
+  - [国际标准对标](#国际标准对标)
+    - [任务调度标准](#任务调度标准)
+      - [OpenMP](#openmp)
+      - [MPI](#mpi)
+      - [Kubernetes](#kubernetes)
+    - [工作流引擎标准](#工作流引擎标准)
+      - [Apache Airflow](#apache-airflow)
+      - [Apache Beam](#apache-beam)
+      - [Temporal](#temporal)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [并行计算课程](#并行计算课程)
+      - [MIT 6.172 - Performance Engineering of Software Systems](#mit-6172---performance-engineering-of-software-systems)
+      - [Stanford CS149 - Parallel Computing](#stanford-cs149---parallel-computing)
+      - [CMU 15-418 - Parallel Computer Architecture and Programming](#cmu-15-418---parallel-computer-architecture-and-programming)
+    - [分布式系统课程](#分布式系统课程)
+      - [MIT 6.824 - Distributed Systems](#mit-6824---distributed-systems)
+      - [Stanford CS244B - Distributed Systems](#stanford-cs244b---distributed-systems)
+      - [CMU 15-440 - Distributed Systems](#cmu-15-440---distributed-systems)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 多线程任务协调器是一个核心组件，负责协调和管理形式化框架中的多个并行任务，实现任务的分解、调度、执行、监控和结果聚合，确保多线程多任务的高效执行。
@@ -29,6 +76,47 @@ TaskCoordination = (Decomposition, Scheduling, Execution, Monitoring, Aggregatio
 - Execution：并行执行管理
 - Monitoring：执行监控和状态管理
 - Aggregation：结果聚合和整合
+
+### 任务协调流程
+
+```mermaid
+flowchart TD
+    A[任务输入<br/>Task Input] --> B[任务分解<br/>Task Decomposition]
+    B --> C[依赖分析<br/>Dependency Analysis]
+    C --> D[任务调度<br/>Task Scheduling]
+    D --> E[并行执行<br/>Parallel Execution]
+    E --> F[执行监控<br/>Execution Monitoring]
+    F --> G[结果聚合<br/>Result Aggregation]
+    G --> H[任务完成<br/>Task Completion]
+    
+    I[任务分解<br/>Task Decomposition] --> J[层次化分解<br/>Hierarchical Decomposition]
+    I --> K[依赖分解<br/>Dependency Decomposition]
+    I --> L[负载分解<br/>Load Decomposition]
+    
+    M[任务调度<br/>Task Scheduling] --> N[优先级调度<br/>Priority Scheduling]
+    M --> O[负载均衡<br/>Load Balancing]
+    M --> P[资源分配<br/>Resource Allocation]
+    
+    Q[并行执行<br/>Parallel Execution] --> R[线程池管理<br/>Thread Pool Management]
+    Q --> S[任务分发<br/>Task Distribution]
+    Q --> T[执行监控<br/>Execution Monitoring]
+    
+    U[结果聚合<br/>Result Aggregation] --> V[结果收集<br/>Result Collection]
+    U --> W[结果合并<br/>Result Merging]
+    U --> X[结果验证<br/>Result Validation]
+    
+    B --> I
+    D --> M
+    E --> Q
+    G --> U
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style I fill:#fff3e0
+    style M fill:#f3e5f5
+    style Q fill:#fce4ec
+    style U fill:#e8f5e8
+```
 
 ### 多线程协调架构
 
@@ -456,10 +544,27 @@ real_time_collaborative_development_coordination:
 
 ## 相关概念
 
-- [性能优化与扩展](./performance-optimization.md)
-- [智能代码补全](./intelligent-code-completion.md)
-- [形式化验证](./formal-verification.md)
-- [模型转换](./model-transformation.md)
+### 核心概念关联
+
+- [性能优化与扩展](./performance-optimization.md) - 性能优化为多线程任务协调提供性能提升
+- [智能代码补全](./intelligent-code-completion.md) - 智能代码补全使用多线程任务协调提升补全效率
+- [形式化验证](./formal-verification.md) - 形式化验证使用多线程任务协调提升验证效率
+- [模型转换](./model-transformation.md) - 模型转换使用多线程任务协调提升转换效率
+- [自动推理](./automated-reasoning.md) - 自动推理使用多线程任务协调提升推理效率
+- [递归建模](./recursive-modeling.md) - 递归建模使用多线程任务协调提升建模效率
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型多线程处理和并行查询
+- [功能建模](../functional-model/theory.md) - 功能模型多线程处理和并行业务逻辑
+- [交互建模](../interaction-model/theory.md) - 交互模型多线程处理和并行接口处理
+- [运行时建模](../runtime-model/theory.md) - 运行时模型多线程处理和并行配置管理
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融系统多线程任务协调和并行交易处理
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型多线程任务协调和并行推理
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云服务多线程任务协调和并行资源管理
 
 ## 参考文献
 

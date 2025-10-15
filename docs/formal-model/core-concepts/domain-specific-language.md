@@ -1,5 +1,60 @@
 # 领域特定语言 (Domain-Specific Language)
 
+## 目录（Table of Contents）
+
+- [领域特定语言 (Domain-Specific Language)](#领域特定语言-domain-specific-language)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [语言理论](#语言理论)
+    - [DSL设计与实现流程](#dsl设计与实现流程)
+    - [分类体系](#分类体系)
+      - [按实现方式分类](#按实现方式分类)
+      - [按应用领域分类](#按应用领域分类)
+  - [设计原则](#设计原则)
+    - [语言设计原则](#语言设计原则)
+    - [工具设计原则](#工具设计原则)
+  - [国际标准对标](#国际标准对标)
+    - [语言标准](#语言标准)
+      - [SQL (Structured Query Language)](#sql-structured-query-language)
+      - [GraphQL](#graphql)
+      - [YAML (YAML Ain't Markup Language)](#yaml-yaml-aint-markup-language)
+    - [建模标准](#建模标准)
+      - [UML (Unified Modeling Language)](#uml-unified-modeling-language)
+      - [BPMN (Business Process Model and Notation)](#bpmn-business-process-model-and-notation)
+      - [SysML (Systems Modeling Language)](#sysml-systems-modeling-language)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [编程语言课程](#编程语言课程)
+      - [MIT 6.035 - Computer Language Engineering](#mit-6035---computer-language-engineering)
+      - [Stanford CS242 - Programming Languages](#stanford-cs242---programming-languages)
+      - [CMU 15-312 - Foundations of Programming Languages](#cmu-15-312---foundations-of-programming-languages)
+    - [软件工程课程](#软件工程课程)
+      - [MIT 6.170 - Software Studio](#mit-6170---software-studio)
+      - [Stanford CS210 - Software Engineering](#stanford-cs210---software-engineering)
+  - [工程实践](#工程实践)
+    - [DSL设计模式](#dsl设计模式)
+      - [声明式DSL模式](#声明式dsl模式)
+      - [命令式DSL模式](#命令式dsl模式)
+      - [图形DSL模式](#图形dsl模式)
+    - [工具链实现](#工具链实现)
+      - [解析器生成](#解析器生成)
+      - [代码生成](#代码生成)
+      - [编辑器支持](#编辑器支持)
+  - [最佳实践](#最佳实践)
+    - [设计最佳实践](#设计最佳实践)
+    - [实现最佳实践](#实现最佳实践)
+    - [工具链最佳实践](#工具链最佳实践)
+  - [应用案例](#应用案例)
+    - [配置管理DSL](#配置管理dsl)
+    - [测试DSL](#测试dsl)
+    - [部署DSL](#部署dsl)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 领域特定语言(Domain-Specific Language, DSL)是一种专门为特定问题域设计的编程语言，具有针对该领域的语法、语义和工具支持。DSL通过提供领域专家熟悉的抽象和概念，提高开发效率和代码可读性。
@@ -29,6 +84,45 @@ DSL = (Σ, Γ, R, I, T)
 - R：语义规则（Semantic Rules）
 - I：解释器（Interpreter）
 - T：工具链（Toolchain）
+
+### DSL设计与实现流程
+
+```mermaid
+flowchart TD
+    A[需求分析<br/>Requirements Analysis] --> B[领域建模<br/>Domain Modeling]
+    B --> C[语法设计<br/>Syntax Design]
+    C --> D[语义定义<br/>Semantic Definition]
+    D --> E[解析器实现<br/>Parser Implementation]
+    E --> F[解释器/编译器<br/>Interpreter/Compiler]
+    F --> G[工具链开发<br/>Toolchain Development]
+    G --> H[测试与验证<br/>Testing & Validation]
+    H --> I[文档与培训<br/>Documentation & Training]
+    
+    J[语言演化<br/>Language Evolution] --> K[语法扩展<br/>Syntax Extension]
+    J --> L[语义增强<br/>Semantic Enhancement]
+    J --> M[工具改进<br/>Tool Improvement]
+    
+    I --> J
+    
+    N[外部DSL<br/>External DSL] --> O[词法分析<br/>Lexical Analysis]
+    N --> P[语法分析<br/>Syntactic Analysis]
+    N --> Q[语义分析<br/>Semantic Analysis]
+    
+    R[内部DSL<br/>Internal DSL] --> S[宿主语言扩展<br/>Host Language Extension]
+    R --> T[API设计<br/>API Design]
+    R --> U[元编程<br/>Metaprogramming]
+    
+    V[图形DSL<br/>Graphical DSL] --> W[图形语法<br/>Graph Grammar]
+    V --> X[可视化编辑器<br/>Visual Editor]
+    V --> Y[图形渲染<br/>Graph Rendering]
+    
+    style A fill:#e1f5fe
+    style I fill:#c8e6c9
+    style J fill:#fff3e0
+    style N fill:#f3e5f5
+    style R fill:#fce4ec
+    style V fill:#e8f5e8
+```
 
 ### 分类体系
 
@@ -442,10 +536,27 @@ spec:
 
 ## 相关概念
 
-- [抽象语法树](./abstract-syntax-tree.md)
-- [代码生成](./code-generation.md)
-- [模型转换](./model-transformation.md)
-- [形式化建模](./formal-modeling.md)
+### 核心概念关联
+
+- [抽象语法树](./abstract-syntax-tree.md) - AST为DSL解析提供程序结构信息
+- [代码生成](./code-generation.md) - 代码生成与DSL相结合实现从DSL到代码的转换
+- [模型转换](./model-transformation.md) - 模型转换用于DSL的模型处理和转换
+- [形式化建模](./formal-modeling.md) - 形式化建模为DSL提供理论基础
+- [自动推理](./automated-reasoning.md) - 自动推理用于DSL的智能处理
+- [递归建模](./recursive-modeling.md) - 递归建模支持DSL的复杂结构处理
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型DSL和数据库代码生成
+- [功能建模](../functional-model/theory.md) - 功能模型DSL和业务逻辑生成
+- [交互建模](../interaction-model/theory.md) - 交互模型DSL和接口代码生成
+- [运行时建模](../runtime-model/theory.md) - 运行时模型DSL和配置生成
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融业务DSL和交易系统生成
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型DSL和推理代码生成
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云配置DSL和部署代码生成
 
 ## 参考文献
 

@@ -1,5 +1,62 @@
 # 模型转换理论与技术 (Model Transformation Theory and Technology)
 
+## 目录（Table of Contents）
+
+- [模型转换理论与技术 (Model Transformation Theory and Technology)](#模型转换理论与技术-model-transformation-theory-and-technology)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [模型转换理论](#模型转换理论)
+    - [模型转换流程](#模型转换流程)
+    - [转换类型理论](#转换类型理论)
+  - [核心组件](#核心组件)
+    - [转换规则模型](#转换规则模型)
+    - [转换引擎模型](#转换引擎模型)
+    - [转换验证模型](#转换验证模型)
+    - [转换策略模型](#转换策略模型)
+  - [国际标准对标](#国际标准对标)
+    - [模型转换标准](#模型转换标准)
+      - [QVT (Query/View/Transformation)](#qvt-queryviewtransformation)
+      - [ATL (Atlas Transformation Language)](#atl-atlas-transformation-language)
+      - [Xtend](#xtend)
+    - [模型驱动标准](#模型驱动标准)
+      - [MDA (Model-Driven Architecture)](#mda-model-driven-architecture)
+      - [EMF (Eclipse Modeling Framework)](#emf-eclipse-modeling-framework)
+      - [Xtext](#xtext)
+    - [图转换标准](#图转换标准)
+      - [AGG (Attributed Graph Grammar)](#agg-attributed-graph-grammar)
+      - [GROOVE](#groove)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [软件工程课程](#软件工程课程)
+      - [MIT 6.170 - Software Studio](#mit-6170---software-studio)
+      - [Stanford CS210 - Software Engineering](#stanford-cs210---software-engineering)
+      - [CMU 15-413 - Software Engineering](#cmu-15-413---software-engineering)
+    - [编译器课程](#编译器课程)
+      - [MIT 6.035 - Computer Language Engineering](#mit-6035---computer-language-engineering)
+      - [Stanford CS143 - Compilers](#stanford-cs143---compilers)
+      - [CMU 15-411 - Compiler Design](#cmu-15-411---compiler-design)
+  - [工程实践](#工程实践)
+    - [模型转换设计模式](#模型转换设计模式)
+      - [规则链模式](#规则链模式)
+      - [规则树模式](#规则树模式)
+      - [规则网络模式](#规则网络模式)
+    - [模型转换实现模式](#模型转换实现模式)
+      - [转换引擎核心模式](#转换引擎核心模式)
+      - [分布式转换模式](#分布式转换模式)
+  - [最佳实践](#最佳实践)
+    - [模型转换设计原则](#模型转换设计原则)
+    - [转换规则设计原则](#转换规则设计原则)
+    - [转换策略选择原则](#转换策略选择原则)
+  - [应用案例](#应用案例)
+    - [代码生成系统](#代码生成系统)
+    - [模型同步系统](#模型同步系统)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 模型转换理论与技术是一种将源模型自动转换为目标模型的技术。它通过转换规则、转换引擎、验证机制等方法，实现不同抽象层次、不同表示形式、不同领域模型之间的自动转换，是模型驱动工程的核心技术。
@@ -29,6 +86,41 @@ ModelTransformation = (SourceModel, TargetModel, Rules, Engine, Validation)
 - Rules：转换规则（映射规则、转换逻辑、约束条件）
 - Engine：转换引擎（规则执行、转换控制、优化策略）
 - Validation：转换验证（正确性验证、一致性检查、质量保证）
+
+### 模型转换流程
+
+```mermaid
+flowchart TD
+    A[源模型<br/>Source Model] --> B[模型解析<br/>Model Parsing]
+    B --> C[模型验证<br/>Model Validation]
+    C --> D[转换规则匹配<br/>Rule Matching]
+    D --> E[转换执行<br/>Transformation Execution]
+    E --> F[目标模型生成<br/>Target Model Generation]
+    F --> G[转换验证<br/>Transformation Validation]
+    G --> H[目标模型输出<br/>Target Model Output]
+    
+    I[转换类型<br/>Transformation Types] --> J[模型到模型<br/>Model-to-Model]
+    I --> K[模型到文本<br/>Model-to-Text]
+    I --> L[文本到模型<br/>Text-to-Model]
+    
+    M[转换引擎<br/>Transformation Engine] --> N[规则引擎<br/>Rule Engine]
+    M --> O[模板引擎<br/>Template Engine]
+    M --> P[代码生成器<br/>Code Generator]
+    
+    Q[转换验证<br/>Transformation Validation] --> R[语法验证<br/>Syntax Validation]
+    Q --> S[语义验证<br/>Semantic Validation]
+    Q --> T[一致性验证<br/>Consistency Validation]
+    
+    D --> I
+    E --> M
+    G --> Q
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style I fill:#fff3e0
+    style M fill:#f3e5f5
+    style Q fill:#fce4ec
+```
 
 ### 转换类型理论
 
@@ -821,10 +913,27 @@ model_synchronization_system:
 
 ## 相关概念
 
-- [形式化建模](./formal-modeling.md)
-- [抽象语法树](./abstract-syntax-tree.md)
-- [领域特定语言](./domain-specific-language.md)
-- [代码生成](./code-generation.md)
+### 核心概念关联
+
+- [形式化建模](./formal-modeling.md) - 形式化建模为模型转换提供理论基础
+- [抽象语法树](./abstract-syntax-tree.md) - AST为模型转换提供结构化表示
+- [领域特定语言](./domain-specific-language.md) - DSL为模型转换提供领域特定表达
+- [代码生成](./code-generation.md) - 代码生成是模型转换的重要应用
+- [自动推理](./automated-reasoning.md) - 自动推理用于模型转换的智能处理
+- [递归建模](./recursive-modeling.md) - 递归建模支持复杂模型转换的层次化处理
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型转换和格式转换
+- [功能建模](../functional-model/theory.md) - 功能模型转换和业务逻辑转换
+- [交互建模](../interaction-model/theory.md) - 交互模型转换和接口转换
+- [运行时建模](../runtime-model/theory.md) - 运行时模型转换和配置转换
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融业务模型转换和合规转换
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型转换和推理转换
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云配置转换和部署转换
 
 ## 参考文献
 

@@ -636,7 +636,7 @@ distributed_alerting_pattern:
 
 - [监控建模](../theory.md)
 - [指标建模](../metrics/theory.md)
-- [日志建模](../logs/theory.md)
+- [日志建模](theory.md)
 - [追踪建模](../tracing/theory.md)
 
 ## 参考文献

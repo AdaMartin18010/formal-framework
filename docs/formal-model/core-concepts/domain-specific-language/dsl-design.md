@@ -1,8 +1,42 @@
 # DSL设计指南 (DSL Design Guide)
 
+## 目录（Table of Contents）
+
+- [DSL设计指南 (DSL Design Guide)](#dsl设计指南-dsl-design-guide)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概述](#概述)
+  - [设计原则](#设计原则)
+    - [1. 领域专注原则](#1-领域专注原则)
+    - [2. 简洁性原则](#2-简洁性原则)
+    - [3. 可扩展性原则](#3-可扩展性原则)
+    - [4. 工具支持原则](#4-工具支持原则)
+  - [设计模式](#设计模式)
+    - [1. 声明式DSL模式](#1-声明式dsl模式)
+    - [2. 命令式DSL模式](#2-命令式dsl模式)
+    - [3. 查询式DSL模式](#3-查询式dsl模式)
+  - [语法设计](#语法设计)
+    - [1. 语法结构设计](#1-语法结构设计)
+    - [2. 语义设计](#2-语义设计)
+  - [工具链设计](#工具链设计)
+    - [1. 解析器设计](#1-解析器设计)
+    - [2. 代码生成器设计](#2-代码生成器设计)
+  - [最佳实践](#最佳实践)
+    - [1. 设计阶段](#1-设计阶段)
+    - [2. 实现阶段](#2-实现阶段)
+    - [3. 维护阶段](#3-维护阶段)
+  - [应用案例](#应用案例)
+    - [1. 配置DSL](#1-配置dsl)
+    - [2. 工作流DSL](#2-工作流dsl)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概述
 
-DSL设计指南提供了领域特定语言设计的完整方法论，包括设计原则、模式、工具和实践经验。本指南旨在帮助开发者创建高质量、易用、可维护的DSL。
+DSL设计指南提供了领域特定语言设计的完整方法论，包括设计原则、模式、工具和实践经验。
+本指南旨在帮助开发者创建高质量、易用、可维护的DSL。
 
 ## 设计原则
 
@@ -452,10 +486,28 @@ workflow_dsl:
 
 ## 相关概念
 
-- [领域特定语言](domain-specific-language.md)
-- [抽象语法树](abstract-syntax-tree.md)
-- [代码生成](code-generation.md)
-- [模型转换](model-transformation.md)
+### 核心概念关联
+
+- [领域特定语言](../domain-specific-language.md) - DSL设计是领域特定语言的核心组成部分
+- [抽象语法树](../abstract-syntax-tree.md) - AST为DSL设计提供结构化表示和解析基础
+- [代码生成](../code-generation.md) - 代码生成实现DSL到目标代码的转换
+- [模型转换](../model-transformation.md) - 模型转换实现DSL模型间的转换和优化
+- [形式化建模](../formal-modeling.md) - 形式化建模为DSL设计提供理论基础
+- [自动推理](../automated-reasoning.md) - 自动推理用于DSL的智能处理和优化
+- [递归建模](../recursive-modeling.md) - 递归建模支持DSL的层次化设计和处理
+
+### 应用领域关联
+
+- [数据建模](../../data-model/theory.md) - 数据模型DSL和数据库代码生成
+- [功能建模](../../functional-model/theory.md) - 功能模型DSL和业务逻辑生成
+- [交互建模](../../interaction-model/theory.md) - 交互模型DSL和接口代码生成
+- [运行时建模](../../runtime-model/theory.md) - 运行时模型DSL和配置生成
+
+### 行业应用关联
+
+- [金融架构](../../../industry-model/finance-architecture/) - 金融业务DSL和交易系统生成
+- [AI基础设施](../../../industry-model/ai-infrastructure-architecture/) - AI模型DSL和推理代码生成
+- [云原生架构](../../../industry-model/cloud-native-architecture/) - 云配置DSL和部署代码生成
 
 ## 参考文献
 

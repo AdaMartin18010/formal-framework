@@ -1,5 +1,58 @@
 # 知识图谱建模理论 (Knowledge Graph Modeling Theory)
 
+## 目录（Table of Contents）
+
+- [知识图谱建模理论 (Knowledge Graph Modeling Theory)](#知识图谱建模理论-knowledge-graph-modeling-theory)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [知识图谱建模理论](#知识图谱建模理论)
+    - [知识图谱构建流程](#知识图谱构建流程)
+    - [知识图谱设计层次理论](#知识图谱设计层次理论)
+  - [核心组件](#核心组件)
+    - [实体模型](#实体模型)
+    - [关系模型](#关系模型)
+    - [本体模型](#本体模型)
+    - [推理模型](#推理模型)
+    - [查询模型](#查询模型)
+  - [国际标准对标](#国际标准对标)
+    - [知识表示标准](#知识表示标准)
+      - [RDF (Resource Description Framework)](#rdf-resource-description-framework)
+      - [OWL (Web Ontology Language)](#owl-web-ontology-language)
+      - [SPARQL](#sparql)
+    - [图数据库标准](#图数据库标准)
+      - [Neo4j](#neo4j)
+      - [Apache TinkerPop](#apache-tinkerpop)
+      - [Amazon Neptune](#amazon-neptune)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [人工智能课程](#人工智能课程)
+      - [MIT 6.034 - Artificial Intelligence](#mit-6034---artificial-intelligence)
+      - [Stanford CS224W - Machine Learning with Graphs](#stanford-cs224w---machine-learning-with-graphs)
+      - [CMU 15-780 - Graduate Artificial Intelligence](#cmu-15-780---graduate-artificial-intelligence)
+    - [数据库课程](#数据库课程)
+      - [MIT 6.830 - Database Systems](#mit-6830---database-systems)
+      - [Stanford CS245 - Principles of Data-Intensive Systems](#stanford-cs245---principles-of-data-intensive-systems)
+  - [工程实践](#工程实践)
+    - [知识图谱设计模式](#知识图谱设计模式)
+      - [本体设计模式](#本体设计模式)
+      - [知识融合模式](#知识融合模式)
+    - [知识图谱实现模式](#知识图谱实现模式)
+      - [存储模式](#存储模式)
+      - [查询模式](#查询模式)
+  - [最佳实践](#最佳实践)
+    - [知识图谱设计原则](#知识图谱设计原则)
+    - [知识图谱构建原则](#知识图谱构建原则)
+    - [知识图谱应用原则](#知识图谱应用原则)
+  - [应用案例](#应用案例)
+    - [企业知识图谱](#企业知识图谱)
+    - [学术知识图谱](#学术知识图谱)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 知识图谱建模理论是一种形式化建模方法，用于构建和管理结构化的知识表示系统。它通过实体、关系、属性的形式化定义，实现知识的语义化表示、推理和查询，支持复杂知识的自动化处理和智能应用。
@@ -29,6 +82,41 @@ KnowledgeGraph = (Entities, Relations, Properties, Axioms, Rules)
 - Properties：属性（实体的特征和描述）
 - Axioms：公理（领域知识和约束）
 - Rules：规则（推理规则和逻辑）
+
+### 知识图谱构建流程
+
+```mermaid
+flowchart TD
+    A[知识源<br/>Knowledge Sources] --> B[知识抽取<br/>Knowledge Extraction]
+    B --> C[实体识别<br/>Entity Recognition]
+    C --> D[关系抽取<br/>Relation Extraction]
+    D --> E[知识融合<br/>Knowledge Fusion]
+    E --> F[知识验证<br/>Knowledge Validation]
+    F --> G[知识存储<br/>Knowledge Storage]
+    G --> H[知识查询<br/>Knowledge Query]
+    
+    I[知识表示<br/>Knowledge Representation] --> J[实体建模<br/>Entity Modeling]
+    I --> K[关系建模<br/>Relation Modeling]
+    I --> L[属性建模<br/>Property Modeling]
+    
+    M[知识推理<br/>Knowledge Reasoning] --> N[逻辑推理<br/>Logical Reasoning]
+    M --> O[统计推理<br/>Statistical Reasoning]
+    M --> P[神经网络推理<br/>Neural Reasoning]
+    
+    Q[知识应用<br/>Knowledge Applications] --> R[智能问答<br/>Question Answering]
+    Q --> S[知识推荐<br/>Knowledge Recommendation]
+    Q --> T[知识发现<br/>Knowledge Discovery]
+    
+    E --> I
+    F --> M
+    H --> Q
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style I fill:#fff3e0
+    style M fill:#f3e5f5
+    style Q fill:#fce4ec
+```
 
 ### 知识图谱设计层次理论
 
@@ -1210,10 +1298,27 @@ academic_knowledge_graph:
 
 ## 相关概念
 
-- [概念索引](concept-index.md)
-- [模型转换](model-transformation.md)
-- [语义分析](semantic-analysis.md)
-- [自动推理](automated-reasoning.md)
+### 核心概念关联
+
+- [概念索引](./concept-index.md) - 概念索引为知识图谱提供概念分类和组织基础
+- [模型转换](./model-transformation.md) - 模型转换实现知识图谱的自动化构建和更新
+- [语义分析](./semantic-analysis.md) - 语义分析为知识图谱提供语义理解和抽取能力
+- [自动推理](./automated-reasoning.md) - 自动推理为知识图谱提供智能推理和发现能力
+- [形式化建模](./formal-modeling.md) - 形式化建模为知识图谱提供理论基础
+- [递归建模](./recursive-modeling.md) - 递归建模支持复杂知识图谱的层次化构建
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型与知识图谱的实体和属性映射
+- [功能建模](../functional-model/theory.md) - 功能模型与知识图谱的业务逻辑映射
+- [交互建模](../interaction-model/theory.md) - 交互模型与知识图谱的关系和接口映射
+- [运行时建模](../runtime-model/theory.md) - 运行时模型与知识图谱的状态和配置映射
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融知识图谱和业务关系建模
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI知识图谱和技术栈建模
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云原生知识图谱和架构模式建模
 
 ## 参考文献
 

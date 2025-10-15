@@ -386,8 +386,8 @@ monitoring_alerting:
 ### 内部文档
 
 - [AI基础设施架构](../ai-infrastructure-architecture.md)
-- [数据模型](../../formal-model/data-model/theory.md)
-- [监控模型](../../formal-model/monitoring-model/theory.md)
+- [数据模型](theory.md)
+- [监控模型](theory.md)
 
 ### 外部资源
 

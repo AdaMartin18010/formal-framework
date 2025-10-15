@@ -1229,9 +1229,9 @@ iot_communication_protocol:
 
 ## 相关概念
 
-- [API建模](api/theory.md)
-- [契约建模](contract/theory.md)
-- [消息建模](message/theory.md)
+- [API建模](theory.md)
+- [契约建模](theory.md)
+- [消息建模](theory.md)
 - [交互建模](../theory.md)
 
 ## 参考文献

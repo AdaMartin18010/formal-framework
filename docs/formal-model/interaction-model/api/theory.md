@@ -1145,9 +1145,9 @@ realtime_api_case:
 ## 相关概念
 
 - [交互建模理论](theory.md)
-- [契约建模](contract/theory.md)
-- [消息建模](message/theory.md)
-- [协议建模](protocol/theory.md)
+- [契约建模](theory.md)
+- [消息建模](theory.md)
+- [协议建模](theory.md)
 
 ## 参考文献
 

@@ -1,5 +1,63 @@
 # 语义分析理论与技术 (Semantic Analysis Theory and Technology)
 
+## 目录（Table of Contents）
+
+- [语义分析理论与技术 (Semantic Analysis Theory and Technology)](#语义分析理论与技术-semantic-analysis-theory-and-technology)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [语义分析理论](#语义分析理论)
+    - [语义分析流程](#语义分析流程)
+    - [语义分析类型理论](#语义分析类型理论)
+  - [核心组件](#核心组件)
+    - [符号表模型](#符号表模型)
+    - [类型系统模型](#类型系统模型)
+    - [作用域分析模型](#作用域分析模型)
+    - [语义验证模型](#语义验证模型)
+  - [国际标准对标](#国际标准对标)
+    - [语义分析标准](#语义分析标准)
+      - [TypeScript](#typescript)
+      - [Flow](#flow)
+      - [Rust](#rust)
+    - [程序分析标准](#程序分析标准)
+      - [LLVM](#llvm)
+      - [GCC](#gcc)
+      - [Clang Static Analyzer](#clang-static-analyzer)
+    - [语义网标准](#语义网标准)
+      - [RDF (Resource Description Framework)](#rdf-resource-description-framework)
+      - [OWL (Web Ontology Language)](#owl-web-ontology-language)
+      - [SPARQL](#sparql)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [编译器课程](#编译器课程)
+      - [MIT 6.035 - Computer Language Engineering](#mit-6035---computer-language-engineering)
+      - [Stanford CS143 - Compilers](#stanford-cs143---compilers)
+      - [CMU 15-411 - Compiler Design](#cmu-15-411---compiler-design)
+    - [程序分析课程](#程序分析课程)
+      - [MIT 6.883 - Program Analysis](#mit-6883---program-analysis)
+      - [Stanford CS243 - Program Analysis and Optimization](#stanford-cs243---program-analysis-and-optimization)
+      - [CMU 15-414 - Bug Catching: Automated Program Verification](#cmu-15-414---bug-catching-automated-program-verification)
+  - [工程实践](#工程实践)
+    - [语义分析设计模式](#语义分析设计模式)
+      - [访问者模式](#访问者模式)
+      - [符号表模式](#符号表模式)
+      - [类型系统模式](#类型系统模式)
+    - [语义分析实现模式](#语义分析实现模式)
+      - [语义分析器核心模式](#语义分析器核心模式)
+      - [增量语义分析模式](#增量语义分析模式)
+  - [最佳实践](#最佳实践)
+    - [语义分析设计原则](#语义分析设计原则)
+    - [类型系统设计原则](#类型系统设计原则)
+    - [作用域分析原则](#作用域分析原则)
+  - [应用案例](#应用案例)
+    - [编译器语义分析器](#编译器语义分析器)
+    - [静态分析工具](#静态分析工具)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 语义分析理论与技术是一种分析程序语义和含义的技术。它通过类型检查、作用域分析、语义验证等方法，确保程序的语义正确性，理解程序的行为和意图，是编译器和程序分析工具的核心技术。
@@ -29,6 +87,40 @@ SemanticAnalysis = (SyntaxTree, SymbolTable, TypeSystem, ScopeRules, Validation)
 - TypeSystem：类型系统（类型检查、类型推断）
 - ScopeRules：作用域规则（作用域分析、可见性）
 - Validation：语义验证（语义检查、错误检测）
+
+### 语义分析流程
+
+```mermaid
+flowchart TD
+    A[语法树输入<br/>Syntax Tree Input] --> B[符号表构建<br/>Symbol Table Construction]
+    B --> C[作用域分析<br/>Scope Analysis]
+    C --> D[类型检查<br/>Type Checking]
+    D --> E[语义验证<br/>Semantic Validation]
+    E --> F[语义优化<br/>Semantic Optimization]
+    F --> G[语义信息输出<br/>Semantic Information Output]
+    
+    H[语义分析类型<br/>Semantic Analysis Types] --> I[静态语义分析<br/>Static Semantic Analysis]
+    H --> J[动态语义分析<br/>Dynamic Semantic Analysis]
+    H --> K[语义验证<br/>Semantic Verification]
+    
+    L[类型系统<br/>Type System] --> M[类型检查<br/>Type Checking]
+    L --> N[类型推断<br/>Type Inference]
+    L --> O[类型转换<br/>Type Conversion]
+    
+    P[语义优化<br/>Semantic Optimization] --> Q[常量折叠<br/>Constant Folding]
+    P --> R[死代码消除<br/>Dead Code Elimination]
+    P --> S[循环优化<br/>Loop Optimization]
+    
+    D --> H
+    D --> L
+    F --> P
+    
+    style A fill:#e1f5fe
+    style G fill:#c8e6c9
+    style H fill:#fff3e0
+    style L fill:#f3e5f5
+    style P fill:#fce4ec
+```
 
 ### 语义分析类型理论
 
@@ -971,10 +1063,27 @@ static_analysis_tool:
 
 ## 相关概念
 
-- [抽象语法树](./abstract-syntax-tree.md)
-- [形式化验证](./formal-verification.md)
-- [自动推理](./automated-reasoning.md)
-- [代码生成](./code-generation.md)
+### 核心概念关联
+
+- [抽象语法树](./abstract-syntax-tree.md) - AST为语义分析提供程序结构信息
+- [形式化验证](./formal-verification.md) - 形式化验证基于语义分析进行程序验证
+- [自动推理](./automated-reasoning.md) - 自动推理用于语义分析的智能处理
+- [代码生成](./code-generation.md) - 代码生成基于语义分析进行代码生成
+- [递归建模](./recursive-modeling.md) - 递归建模支持语义分析的层次化处理
+- [模型转换](./model-transformation.md) - 模型转换使用语义分析进行模型验证
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型语义分析和类型检查
+- [功能建模](../functional-model/theory.md) - 功能模型语义分析和业务逻辑验证
+- [交互建模](../interaction-model/theory.md) - 交互模型语义分析和接口验证
+- [运行时建模](../runtime-model/theory.md) - 运行时模型语义分析和配置验证
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融业务规则语义分析和合规验证
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型语义分析和性能验证
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云配置语义分析和部署验证
 
 ## 参考文献
 

@@ -1,5 +1,52 @@
 # 性能优化与扩展 (Performance Optimization and Extension)
 
+## 目录（Table of Contents）
+
+- [性能优化与扩展 (Performance Optimization and Extension)](#性能优化与扩展-performance-optimization-and-extension)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [性能优化理论](#性能优化理论)
+    - [性能优化流程](#性能优化流程)
+    - [多线程性能架构](#多线程性能架构)
+  - [核心组件](#核心组件)
+    - [多线程并行处理引擎](#多线程并行处理引擎)
+    - [内存优化引擎](#内存优化引擎)
+    - [算法优化引擎](#算法优化引擎)
+  - [多线程并行处理](#多线程并行处理)
+    - [并行算法策略](#并行算法策略)
+    - [线程管理策略](#线程管理策略)
+  - [工程实践](#工程实践)
+    - [性能优化框架设计](#性能优化框架设计)
+    - [性能测试与评估](#性能测试与评估)
+  - [应用案例](#应用案例)
+    - [大规模模型并行处理](#大规模模型并行处理)
+    - [实时性能优化](#实时性能优化)
+  - [国际标准对标](#国际标准对标)
+    - [性能优化标准](#性能优化标准)
+      - [Java性能优化](#java性能优化)
+      - [C++性能优化](#c性能优化)
+      - [Python性能优化](#python性能优化)
+    - [并行计算标准](#并行计算标准)
+      - [OpenMP](#openmp)
+      - [MPI](#mpi)
+      - [CUDA](#cuda)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [性能优化课程](#性能优化课程)
+      - [MIT 6.172 - Performance Engineering of Software Systems](#mit-6172---performance-engineering-of-software-systems)
+      - [Stanford CS149 - Parallel Computing](#stanford-cs149---parallel-computing)
+      - [CMU 15-418 - Parallel Computer Architecture and Programming](#cmu-15-418---parallel-computer-architecture-and-programming)
+    - [系统优化课程](#系统优化课程)
+      - [MIT 6.033 - Computer System Engineering](#mit-6033---computer-system-engineering)
+      - [Stanford CS140 - Operating Systems](#stanford-cs140---operating-systems)
+      - [CMU 15-410 - Operating System Design and Implementation](#cmu-15-410---operating-system-design-and-implementation)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 性能优化与扩展是指通过多线程并行处理、算法优化、内存管理优化、缓存策略等技术手段，提升形式化框架的整体性能和可扩展性，支持大规模模型的高效处理。
@@ -29,6 +76,43 @@ PerformanceOptimization = (Parallelism, Algorithm, Memory, Cache, Scalability)
 - Memory：内存管理优化
 - Cache：缓存策略优化
 - Scalability：可扩展性设计
+
+### 性能优化流程
+
+```mermaid
+flowchart TD
+    A[性能分析<br/>Performance Analysis] --> B[瓶颈识别<br/>Bottleneck Identification]
+    B --> C[优化策略制定<br/>Optimization Strategy]
+    C --> D[并行化设计<br/>Parallelization Design]
+    D --> E[算法优化<br/>Algorithm Optimization]
+    E --> F[内存优化<br/>Memory Optimization]
+    F --> G[缓存优化<br/>Cache Optimization]
+    G --> H[性能测试<br/>Performance Testing]
+    H --> I[优化验证<br/>Optimization Validation]
+    
+    J[优化策略<br/>Optimization Strategies] --> K[并行处理<br/>Parallel Processing]
+    J --> L[算法优化<br/>Algorithm Optimization]
+    J --> M[内存优化<br/>Memory Optimization]
+    J --> N[缓存优化<br/>Cache Optimization]
+    
+    O[多线程架构<br/>Multi-threading Architecture] --> P[线程池<br/>Thread Pool]
+    O --> Q[任务调度<br/>Task Scheduling]
+    O --> R[负载均衡<br/>Load Balancing]
+    
+    S[性能监控<br/>Performance Monitoring] --> T[性能指标<br/>Performance Metrics]
+    S --> U[资源监控<br/>Resource Monitoring]
+    S --> V[瓶颈分析<br/>Bottleneck Analysis]
+    
+    D --> J
+    D --> O
+    H --> S
+    
+    style A fill:#e1f5fe
+    style I fill:#c8e6c9
+    style J fill:#fff3e0
+    style O fill:#f3e5f5
+    style S fill:#fce4ec
+```
 
 ### 多线程性能架构
 
@@ -456,10 +540,27 @@ real_time_performance_optimization:
 
 ## 相关概念
 
-- [抽象语法树](./abstract-syntax-tree.md)
-- [代码生成](./code-generation.md)
-- [形式化验证](./formal-verification.md)
-- [模型转换](./model-transformation.md)
+### 核心概念关联
+
+- [抽象语法树](./abstract-syntax-tree.md) - AST为性能优化提供程序结构信息
+- [代码生成](./code-generation.md) - 代码生成与性能优化相结合提升生成代码性能
+- [形式化验证](./formal-verification.md) - 形式化验证使用性能优化提升验证效率
+- [模型转换](./model-transformation.md) - 模型转换使用性能优化提升转换效率
+- [自动推理](./automated-reasoning.md) - 自动推理使用性能优化提升推理效率
+- [递归建模](./recursive-modeling.md) - 递归建模使用性能优化提升建模效率
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型性能优化和查询优化
+- [功能建模](../functional-model/theory.md) - 功能模型性能优化和业务逻辑优化
+- [交互建模](../interaction-model/theory.md) - 交互模型性能优化和接口优化
+- [运行时建模](../runtime-model/theory.md) - 运行时模型性能优化和配置优化
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融系统性能优化和交易性能提升
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型性能优化和推理加速
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云服务性能优化和资源优化
 
 ## 参考文献
 

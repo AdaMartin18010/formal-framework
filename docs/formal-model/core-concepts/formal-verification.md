@@ -1,5 +1,35 @@
 # 形式化验证理论与技术 (Formal Verification Theory and Technology)
 
+## 目录（Table of Contents）
+
+- [形式化验证理论与技术 (Formal Verification Theory and Technology)](#形式化验证理论与技术-formal-verification-theory-and-technology)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [形式化验证理论](#形式化验证理论)
+    - [形式化验证流程](#形式化验证流程)
+    - [Z Notation集成框架](#z-notation集成框架)
+    - [多线程验证架构](#多线程验证架构)
+  - [核心组件](#核心组件)
+    - [Z Notation解析器](#z-notation解析器)
+    - [Z模型生成器](#z模型生成器)
+    - [Z证明助手](#z证明助手)
+  - [多线程并行验证](#多线程并行验证)
+    - [并行证明策略](#并行证明策略)
+    - [线程管理](#线程管理)
+  - [工程实践](#工程实践)
+    - [多线程验证框架设计](#多线程验证框架设计)
+    - [性能优化策略](#性能优化策略)
+  - [应用案例](#应用案例)
+    - [并发系统验证](#并发系统验证)
+    - [分布式系统验证](#分布式系统验证)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 形式化验证是一种使用数学方法证明软件系统正确性的技术。它通过形式化规格说明、定理证明、模型检查等方法，确保系统满足其规格说明的要求。
@@ -28,6 +58,42 @@ FormalVerification = (Specification, Model, Proof, Verification)
 - Model：系统模型
 - Proof：证明过程
 - Verification：验证结果
+
+### 形式化验证流程
+
+```mermaid
+flowchart TD
+    A[系统需求<br/>System Requirements] --> B[形式化规格<br/>Formal Specification]
+    B --> C[系统建模<br/>System Modeling]
+    C --> D[属性定义<br/>Property Definition]
+    D --> E[验证方法选择<br/>Verification Method Selection]
+    E --> F[验证执行<br/>Verification Execution]
+    F --> G[结果分析<br/>Result Analysis]
+    G --> H[报告生成<br/>Report Generation]
+    
+    I[验证方法<br/>Verification Methods] --> J[定理证明<br/>Theorem Proving]
+    I --> K[模型检查<br/>Model Checking]
+    I --> L[静态分析<br/>Static Analysis]
+    
+    M[验证工具<br/>Verification Tools] --> N[Coq]
+    M --> O[Isabelle]
+    M --> P[TLA+]
+    M --> Q[Alloy]
+    
+    R[验证策略<br/>Verification Strategies] --> S[分层验证<br/>Layered Verification]
+    R --> T[增量验证<br/>Incremental Verification]
+    R --> U[并行验证<br/>Parallel Verification]
+    
+    E --> I
+    F --> M
+    F --> R
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style I fill:#fff3e0
+    style M fill:#f3e5f5
+    style R fill:#fce4ec
+```
 
 ### Z Notation集成框架
 
@@ -399,10 +465,27 @@ distributed_system_verification:
 
 ## 相关概念
 
-- [抽象语法树](./abstract-syntax-tree.md)
-- [代码生成](./code-generation.md)
-- [模型转换](./model-transformation.md)
-- [形式化建模](./formal-modeling.md)
+### 核心概念关联
+
+- [形式化建模](./formal-modeling.md) - 形式化建模为形式化验证提供基础模型
+- [抽象语法树](./abstract-syntax-tree.md) - AST为形式化验证提供程序结构信息
+- [代码生成](./code-generation.md) - 代码生成与形式化验证相结合确保代码正确性
+- [模型转换](./model-transformation.md) - 模型转换需要形式化验证确保转换正确性
+- [自动推理](./automated-reasoning.md) - 自动推理用于形式化验证的自动化证明
+- [递归建模](./recursive-modeling.md) - 递归建模支持复杂系统的形式化验证
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型的形式化验证和约束检查
+- [功能建模](../functional-model/theory.md) - 业务逻辑的形式化验证和规则检查
+- [交互建模](../interaction-model/theory.md) - 接口协议的形式化验证和兼容性检查
+- [运行时建模](../runtime-model/theory.md) - 运行时行为的形式化验证和性能检查
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融业务规则的形式化验证和合规检查
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型的形式化验证和安全性检查
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云服务的形式化验证和可靠性检查
 
 ## 参考文献
 

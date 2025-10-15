@@ -1,5 +1,57 @@
 # 抽象语法树 (Abstract Syntax Tree)
 
+## 目录（Table of Contents）
+
+- [抽象语法树 (Abstract Syntax Tree)](#抽象语法树-abstract-syntax-tree)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [形式化定义](#形式化定义)
+    - [AST构建与处理流程](#ast构建与处理流程)
+    - [节点类型](#节点类型)
+      - [表达式节点](#表达式节点)
+      - [语句节点](#语句节点)
+      - [声明节点](#声明节点)
+  - [国际标准对标](#国际标准对标)
+    - [语言标准](#语言标准)
+      - [ECMAScript AST](#ecmascript-ast)
+      - [Python AST](#python-ast)
+      - [Java AST](#java-ast)
+    - [编译器标准](#编译器标准)
+      - [LLVM IR](#llvm-ir)
+      - [GCC GIMPLE](#gcc-gimple)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [编译器课程](#编译器课程)
+      - [MIT 6.035 - Computer Language Engineering](#mit-6035---computer-language-engineering)
+      - [Stanford CS143 - Compilers](#stanford-cs143---compilers)
+      - [CMU 15-411 - Compiler Design](#cmu-15-411---compiler-design)
+    - [程序分析课程](#程序分析课程)
+      - [MIT 6.883 - Program Analysis](#mit-6883---program-analysis)
+      - [Stanford CS243 - Program Analysis and Optimization](#stanford-cs243---program-analysis-and-optimization)
+  - [工程实践](#工程实践)
+    - [AST构建模式](#ast构建模式)
+      - [递归下降解析](#递归下降解析)
+      - [操作符优先级解析](#操作符优先级解析)
+    - [AST遍历模式](#ast遍历模式)
+      - [访问者模式](#访问者模式)
+      - [树遍历器](#树遍历器)
+    - [AST变换模式](#ast变换模式)
+      - [常量折叠](#常量折叠)
+      - [死代码消除](#死代码消除)
+  - [最佳实践](#最佳实践)
+    - [设计最佳实践](#设计最佳实践)
+    - [实现最佳实践](#实现最佳实践)
+    - [工具链最佳实践](#工具链最佳实践)
+  - [应用案例](#应用案例)
+    - [代码分析工具](#代码分析工具)
+    - [代码生成工具](#代码生成工具)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 抽象语法树(Abstract Syntax Tree, AST)是源代码的树状表示，其中每个节点表示源代码中的一个结构。
@@ -29,6 +81,34 @@ AST = (N, E, L, T)
 - E：边集合（Edges）
 - L：标签函数（Labels）
 - T：类型函数（Types）
+
+### AST构建与处理流程
+
+```mermaid
+flowchart TD
+    A[源代码] --> B[词法分析<br/>Lexical Analysis]
+    B --> C[语法分析<br/>Syntactic Analysis]
+    C --> D[AST构建<br/>AST Construction]
+    D --> E[语义分析<br/>Semantic Analysis]
+    E --> F[AST优化<br/>AST Optimization]
+    F --> G[代码生成<br/>Code Generation]
+    
+    H[AST遍历<br/>AST Traversal] --> I[访问者模式<br/>Visitor Pattern]
+    H --> J[树遍历器<br/>Tree Walker]
+    
+    K[AST变换<br/>AST Transformation] --> L[常量折叠<br/>Constant Folding]
+    K --> M[死代码消除<br/>Dead Code Elimination]
+    K --> N[循环优化<br/>Loop Optimization]
+    
+    D --> H
+    D --> K
+    
+    style A fill:#e1f5fe
+    style G fill:#c8e6c9
+    style D fill:#fff3e0
+    style H fill:#f3e5f5
+    style K fill:#fce4ec
+```
 
 ### 节点类型
 
@@ -609,10 +689,27 @@ public class CodeGenerator implements ASTVisitor<String> {
 
 ## 相关概念
 
-- [领域特定语言](./domain-specific-language.md)
-- [代码生成](./code-generation.md)
-- [语义分析](./semantic-analysis.md)
-- [模型转换](./model-transformation.md)
+### 核心概念关联
+
+- [领域特定语言](./domain-specific-language.md) - AST是DSL解析的核心数据结构
+- [代码生成](./code-generation.md) - AST到目标代码的转换过程
+- [模型转换](./model-transformation.md) - AST作为中间表示进行模型转换
+- [语义分析](./semantic-analysis.md) - 基于AST进行语义分析和类型检查
+- [自动推理](./automated-reasoning.md) - 基于AST进行程序推理和验证
+- [递归建模](./recursive-modeling.md) - AST的递归结构支持递归建模
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型可以表示为AST结构
+- [功能建模](../functional-model/theory.md) - 业务逻辑的AST表示
+- [交互建模](../interaction-model/theory.md) - API定义的AST结构
+- [运行时建模](../runtime-model/theory.md) - 运行时配置的AST表示
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融业务规则的AST建模
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - 机器学习模型的AST表示
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云配置的AST结构
 
 ## 参考文献
 

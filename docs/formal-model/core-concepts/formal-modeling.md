@@ -1,5 +1,47 @@
 # 形式化建模 (Formal Modeling)
 
+## 目录（Table of Contents）
+
+- [形式化建模 (Formal Modeling)](#形式化建模-formal-modeling)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [数学基础](#数学基础)
+    - [形式化建模流程](#形式化建模流程)
+    - [形式化定义](#形式化定义)
+  - [建模方法](#建模方法)
+    - [状态机建模](#状态机建模)
+    - [代数建模](#代数建模)
+    - [逻辑建模](#逻辑建模)
+  - [在Formal Framework中的应用](#在formal-framework中的应用)
+    - [数据模型形式化](#数据模型形式化)
+    - [业务逻辑形式化](#业务逻辑形式化)
+    - [系统行为形式化](#系统行为形式化)
+  - [验证方法](#验证方法)
+    - [模型检查](#模型检查)
+    - [定理证明](#定理证明)
+    - [静态分析](#静态分析)
+  - [工具和技术](#工具和技术)
+    - [形式化语言](#形式化语言)
+    - [验证工具](#验证工具)
+    - [集成环境](#集成环境)
+  - [最佳实践](#最佳实践)
+    - [建模原则](#建模原则)
+    - [验证策略](#验证策略)
+    - [工具选择](#工具选择)
+  - [应用案例](#应用案例)
+    - [金融系统验证](#金融系统验证)
+    - [安全协议验证](#安全协议验证)
+  - [评估标准](#评估标准)
+    - [质量指标](#质量指标)
+    - [成功标准](#成功标准)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 形式化建模是一种使用数学符号和逻辑规则来描述系统行为的方法，通过精确的语法和语义定义，实现系统行为的严格规范和验证。
@@ -21,6 +63,41 @@
 - **逻辑学**：用于描述推理规则和约束条件
 - **代数理论**：用于描述操作和变换
 - **图论**：用于描述结构和关系
+
+### 形式化建模流程
+
+```mermaid
+flowchart TD
+    A[需求分析<br/>Requirements Analysis] --> B[系统抽象<br/>System Abstraction]
+    B --> C[数学建模<br/>Mathematical Modeling]
+    C --> D[形式化规格<br/>Formal Specification]
+    D --> E[模型验证<br/>Model Verification]
+    E --> F[模型精化<br/>Model Refinement]
+    F --> G[代码生成<br/>Code Generation]
+    
+    H[建模方法<br/>Modeling Methods] --> I[状态机建模<br/>State Machine]
+    H --> J[代数建模<br/>Algebraic Modeling]
+    H --> K[逻辑建模<br/>Logical Modeling]
+    
+    L[验证方法<br/>Verification Methods] --> M[定理证明<br/>Theorem Proving]
+    L --> N[模型检查<br/>Model Checking]
+    L --> O[静态分析<br/>Static Analysis]
+    
+    P[工具支持<br/>Tool Support] --> Q[Z Notation]
+    P --> R[Alloy]
+    P --> S[TLA+]
+    P --> T[Coq]
+    
+    C --> H
+    E --> L
+    D --> P
+    
+    style A fill:#e1f5fe
+    style G fill:#c8e6c9
+    style H fill:#fff3e0
+    style L fill:#f3e5f5
+    style P fill:#fce4ec
+```
 
 ### 形式化定义
 
@@ -358,10 +435,27 @@ security_verification:
 
 ## 相关概念
 
-- [递归建模](./recursive-modeling.md)
-- [领域特定语言](./domain-specific-language.md)
-- [模型驱动工程](./model-driven-engineering.md)
-- [软件验证](./software-verification.md)
+### 核心概念关联
+
+- [递归建模](./recursive-modeling.md) - 递归建模是形式化建模的重要方法
+- [领域特定语言](./domain-specific-language.md) - DSL为形式化建模提供领域特定表达
+- [模型驱动工程](./model-driven-engineering.md) - MDE基于形式化建模实现自动化
+- [形式化验证](./formal-verification.md) - 形式化验证基于形式化建模进行系统验证
+- [抽象语法树](./abstract-syntax-tree.md) - AST为形式化建模提供结构化表示
+- [自动推理](./automated-reasoning.md) - 自动推理用于形式化建模的自动化处理
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型的形式化建模和验证
+- [功能建模](../functional-model/theory.md) - 业务逻辑的形式化建模和验证
+- [交互建模](../interaction-model/theory.md) - 接口协议的形式化建模和验证
+- [运行时建模](../runtime-model/theory.md) - 运行时行为的形式化建模和验证
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融业务规则的形式化建模和合规验证
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型的形式化建模和性能验证
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云服务的形式化建模和可靠性验证
 
 ## 参考文献
 

@@ -1160,9 +1160,9 @@ api_contract_management:
 
 ## 相关概念
 
-- [API建模](api/theory.md)
-- [消息建模](message/theory.md)
-- [协议建模](protocol/theory.md)
+- [API建模](theory.md)
+- [消息建模](theory.md)
+- [协议建模](theory.md)
 - [交互建模](../theory.md)
 
 ## 参考文献

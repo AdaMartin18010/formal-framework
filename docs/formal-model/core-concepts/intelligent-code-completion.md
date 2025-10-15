@@ -1,5 +1,52 @@
 # 智能代码补全 (Intelligent Code Completion)
 
+## 目录（Table of Contents）
+
+- [智能代码补全 (Intelligent Code Completion)](#智能代码补全-intelligent-code-completion)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [智能代码补全理论](#智能代码补全理论)
+    - [智能代码补全流程](#智能代码补全流程)
+    - [多线程智能补全架构](#多线程智能补全架构)
+  - [核心组件](#核心组件)
+    - [上下文分析器](#上下文分析器)
+    - [语义理解引擎](#语义理解引擎)
+    - [机器学习预测引擎](#机器学习预测引擎)
+  - [多线程并行处理](#多线程并行处理)
+    - [并行分析策略](#并行分析策略)
+    - [线程管理策略](#线程管理策略)
+  - [工程实践](#工程实践)
+    - [智能代码补全框架设计](#智能代码补全框架设计)
+    - [性能优化策略](#性能优化策略)
+  - [应用案例](#应用案例)
+    - [大规模代码库智能补全](#大规模代码库智能补全)
+    - [实时协作开发支持](#实时协作开发支持)
+  - [国际标准对标](#国际标准对标)
+    - [智能代码补全标准](#智能代码补全标准)
+      - [Language Server Protocol (LSP)](#language-server-protocol-lsp)
+      - [IntelliSense](#intellisense)
+      - [TabNine](#tabnine)
+    - [机器学习标准](#机器学习标准)
+      - [TensorFlow](#tensorflow)
+      - [PyTorch](#pytorch)
+      - [Hugging Face Transformers](#hugging-face-transformers)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [人工智能课程](#人工智能课程)
+      - [MIT 6.034 - Artificial Intelligence](#mit-6034---artificial-intelligence)
+      - [Stanford CS224N - Natural Language Processing with Deep Learning](#stanford-cs224n---natural-language-processing-with-deep-learning)
+      - [CMU 15-445 - Database Systems](#cmu-15-445---database-systems)
+    - [软件工程课程](#软件工程课程)
+      - [MIT 6.170 - Software Studio](#mit-6170---software-studio)
+      - [Stanford CS210 - Software Engineering](#stanford-cs210---software-engineering)
+      - [CMU 15-413 - Software Engineering](#cmu-15-413---software-engineering)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 智能代码补全是一种基于人工智能和机器学习的代码辅助技术，通过分析代码上下文、语义信息和用户意图，为开发者提供智能化的代码建议、自动补全和错误修复功能。
@@ -29,6 +76,41 @@ IntelligentCodeCompletion = (Context, Semantics, ML, Parallelism, Learning)
 - ML：机器学习算法
 - Parallelism：并行处理能力
 - Learning：持续学习机制
+
+### 智能代码补全流程
+
+```mermaid
+flowchart TD
+    A[代码输入<br/>Code Input] --> B[上下文分析<br/>Context Analysis]
+    B --> C[语义理解<br/>Semantic Understanding]
+    C --> D[机器学习预测<br/>ML Prediction]
+    D --> E[建议生成<br/>Suggestion Generation]
+    E --> F[建议排序<br/>Suggestion Ranking]
+    F --> G[用户反馈<br/>User Feedback]
+    G --> H[模型更新<br/>Model Update]
+    
+    I[上下文分析<br/>Context Analysis] --> J[语法分析<br/>Syntax Analysis]
+    I --> K[语义分析<br/>Semantic Analysis]
+    I --> L[类型分析<br/>Type Analysis]
+    
+    M[机器学习模型<br/>ML Models] --> N[语言模型<br/>Language Model]
+    M --> O[代码模型<br/>Code Model]
+    M --> P[上下文模型<br/>Context Model]
+    
+    Q[多线程处理<br/>Multi-threading] --> R[并行分析<br/>Parallel Analysis]
+    Q --> S[异步处理<br/>Async Processing]
+    Q --> T[负载均衡<br/>Load Balancing]
+    
+    B --> I
+    D --> M
+    B --> Q
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style I fill:#fff3e0
+    style M fill:#f3e5f5
+    style Q fill:#fce4ec
+```
 
 ### 多线程智能补全架构
 
@@ -456,10 +538,27 @@ real_time_collaborative_development:
 
 ## 相关概念
 
-- [抽象语法树](./abstract-syntax-tree.md)
-- [代码生成](./code-generation.md)
-- [语义分析](./semantic-analysis.md)
-- [模型转换](./model-transformation.md)
+### 核心概念关联
+
+- [抽象语法树](./abstract-syntax-tree.md) - AST为智能代码补全提供程序结构信息
+- [代码生成](./code-generation.md) - 代码生成与智能代码补全相结合提供完整代码
+- [语义分析](./semantic-analysis.md) - 语义分析为智能代码补全提供语义理解能力
+- [模型转换](./model-transformation.md) - 模型转换用于智能代码补全的模型处理
+- [自动推理](./automated-reasoning.md) - 自动推理用于智能代码补全的智能推理
+- [递归建模](./recursive-modeling.md) - 递归建模支持智能代码补全的复杂结构处理
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型智能补全和数据库代码生成
+- [功能建模](../functional-model/theory.md) - 功能模型智能补全和业务逻辑生成
+- [交互建模](../interaction-model/theory.md) - 交互模型智能补全和接口代码生成
+- [运行时建模](../runtime-model/theory.md) - 运行时模型智能补全和配置生成
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融业务代码智能补全和交易系统生成
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型代码智能补全和推理代码生成
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云配置智能补全和部署代码生成
 
 ## 参考文献
 

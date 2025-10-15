@@ -1,5 +1,33 @@
 # 可观测性理论
 
+## 目录（Table of Contents）
+
+- [可观测性理论](#可观测性理论)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [可观测性](#可观测性)
+    - [核心概念](#核心概念)
+  - [理论基础](#理论基础)
+    - [形式化建模理论](#形式化建模理论)
+    - [公理化系统](#公理化系统)
+    - [类型安全理论](#类型安全理论)
+  - [应用案例](#应用案例)
+    - [案例1：微服务监控体系](#案例1微服务监控体系)
+    - [案例2：分布式追踪系统](#案例2分布式追踪系统)
+  - [最佳实践](#最佳实践)
+    - [1. 指标设计最佳实践](#1-指标设计最佳实践)
+    - [2. 日志最佳实践](#2-日志最佳实践)
+    - [3. 告警最佳实践](#3-告警最佳实践)
+  - [开源项目映射](#开源项目映射)
+    - [Prometheus](#prometheus)
+    - [Grafana](#grafana)
+    - [Jaeger](#jaeger)
+    - [ELK Stack](#elk-stack)
+  - [相关链接](#相关链接)
+    - [内部文档](#内部文档)
+    - [外部资源](#外部资源)
+  - [总结](#总结)
+
 ## 概念定义
 
 ### 可观测性
@@ -460,9 +488,9 @@ alerting_best_practices:
 ### 内部文档
 
 - [云原生架构](../cloud-native-architecture.md)
-- [监控模型](../../formal-model/monitoring-model/theory.md)
-- [日志分析](../../formal-model/monitoring-model/logs/analysis/theory.md)
-- [指标监控](../../formal-model/monitoring-model/metrics/theory.md)
+- [监控模型](theory.md)
+- [日志分析](theory.md)
+- [指标监控](theory.md)
 
 ### 外部资源
 

@@ -1,5 +1,62 @@
 # 代码生成理论与技术 (Code Generation Theory and Technology)
 
+## 目录（Table of Contents）
+
+- [代码生成理论与技术 (Code Generation Theory and Technology)](#代码生成理论与技术-code-generation-theory-and-technology)
+  - [目录（Table of Contents）](#目录table-of-contents)
+  - [概念定义](#概念定义)
+    - [核心特征](#核心特征)
+  - [理论基础](#理论基础)
+    - [代码生成理论](#代码生成理论)
+    - [代码生成流程](#代码生成流程)
+    - [代码生成层次理论](#代码生成层次理论)
+  - [核心组件](#核心组件)
+    - [模板引擎模型](#模板引擎模型)
+    - [模型转换模型](#模型转换模型)
+    - [代码生成策略模型](#代码生成策略模型)
+    - [多语言支持模型](#多语言支持模型)
+  - [国际标准对标](#国际标准对标)
+    - [代码生成标准](#代码生成标准)
+      - [Model-Driven Architecture (MDA)](#model-driven-architecture-mda)
+      - [Query/View/Transformation (QVT)](#queryviewtransformation-qvt)
+      - [Xtend](#xtend)
+    - [模板引擎标准](#模板引擎标准)
+      - [Apache Velocity](#apache-velocity)
+      - [FreeMarker](#freemarker)
+      - [Thymeleaf](#thymeleaf)
+    - [代码生成工具标准](#代码生成工具标准)
+      - [ANTLR](#antlr)
+      - [Xtext](#xtext)
+      - [JetBrains MPS](#jetbrains-mps)
+  - [著名大学课程对标](#著名大学课程对标)
+    - [编译器课程](#编译器课程)
+      - [MIT 6.035 - Computer Language Engineering](#mit-6035---computer-language-engineering)
+      - [Stanford CS143 - Compilers](#stanford-cs143---compilers)
+      - [CMU 15-411 - Compiler Design](#cmu-15-411---compiler-design)
+    - [软件工程课程](#软件工程课程)
+      - [MIT 6.170 - Software Studio](#mit-6170---software-studio)
+      - [Stanford CS210 - Software Engineering](#stanford-cs210---software-engineering)
+      - [CMU 15-413 - Software Engineering](#cmu-15-413---software-engineering)
+  - [工程实践](#工程实践)
+    - [代码生成设计模式](#代码生成设计模式)
+      - [模板模式](#模板模式)
+      - [转换模式](#转换模式)
+    - [代码生成优化策略](#代码生成优化策略)
+      - [性能优化](#性能优化)
+      - [质量保证](#质量保证)
+  - [最佳实践](#最佳实践)
+    - [代码生成设计原则](#代码生成设计原则)
+    - [模板设计原则](#模板设计原则)
+    - [代码生成策略选择原则](#代码生成策略选择原则)
+  - [应用案例](#应用案例)
+    - [数据库代码生成](#数据库代码生成)
+    - [API代码生成](#api代码生成)
+  - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
+    - [行业应用关联](#行业应用关联)
+  - [参考文献](#参考文献)
+
 ## 概念定义
 
 代码生成理论与技术是一种将高级抽象模型自动转换为可执行代码的技术。
@@ -29,6 +86,43 @@ CodeGeneration = (Model, Template, Transformation, Output)
 - Template：代码模板（模板语言、变量绑定、控制结构）
 - Transformation：转换规则（模型转换、代码合成、优化）
 - Output：输出代码（目标语言、代码结构、质量指标）
+
+### 代码生成流程
+
+```mermaid
+flowchart TD
+    A[输入模型<br/>Input Model] --> B[模型解析<br/>Model Parsing]
+    B --> C[模型验证<br/>Model Validation]
+    C --> D[模板选择<br/>Template Selection]
+    D --> E[模板渲染<br/>Template Rendering]
+    E --> F[代码生成<br/>Code Generation]
+    F --> G[代码优化<br/>Code Optimization]
+    G --> H[质量检查<br/>Quality Check]
+    H --> I[输出代码<br/>Output Code]
+    
+    J[模板引擎<br/>Template Engine] --> K[Jinja2]
+    J --> L[FreeMarker]
+    J --> M[Velocity]
+    
+    N[代码生成策略<br/>Generation Strategy] --> O[直接生成<br/>Direct Generation]
+    N --> P[增量生成<br/>Incremental Generation]
+    N --> Q[增量更新<br/>Incremental Update]
+    
+    R[多语言支持<br/>Multi-language Support] --> S[Python]
+    R --> T[Java]
+    R --> U[TypeScript]
+    R --> V[Go]
+    
+    D --> J
+    F --> N
+    F --> R
+    
+    style A fill:#e1f5fe
+    style I fill:#c8e6c9
+    style J fill:#fff3e0
+    style N fill:#f3e5f5
+    style R fill:#fce4ec
+```
 
 ### 代码生成层次理论
 
@@ -727,10 +821,27 @@ api_code_generation:
 
 ## 相关概念
 
-- [抽象语法树](./abstract-syntax-tree.md)
-- [领域特定语言](./domain-specific-language.md)
-- [模型转换](./model-transformation.md)
-- [形式化建模](./formal-modeling.md)
+### 核心概念关联
+
+- [抽象语法树](./abstract-syntax-tree.md) - AST是代码生成的核心数据结构
+- [领域特定语言](./domain-specific-language.md) - DSL解析后通过代码生成转换为可执行代码
+- [模型转换](./model-transformation.md) - 模型转换是代码生成的重要环节
+- [形式化建模](./formal-modeling.md) - 形式化模型为代码生成提供输入
+- [自动推理](./automated-reasoning.md) - 自动推理用于代码生成的优化和验证
+- [递归建模](./recursive-modeling.md) - 递归建模支持复杂代码结构的生成
+
+### 应用领域关联
+
+- [数据建模](../data-model/theory.md) - 数据模型到数据库代码的生成
+- [功能建模](../functional-model/theory.md) - 业务逻辑到服务代码的生成
+- [交互建模](../interaction-model/theory.md) - API模型到接口代码的生成
+- [运行时建模](../runtime-model/theory.md) - 运行时配置到部署代码的生成
+
+### 行业应用关联
+
+- [金融架构](../../industry-model/finance-architecture/) - 金融业务规则到交易代码的生成
+- [AI基础设施](../../industry-model/ai-infrastructure-architecture/) - AI模型到推理代码的生成
+- [云原生架构](../../industry-model/cloud-native-architecture/) - 云配置到基础设施代码的生成
 
 ## 参考文献
 
