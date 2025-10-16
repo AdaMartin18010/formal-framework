@@ -35,16 +35,16 @@
 
 ### ⚠️ 质量评分最低的10个文档
 
-255. **FIN-PAY-GW.md** - 13.0分
-256. **IOT-DEVICE-ACCESS.md** - 13.0分
-257. **IOT-SMARTFACTORY-001.md** - 13.0分
-258. **W3-CONSENSUS-POS.md** - 13.0分
-259. **W3-UNISWAP-001.md** - 13.0分
-260. **alignment-L2-L3-matrix.md** - 13.0分
-261. **TEMPLATE_证据条目.md** - 11.0分
-262. **dsl-draft.md** - 9.0分
-263. **dsl-draft.md** - 9.0分
-264. **dsl-draft.md** - 9.0分
+1. **FIN-PAY-GW.md** - 13.0分
+2. **IOT-DEVICE-ACCESS.md** - 13.0分
+3. **IOT-SMARTFACTORY-001.md** - 13.0分
+4. **W3-CONSENSUS-POS.md** - 13.0分
+5. **W3-UNISWAP-001.md** - 13.0分
+6. **alignment-L2-L3-matrix.md** - 13.0分
+7. **TEMPLATE_证据条目.md** - 11.0分
+8. **dsl-draft.md** - 9.0分
+9. **dsl-draft.md** - 9.0分
+10. **dsl-draft.md** - 9.0分
 
 ## 🚨 需要改进的文档
 
