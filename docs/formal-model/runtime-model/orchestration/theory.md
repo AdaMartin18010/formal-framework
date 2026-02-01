@@ -45,6 +45,8 @@
     - [Kubernetes编排](#kubernetes编排)
     - [云原生编排](#云原生编排)
   - [相关概念](#相关概念)
+    - [核心概念关联](#核心概念关联)
+    - [应用领域关联](#应用领域关联)
   - [参考文献](#参考文献)
 
 ## 概念定义
@@ -1089,10 +1091,26 @@ cloud_native_orchestration:
 
 ## 相关概念
 
-- [容器建模](theory.md)
-- [网络建模](theory.md)
-- [存储建模](theory.md)
+- [容器建模](../container/theory.md)
+- [网络建模](../network/theory.md)
+- [存储建模](../storage/theory.md)
 - [运行时建模](../theory.md)
+
+### 核心概念关联
+
+- [抽象语法树](../../core-concepts/abstract-syntax-tree.md) - AST 为编排模型提供结构化表示
+- [代码生成](../../core-concepts/code-generation.md) - 代码生成实现编排模型到部署配置的转换
+- [模型转换](../../core-concepts/model-transformation.md) - 模型转换实现编排模型与容器/网络/存储模型间的转换
+- [形式化建模](../../core-concepts/formal-modeling.md) - 形式化建模为编排理论提供理论基础
+- [工作流建模](../../functional-model/workflow/theory.md) - 工作流模型与编排工作流管理关联
+- [递归建模](../../core-concepts/recursive-modeling.md) - 递归建模支持编排的层次化处理
+
+### 应用领域关联
+
+- [数据建模](../../data-model/theory.md) - 数据模型与编排中持久化存储关联
+- [功能建模](../../functional-model/theory.md) - 功能模型与编排中业务逻辑关联
+- [交互建模](../../interaction-model/theory.md) - 交互模型与编排中服务通信关联
+- [部署建模](../../deployment-model/theory.md) - 部署模型与编排部署策略关联
 
 ## 参考文献
 

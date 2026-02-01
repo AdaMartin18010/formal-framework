@@ -23,9 +23,9 @@
       - [场景与目标](#场景与目标)
       - [术语与概念对齐](#术语与概念对齐)
       - [结构与约束](#结构与约束)
-    - [接口与 DSL 片段](#接口与-dsl-片段)
-    - [验证与度量](#验证与度量)
-    - [证据与引用](#证据与引用)
+      - [接口与 DSL 片段](#接口与-dsl-片段)
+      - [验证与度量](#验证与度量)
+      - [证据与引用](#证据与引用)
   - [案例二：Service Mesh 流量治理（Istio）](#案例二service-mesh-流量治理istio)
     - [场景与目标2](#场景与目标2)
     - [术语与概念对齐2](#术语与概念对齐2)
@@ -47,15 +47,33 @@
     - [接口与 DSL 片段4](#接口与-dsl-片段4)
     - [验证与度量4](#验证与度量4)
     - [证据与引用4](#证据与引用4)
+  - [案例五：Serverless 函数计算（AWS Lambda/Knative）](#案例五serverless-函数计算aws-lambdaknative)
+    - [场景与目标5](#场景与目标5)
+    - [术语与概念对齐5](#术语与概念对齐5)
+    - [结构与约束5](#结构与约束5)
+    - [接口与 DSL 片段5](#接口与-dsl-片段5)
+    - [验证与度量5](#验证与度量5)
+    - [证据与引用5](#证据与引用5)
+  - [案例六：API 网关流量治理（Kong/Envoy）](#案例六api-网关流量治理kongenvoy)
+    - [场景与目标6](#场景与目标6)
+    - [术语与概念对齐6](#术语与概念对齐6)
+    - [结构与约束6](#结构与约束6)
+    - [接口与 DSL 片段6](#接口与-dsl-片段6)
+    - [验证与度量6](#验证与度量6)
+    - [证据与引用6](#证据与引用6)
+  - [相关概念](#相关概念)
+  - [子模块导航](#子模块导航)
+  - [参考文献](#参考文献)
 
 ## 1. 核心业务领域
 
 ### 1.1 容器编排 (Container Orchestration)
 
 - **工作负载管理**：Pod、Deployment、StatefulSet、DaemonSet
-- **服务发现**：Service、Ingress、DNS解析
+- **服务发现**：Service、Ingress、DNS 解析
 - **配置管理**：ConfigMap、Secret、环境变量
-- **存储管理**：PV、PVC、StorageClass、CSI驱动
+- **存储管理**：PV、PVC、StorageClass、CSI 驱动
+- **案例与子模块**：→ [案例一：Kubernetes 集群编排](#案例一kubernetes-集群编排基础) | [理论](container-orchestration/theory.md) | [DSL](container-orchestration/dsl-draft.md)
 
 ### 1.2 服务网格 (Service Mesh)
 
@@ -63,13 +81,15 @@
 - **安全策略**：mTLS、访问控制、策略执行
 - **可观测性**：指标收集、链路追踪、日志聚合
 - **多集群**：跨集群通信、服务发现、配置同步
+- **案例与子模块**：→ [案例二：Service Mesh 流量治理](#案例二service-mesh-流量治理istio) | [理论](service-mesh/theory.md) | [DSL](service-mesh/dsl-draft.md)
 
 ### 1.3 API网关 (API Gateway)
 
 - **请求路由**：路径匹配、方法过滤、参数验证
-- **认证授权**：JWT、OAuth2、API密钥管理
+- **认证授权**：JWT、OAuth2、API 密钥管理
 - **限流熔断**：速率限制、熔断器、重试策略
 - **监控分析**：请求统计、性能分析、错误追踪
+- **案例与子模块**：→ [案例六：API 网关流量治理](#案例六api-网关流量治理kongenvoy) | [理论](api-gateway/theory.md) | [DSL](api-gateway/dsl-draft.md)
 
 ### 1.4 可观测性 (Observability)
 
@@ -77,6 +97,7 @@
 - **日志管理**：ELK Stack、Fluentd、日志聚合
 - **链路追踪**：Jaeger、Zipkin、分布式追踪
 - **事件管理**：事件驱动、消息队列、工作流
+- **案例与子模块**：→ [案例四：可观测性一体化](#案例四可观测性一体化prometheusotel) | [理论](observability/theory.md) | [DSL](observability/dsl-draft.md)
 
 ### 1.5 Serverless (无服务器)
 
@@ -84,6 +105,7 @@
 - **工作流编排**：状态机、条件分支、并行执行
 - **事件驱动**：消息队列、事件总线、流处理
 - **资源管理**：冷启动优化、内存配置、超时控制
+- **案例与子模块**：→ [案例五：Serverless 函数计算](#案例五serverless-函数计算aws-lambdaknative) | [理论](serverless/theory.md) | [DSL](serverless/dsl-draft.md)
 
 ## 2. 技术架构组件
 
@@ -93,9 +115,9 @@
 |---------|---------|---------|
 | 容器编排 | Kubernetes, Docker Swarm | 容器生命周期管理、服务发现 |
 | 服务网格 | Istio, Linkerd, Consul Connect | 服务间通信、安全、可观测性 |
-| API网关 | Envoy, Kong, Traefik | 流量管理、认证授权、监控 |
+| API网关 | Envoy, Kong, Traefik | 流量管理、认证授权、监控 → [案例六](#案例六api-网关流量治理kongenvoy) |
 | 可观测性 | Prometheus, Grafana, Jaeger | 指标监控、可视化、链路追踪 |
-| 配置管理 | Helm, Kustomize, ArgoCD | 应用配置、版本管理、GitOps |
+| 配置管理 | Helm, Kustomize, ArgoCD | 应用配置、版本管理、GitOps → [案例三](#案例三gitops-持续交付argocd) |
 
 ### 2.2 云原生架构模式
 
@@ -134,10 +156,10 @@ cloud_native_architecture:
 
 #### 术语与概念对齐
 
-- **Pod/Deployment** ↔ `L3_D04_运行时标准模型.md` 容器编排
-- **Service/Ingress** ↔ `L3_D01_交互标准模型.md` 服务暴露
-- **ConfigMap/Secret** ↔ `L3_D05_部署标准模型.md` 配置管理
-- **PV/PVC** ↔ `L3_D04_运行时标准模型.md` 存储管理
+- **Pod/Deployment** ↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 容器编排
+- **Service/Ingress** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 服务暴露
+- **ConfigMap/Secret** ↔ [L3_D05_部署标准模型](../../L3_D05_部署标准模型.md) 配置管理
+- **PV/PVC** ↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 存储管理
 
 #### 结构与约束
 
@@ -145,7 +167,7 @@ cloud_native_architecture:
 - **服务约束**：服务发现、负载均衡、网络策略
 - **存储约束**：持久化存储、访问模式、回收策略
 
-### 接口与 DSL 片段
+#### 接口与 DSL 片段
 
 ```yaml
 kubernetes_cluster:
@@ -191,18 +213,18 @@ kubernetes_cluster:
           port: 80
 ```
 
-### 验证与度量
+#### 验证与度量
 
 - **可用性指标**：服务可用性 > 99.9%，Pod重启次数 < 5次/天
 - **健康检查**：健康检查成功率 > 99.5%，响应时间 < 1s
 - **资源配额**：CPU利用率 60-80%，内存利用率 70-85%
 - **部署成功率**：部署成功率 > 95%，回滚时间 < 2分钟
 
-### 证据与引用
+#### 证据与引用
 
 - **evidence:CN-K8S-BASE**：Kubernetes官方文档
-- **交叉链接**：`docs/formal-model/runtime-model/theory.md`
-- **标准对齐**：`L3_D04_运行时标准模型.md`
+- **交叉链接**：[运行时建模理论](../../formal-model/runtime-model/theory.md)、[编排建模理论](../../formal-model/runtime-model/orchestration/theory.md)
+- **标准对齐**：[L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md)
 
 ## 案例二：Service Mesh 流量治理（Istio）
 
@@ -214,10 +236,10 @@ kubernetes_cluster:
 
 ### 术语与概念对齐2
 
-- **VirtualService/DestinationRule** ↔ `L3_D04_运行时标准模型.md` 服务网格
-- **Gateway/Ingress** ↔ `L3_D01_交互标准模型.md` 网关路由
-- **PeerAuthentication** ↔ `L3_D01_交互标准模型.md` 安全认证
-- **AuthorizationPolicy** ↔ `L3_D01_交互标准模型.md` 访问控制
+- **VirtualService/DestinationRule** ↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 服务网格
+- **Gateway/Ingress** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 网关路由
+- **PeerAuthentication** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 安全认证
+- **AuthorizationPolicy** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 访问控制
 
 ### 结构与约束2
 
@@ -296,8 +318,8 @@ service_mesh:
 ### 证据与引用2
 
 - **evidence:CN-ISTIO-TRAFFIC**：Istio官方文档
-- **交叉链接**：`docs/formal-model/runtime-model/theory.md`
-- **标准对齐**：`L3_D04_运行时标准模型.md`
+- **交叉链接**：[运行时建模理论](../../formal-model/runtime-model/theory.md)、[服务网格理论](service-mesh/theory.md)
+- **标准对齐**：[L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md)、[L3_D01_交互标准模型](../../L3_D01_交互标准模型.md)
 
 ## 案例三：GitOps 持续交付（ArgoCD）
 
@@ -309,10 +331,10 @@ service_mesh:
 
 ### 术语与概念对齐3
 
-- **Application/SyncPolicy** ↔ `L3_D05_部署标准模型.md` GitOps部署
-- **HealthCheck/SyncStatus** ↔ `L3_D06_监控标准模型.md` 健康检查
-- **QualityGate/PR** ↔ `L3_D09_CICD标准模型.md` 质量门禁
-- **Rollback/History** ↔ `L3_D05_部署标准模型.md` 版本回滚
+- **Application/SyncPolicy** ↔ [L3_D05_部署标准模型](../../L3_D05_部署标准模型.md) GitOps 部署
+- **HealthCheck/SyncStatus** ↔ [L3_D06_监控标准模型](../../L3_D06_监控标准模型.md) 健康检查
+- **QualityGate/PR** ↔ [L3_D09_CICD标准模型](../../L3_D09_CICD标准模型.md) 质量门禁
+- **Rollback/History** ↔ [L3_D05_部署标准模型](../../L3_D05_部署标准模型.md) 版本回滚
 
 ### 结构与约束3
 
@@ -382,8 +404,8 @@ gitops:
 ### 证据与引用3
 
 - **evidence:CN-ARGO-GITOPS**：ArgoCD官方文档
-- **交叉链接**：`docs/formal-model/deployment-model/theory.md`
-- **标准对齐**：`L3_D05_部署标准模型.md`
+- **交叉链接**：[部署建模理论](../../formal-model/deployment-model/theory.md)
+- **标准对齐**：[L3_D05_部署标准模型](../../L3_D05_部署标准模型.md)、[L3_D09_CICD标准模型](../../L3_D09_CICD标准模型.md)
 
 ## 案例四：可观测性一体化（Prometheus+OTel）
 
@@ -395,10 +417,10 @@ gitops:
 
 ### 术语与概念对齐4
 
-- **Metric/Alert** ↔ `L3_D06_监控标准模型.md` 指标监控
-- **Trace/Span** ↔ `L3_D06_监控标准模型.md` 链路追踪
-- **Log/Event** ↔ `L3_D06_监控标准模型.md` 日志管理
-- **Dashboard/Visualization** ↔ `L3_D06_监控标准模型.md` 可视化
+- **Metric/Alert** ↔ [L3_D06_监控标准模型](../../L3_D06_监控标准模型.md) 指标监控
+- **Trace/Span** ↔ [L3_D06_监控标准模型](../../L3_D06_监控标准模型.md) 链路追踪
+- **Log/Event** ↔ [L3_D06_监控标准模型](../../L3_D06_监控标准模型.md) 日志管理
+- **Dashboard/Visualization** ↔ [L3_D06_监控标准模型](../../L3_D06_监控标准模型.md) 可视化
 
 ### 结构与约束4
 
@@ -447,5 +469,195 @@ observability:
 ### 证据与引用4
 
 - **evidence:CN-OBS-OTEL**：OpenTelemetry官方文档
-- **交叉链接**：`docs/formal-model/monitoring-model/theory.md`
-- **标准对齐**：`L3_D06_监控标准模型.md`
+- **交叉链接**：[监控建模理论](../../formal-model/monitoring-model/theory.md)
+- **标准对齐**：[L3_D06_监控标准模型](../../L3_D06_监控标准模型.md)
+
+## 案例五：Serverless 函数计算（AWS Lambda/Knative）
+
+### 场景与目标5
+
+- **业务场景**：事件驱动函数计算，支持 HTTP 触发、消息队列、定时任务、对象存储事件
+- **技术目标**：实现函数即服务（FaaS）、自动扩缩容、按需计费、冷启动优化
+- **质量目标**：冷启动 < 500ms，成功率 > 99.9%，成本按实际调用量计费
+
+### 术语与概念对齐5
+
+- **Function/Handler** ↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 函数计算
+- **Trigger/Event** ↔ [L3_D03_功能标准模型](../../L3_D03_功能标准模型.md) 事件驱动
+- **Scaling/Concurrency** ↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 弹性伸缩
+- **StateMachine/Workflow** ↔ [L3_D03_功能标准模型](../../L3_D03_功能标准模型.md) 工作流编排
+
+### 结构与约束5
+
+- **函数约束**：内存限制、超时配置、并发限制、冷启动阈值
+- **事件约束**：触发器类型、过滤条件、重试策略、死信队列
+- **扩缩容约束**：最小/最大实例、预留并发、突发容量
+
+### 接口与 DSL 片段5
+
+```yaml
+serverless:
+  functions:
+    - name: "user-auth"
+      runtime: "nodejs18.x"
+      handler: "index.handler"
+      memory: 512
+      timeout: 30
+      triggers:
+        - type: "http"
+          path: "/auth/login"
+          method: "POST"
+        - type: "schedule"
+          expression: "rate(5 minutes)"
+      scaling:
+        min_capacity: 0
+        max_capacity: 100
+        target_utilization: 70
+      permissions:
+        - service: "dynamodb"
+          actions: ["GetItem", "PutItem"]
+          resources: ["arn:aws:dynamodb:*:*:table/users"]
+  
+  state_machines:
+    - name: "order-workflow"
+      definition:
+        start_at: "ValidateOrder"
+        states:
+          ValidateOrder:
+            type: "task"
+            resource: "arn:aws:lambda:region:account:function:ValidateOrder"
+            next: "ProcessPayment"
+          ProcessPayment:
+            type: "task"
+            resource: "arn:aws:lambda:region:account:function:ProcessPayment"
+            next: "FulfillOrder"
+          FulfillOrder:
+            type: "task"
+            resource: "arn:aws:lambda:region:account:function:FulfillOrder"
+            next: "OrderComplete"
+          OrderComplete:
+            type: "succeed"
+```
+
+### 验证与度量5
+
+- **冷启动指标**：P99 冷启动 < 500ms，预热策略有效性
+- **成功率**：函数调用成功率 > 99.9%，错误重试率 < 1%
+- **成本**：按调用次数与执行时长计费，预留并发成本优化
+- **扩展性**：突发扩缩容 < 30s，预留实例预热覆盖率 > 80%
+
+### 证据与引用5
+
+- **evidence:CN-SERVERLESS-LAMBDA**：AWS Lambda 官方文档
+- **evidence:CN-SERVERLESS-KNATIVE**：Knative 官方文档
+- **交叉链接**：[Serverless 理论](serverless/theory.md)、[Serverless DSL 草案](serverless/dsl-draft.md)
+- **标准对齐**：[L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md)、[L3_D03_功能标准模型](../../L3_D03_功能标准模型.md)
+
+## 案例六：API 网关流量治理（Kong/Envoy）
+
+### 场景与目标6
+
+- **业务场景**：统一 API 入口、请求路由、认证鉴权、限流熔断、灰度发布
+- **技术目标**：实现 API 网关、JWT/OAuth2 认证、速率限制、熔断器、请求追踪
+- **质量目标**：P99 延迟 < 100ms，错误率 < 0.1%，零停机配置更新
+
+### 术语与概念对齐6
+
+- **Route/Service** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 网关路由
+- **Plugin/Policy** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 安全策略
+- **RateLimit/CircuitBreaker** ↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 流量控制
+- **Auth/JWT** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 认证授权
+
+### 结构与约束6
+
+- **路由约束**：匹配优先级、路径规范、方法过滤
+- **安全约束**：认证前置、权限最小化、CORS 策略
+- **流量约束**：限流阈值、熔断条件、重试策略
+
+### 接口与 DSL 片段6
+
+```yaml
+api_gateway:
+  name: "user-api-gateway"
+  routes:
+    - path: "/users/*"
+      method: "GET"
+      service:
+        name: "user-service"
+        url: "http://user-service:8080"
+      middleware:
+        - type: "jwt-auth"
+          config:
+            claims_required: ["sub", "roles"]
+        - type: "rate-limit"
+          requests_per_minute: 1000
+          burst: 100
+    - path: "/auth/login"
+      method: "POST"
+      service:
+        name: "auth-service"
+        url: "http://auth-service:8080"
+      middleware:
+        - type: "cors"
+          origins: ["https://app.company.com"]
+  
+  traffic:
+    circuit_breaker:
+      failure_threshold: 5
+      success_threshold: 2
+      timeout: "30s"
+    retry:
+      attempts: 3
+      backoff: "exponential"
+  
+  monitoring:
+    metrics: ["latency", "errors", "requests_total"]
+    tracing:
+      enabled: true
+      sampling_rate: 0.1
+```
+
+### 验证与度量6
+
+- **延迟指标**：P99 网关延迟 < 100ms，P95 < 50ms
+- **错误率**：5xx 错误率 < 0.1%，认证失败率 < 1%
+- **限流有效性**：超限请求拒绝率准确，无漏限流
+- **可用性**：网关可用性 > 99.99%，配置热更新零中断
+
+### 证据与引用6
+
+- **evidence:CN-API-KONG**：Kong 官方文档
+- **evidence:CN-API-ENVOY**：Envoy 官方文档
+- **交叉链接**：[API 网关理论](api-gateway/theory.md)、[API 网关 DSL 草案](api-gateway/dsl-draft.md)
+- **标准对齐**：[L3_D01_交互标准模型](../../L3_D01_交互标准模型.md)、[L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md)
+
+## 相关概念
+
+- [云原生架构理论](theory.md)
+- [运行时建模](../../formal-model/runtime-model/theory.md) - 容器、网络、存储、编排
+- [功能建模](../../formal-model/functional-model/theory.md) - 工作流、状态机、规则引擎
+- [交互建模](../../formal-model/interaction-model/theory.md) - API、消息、协议
+- [监控建模](../../formal-model/monitoring-model/theory.md) - 指标、日志、追踪
+- [部署建模](../../formal-model/deployment-model/theory.md) - 配置、版本、回滚
+- [CI/CD 建模](../../formal-model/cicd-model/theory.md) - 流水线、质量门禁、GitOps
+
+## 子模块导航
+
+| 子模块 | 理论文档 | DSL 草案 |
+|--------|----------|----------|
+| 容器编排 | [container-orchestration/theory.md](container-orchestration/theory.md) | [container-orchestration/dsl-draft.md](container-orchestration/dsl-draft.md) |
+| 服务网格 | [service-mesh/theory.md](service-mesh/theory.md) | [service-mesh/dsl-draft.md](service-mesh/dsl-draft.md) |
+| API 网关 | [api-gateway/theory.md](api-gateway/theory.md) | [api-gateway/dsl-draft.md](api-gateway/dsl-draft.md) |
+| 可观测性 | [observability/theory.md](observability/theory.md) | [observability/dsl-draft.md](observability/dsl-draft.md) |
+| Serverless | [serverless/theory.md](serverless/theory.md) | [serverless/dsl-draft.md](serverless/dsl-draft.md) |
+
+## 参考文献
+
+1. Kubernetes Documentation (2023). "Kubernetes Concepts"
+2. Istio Documentation (2023). "Istio Traffic Management"
+3. Argo CD Documentation (2023). "Argo CD User Guide"
+4. OpenTelemetry Documentation (2023). "OpenTelemetry Specification"
+5. AWS Lambda Documentation (2023). "AWS Lambda Developer Guide"
+6. Knative Documentation (2023). "Knative Serving"
+7. Kong Documentation (2023). "Kong Gateway"
+8. Envoy Documentation (2023). "Envoy Proxy"
