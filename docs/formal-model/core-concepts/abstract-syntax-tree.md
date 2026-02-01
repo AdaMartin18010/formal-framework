@@ -691,12 +691,24 @@ public class CodeGenerator implements ASTVisitor<String> {
 
 ### 核心概念关联
 
-- [领域特定语言](./domain-specific-language.md) - AST是DSL解析的核心数据结构
-- [代码生成](./code-generation.md) - AST到目标代码的转换过程
-- [模型转换](./model-transformation.md) - AST作为中间表示进行模型转换
-- [语义分析](./semantic-analysis.md) - 基于AST进行语义分析和类型检查
-- [自动推理](./automated-reasoning.md) - 基于AST进行程序推理和验证
-- [递归建模](./recursive-modeling.md) - AST的递归结构支持递归建模
+- [形式化建模](./formal-modeling.md) - AST是形式化建模的重要数据结构，提供程序的结构化表示
+- [领域特定语言](./domain-specific-language.md) - AST是DSL解析的核心数据结构，用于表示DSL程序的语法结构
+- [代码生成](./code-generation.md) - AST到目标代码的转换过程，是代码生成的基础输入
+- [模型转换](./model-transformation.md) - AST作为中间表示进行模型转换，支持不同模型间的转换
+- [语义分析](./semantic-analysis.md) - 基于AST进行语义分析和类型检查，是语义分析的基础数据结构
+- [自动推理](./automated-reasoning.md) - 基于AST进行程序推理和验证，支持程序性质的自动推理
+
+### 应用领域关联
+
+- [数据模型](../data-model/theory.md) - AST可用于数据模型的表示和转换
+- [功能模型](../functional-model/theory.md) - AST可用于功能模型的表示和分析
+- [交互模型](../interaction-model/theory.md) - AST可用于API和协议的定义和解析
+
+### 行业应用关联
+
+- [云原生架构](../../industry-model/cloud-native-architecture/) - AST在Kubernetes配置解析中的应用
+- [金融架构](../../industry-model/finance-architecture/) - AST在金融系统代码生成中的应用
+- [IoT架构](../../industry-model/iot-architecture/) - AST在IoT设备配置解析中的应用
 
 ### 应用领域关联
 

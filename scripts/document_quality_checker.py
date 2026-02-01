@@ -203,8 +203,112 @@ class DocumentQualityChecker:
         
         return readability_metrics
     
+    def check_theoretical_completeness(self, file_path: Path) -> Dict:
+        """检查理论完整性"""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception as e:
+            return {'error': str(e)}
+        
+        theoretical_metrics = {
+            'has_formal_definition': bool(re.search(r'形式化定义|formal\s+definition', content, re.IGNORECASE)),
+            'has_mathematical_notation': bool(re.search(r'[∀∃∈∉∧∨→↔]|\\forall|\\exists|\\in|\\notin', content)),
+            'has_axioms': bool(re.search(r'公理|axiom|公理化', content, re.IGNORECASE)),
+            'has_proof': bool(re.search(r'证明|proof|推导', content, re.IGNORECASE)),
+            'has_standard_alignment': bool(re.search(r'国际标准|ISO|IEEE|标准对齐', content, re.IGNORECASE)),
+            'has_references': bool(re.search(r'##\s*参考文献|##\s*References', content, re.IGNORECASE)),
+            'has_academic_courses': bool(re.search(r'大学课程|课程对标|MIT|Stanford|CMU', content, re.IGNORECASE)),
+            'formal_definition_count': len(re.findall(r'形式化定义|formal\s+definition', content, re.IGNORECASE)),
+            'mathematical_formula_count': len(re.findall(r'```.*?```|\\[.*?\\]|\$\$.*?\$\$', content, re.DOTALL)),
+            'standard_mention_count': len(re.findall(r'ISO|IEEE|标准', content, re.IGNORECASE))
+        }
+        
+        # 计算理论完整性评分
+        theoretical_score = 0
+        max_theoretical_score = 100
+        
+        if theoretical_metrics['has_formal_definition']:
+            theoretical_score += 20
+        if theoretical_metrics['has_mathematical_notation']:
+            theoretical_score += 15
+        if theoretical_metrics['has_axioms']:
+            theoretical_score += 10
+        if theoretical_metrics['has_proof']:
+            theoretical_score += 15
+        if theoretical_metrics['has_standard_alignment']:
+            theoretical_score += 15
+        if theoretical_metrics['has_references']:
+            theoretical_score += 10
+        if theoretical_metrics['has_academic_courses']:
+            theoretical_score += 10
+        
+        # 公式和定义数量加分
+        if theoretical_metrics['formal_definition_count'] > 0:
+            theoretical_score += min(5, theoretical_metrics['formal_definition_count'])
+        if theoretical_metrics['mathematical_formula_count'] > 0:
+            theoretical_score += min(5, theoretical_metrics['mathematical_formula_count'])
+        
+        theoretical_metrics['theoretical_completeness_score'] = min(theoretical_score, max_theoretical_score)
+        
+        return theoretical_metrics
+    
+    def check_learning_friendliness(self, file_path: Path) -> Dict:
+        """检查学习友好性"""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception as e:
+            return {'error': str(e)}
+        
+        learning_metrics = {
+            'has_concept_explanation': bool(re.search(r'概念定义|概念说明|concept\s+definition', content, re.IGNORECASE)),
+            'has_examples': bool(re.search(r'示例|example|案例|case', content, re.IGNORECASE)),
+            'has_diagrams': bool(re.search(r'```mermaid|```graph|流程图|diagram', content, re.IGNORECASE)),
+            'has_code_examples': len(re.findall(r'```(?:python|java|javascript|yaml|json)', content, re.IGNORECASE)),
+            'has_learning_path': bool(re.search(r'学习路径|learning\s+path|前置知识', content, re.IGNORECASE)),
+            'has_difficulty_level': bool(re.search(r'难度|difficulty|⭐⭐', content)),
+            'has_exercises': bool(re.search(r'思考|练习|exercise|practice', content, re.IGNORECASE)),
+            'has_checklist': bool(re.search(r'检查清单|checklist|验证清单', content, re.IGNORECASE)),
+            'has_related_concepts': bool(re.search(r'相关概念|related\s+concepts', content, re.IGNORECASE)),
+            'has_cross_references': len(re.findall(r'\[.*?\]\(.*?\)', content)),
+            'example_count': len(re.findall(r'示例|example|案例', content, re.IGNORECASE)),
+            'diagram_count': len(re.findall(r'```mermaid|```graph', content, re.IGNORECASE))
+        }
+        
+        # 计算学习友好性评分
+        learning_score = 0
+        max_learning_score = 100
+        
+        if learning_metrics['has_concept_explanation']:
+            learning_score += 15
+        if learning_metrics['has_examples']:
+            learning_score += 15
+        if learning_metrics['has_diagrams']:
+            learning_score += 15
+        if learning_metrics['has_code_examples'] > 0:
+            learning_score += min(15, learning_metrics['has_code_examples'] * 3)
+        if learning_metrics['has_learning_path']:
+            learning_score += 10
+        if learning_metrics['has_difficulty_level']:
+            learning_score += 5
+        if learning_metrics['has_exercises']:
+            learning_score += 10
+        if learning_metrics['has_checklist']:
+            learning_score += 5
+        if learning_metrics['has_related_concepts']:
+            learning_score += 10
+        
+        # 交叉引用数量加分
+        if learning_metrics['has_cross_references'] >= 5:
+            learning_score += 5
+        
+        learning_metrics['learning_friendliness_score'] = min(learning_score, max_learning_score)
+        
+        return learning_metrics
+    
     def calculate_quality_score(self, metrics: Dict) -> float:
-        """计算质量评分"""
+        """计算质量评分（基础版）"""
         if 'error' in metrics:
             return 0.0
         
@@ -272,6 +376,29 @@ class DocumentQualityChecker:
         
         return min(score, max_score)
     
+    def calculate_enhanced_quality_score(self, metrics: Dict) -> float:
+        """计算增强质量评分（包含理论完整性和学习友好性）"""
+        if 'error' in metrics:
+            return 0.0
+        
+        # 基础质量评分 (60%)
+        base_score = self.calculate_quality_score(metrics)
+        
+        # 理论完整性评分 (20%)
+        theoretical_score = metrics.get('theoretical_completeness_score', 0)
+        
+        # 学习友好性评分 (20%)
+        learning_score = metrics.get('learning_friendliness_score', 0)
+        
+        # 综合评分
+        enhanced_score = (
+            base_score * 0.6 +
+            theoretical_score * 0.2 +
+            learning_score * 0.2
+        )
+        
+        return min(enhanced_score, 100.0)
+    
     def check_document_quality(self, file_path: Path) -> Dict:
         """检查单个文档的质量"""
         print(f"📄 检查文档: {file_path.name}")
@@ -281,17 +408,21 @@ class DocumentQualityChecker:
         content_metrics = self.check_content_quality(file_path)
         format_metrics = self.check_format_consistency(file_path)
         readability_metrics = self.check_readability(file_path)
+        theoretical_metrics = self.check_theoretical_completeness(file_path)
+        learning_metrics = self.check_learning_friendliness(file_path)
         
         # 合并所有指标
         all_metrics = {
             **structure_metrics,
             **content_metrics,
             **format_metrics,
-            **readability_metrics
+            **readability_metrics,
+            **theoretical_metrics,
+            **learning_metrics
         }
         
-        # 计算质量评分
-        quality_score = self.calculate_quality_score(all_metrics)
+        # 计算质量评分（增强版）
+        quality_score = self.calculate_enhanced_quality_score(all_metrics)
         all_metrics['quality_score'] = quality_score
         
         return all_metrics
@@ -377,6 +508,18 @@ class DocumentQualityChecker:
             report.append(f"- **最低质量评分**: {metrics['min_quality_score']:.1f}")
             report.append(f"- **最高质量评分**: {metrics['max_quality_score']:.1f}")
             report.append(f"- **质量评分标准差**: {metrics['std_quality_score']:.1f}")
+        
+        # 理论完整性和学习友好性统计
+        file_results = [r for r in results['file_results'] if 'theoretical_completeness_score' in r]
+        if file_results:
+            theoretical_scores = [r.get('theoretical_completeness_score', 0) for r in file_results]
+            learning_scores = [r.get('learning_friendliness_score', 0) for r in file_results]
+            
+            report.append("")
+            report.append("### 理论完整性和学习友好性统计")
+            report.append("")
+            report.append(f"- **平均理论完整性评分**: {statistics.mean(theoretical_scores):.1f}")
+            report.append(f"- **平均学习友好性评分**: {statistics.mean(learning_scores):.1f}")
         
         if 'quality_distribution' in results and results['quality_distribution']:
             dist = results['quality_distribution']
@@ -469,6 +612,41 @@ class DocumentQualityChecker:
         
         if not result.get('consistent_list_style', False):
             suggestions.append("统一列表格式")
+        
+        # 理论完整性建议
+        if not result.get('has_formal_definition', False):
+            suggestions.append("添加形式化定义")
+        
+        if not result.get('has_mathematical_notation', False):
+            suggestions.append("添加数学符号和公式")
+        
+        if not result.get('has_standard_alignment', False):
+            suggestions.append("添加国际标准对齐内容")
+        
+        if result.get('theoretical_completeness_score', 0) < 50:
+            suggestions.append("提升理论完整性，添加形式化定义和标准对齐")
+        
+        # 学习友好性建议
+        if not result.get('has_concept_explanation', False):
+            suggestions.append("添加概念解释")
+        
+        if not result.get('has_examples', False):
+            suggestions.append("添加示例和案例")
+        
+        if not result.get('has_diagrams', False):
+            suggestions.append("添加流程图或示意图")
+        
+        if result.get('has_code_examples', 0) == 0:
+            suggestions.append("添加代码示例")
+        
+        if not result.get('has_learning_path', False):
+            suggestions.append("添加学习路径说明")
+        
+        if not result.get('has_related_concepts', False):
+            suggestions.append("添加相关概念链接")
+        
+        if result.get('learning_friendliness_score', 0) < 50:
+            suggestions.append("提升学习友好性，添加示例、图表和学习路径")
         
         return suggestions
     
