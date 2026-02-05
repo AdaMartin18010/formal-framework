@@ -2,7 +2,9 @@
 
 ## 概述
 
-参考资源层是形式化框架的知识支撑层，提供权威的参考资源和学习材料。本层汇集了国际标准、学术资源、行业资源等权威资料，为理论研究者、标准制定者、架构师和教育工作者提供可靠的知识来源。
+参考资源层是形式化框架的知识支撑层，提供权威的参考资源和学习材料。
+
+**权威对标总索引**：标准、名校课程、CNCF 等与本框架 L2/L3/L4 的集中映射见 [AUTHORITY_ALIGNMENT_INDEX.md](AUTHORITY_ALIGNMENT_INDEX.md)。**待跟踪标准/课程**（待发布/在研标准与待补充课程）见 [PENDING_TRACKING_STANDARDS_COURSES.md](PENDING_TRACKING_STANDARDS_COURSES.md)。**形式化规格语言与工具族**一览（Z、VDM、TLA+、Alloy、Why3 及与 L2 规格/不变式的对应）见 [FORMAL_SPEC_LANGUAGES.md](FORMAL_SPEC_LANGUAGES.md)。**可选扩展**：知识图谱、本体与形式化方法的结合见 [KNOWLEDGE_GRAPH_ONTOLOGY_FORMAL.md](KNOWLEDGE_GRAPH_ONTOLOGY_FORMAL.md)（不替代主链路）。本层汇集了国际标准、学术资源、行业资源等权威资料，为理论研究者、标准制定者、架构师和教育工作者提供可靠的知识来源。
 
 ## 目录结构
 

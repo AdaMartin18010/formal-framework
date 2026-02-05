@@ -304,6 +304,11 @@ def validate_message(msg):
 5. Hohpe, G., & Woolf, B. (2003). "Enterprise Integration Patterns"
 6. Newman, S. (2015). "Building Microservices"
 
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论对应 [L2_D01 交互元模型](../../L2_D01_交互元模型.md)、[L3_D01 交互标准模型](../../L3_D01_交互标准模型.md)；对象/属性/不变式对齐见 [L2↔L3 映射总表 2.1 节（交互）](../alignment-L2-L3-matrix.md#21-交互d01)。
+- **标准与课程**：交互/API 相关标准（OpenAPI、AsyncAPI、IEEE 830 等）及名校课程与 L2_D01/L3_D01 知识点对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md) 与 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
 ---
 
 > 本文档持续递归完善，欢迎补充更多创新理论、推理伪代码、流程图与行业案例。

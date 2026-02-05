@@ -1,8 +1,13 @@
 # Web3 行业模型 - 案例库
 
+**本节要点**：（1）区块链共识、智能合约、DeFi、跨链互操作、数字身份与隐私五类核心领域；（2）与 L3 交互、功能、分布式模式模型的映射及 Ethereum、Solidity、Chainlink 等；（3）行业案例库与标准映射关系；（4）智能合约安全与跨链最佳实践。  
+**预计阅读时间**：全文约 30–40 分钟；仅读「核心业务领域」+「技术架构组件」约 10 分钟。
+
 ## 概述
 
 Web3行业模型基于通用形式化建模体系，为去中心化应用提供统一的理论基础和工程实践框架。本模型涵盖区块链共识、智能合约、去中心化金融、跨链互操作、数字身份等核心Web3技术要素。
+
+**行业↔通用模型对齐一览表**：本行业与通用 L2/L3 的映射见 [formal-model 通用形式化建模](../../formal-model/)（交互、功能、分布式模式等）；对象/属性/不变式级对齐见 [L2↔L3 映射总表](../../formal-model/alignment-L2-L3-matrix.md)。L4 索引与权威对标见 [L4_D94_W3_行业索引与对标](../../L4_D94_W3_行业索引与对标.md)。
 
 ## 目录
 
@@ -355,3 +360,17 @@ cross_chain_bridge:
 - **流动性管理**：确保充足的流动性供应
 - **治理机制**：设计去中心化的治理机制
 - **合规性**：遵循相关法律法规要求
+
+## 本行业权威来源一览
+
+本行业与权威标准、课程及官方文档的对齐见下表；完整索引见 [reference/AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)。
+
+| 类型 | 来源 | 与本行业映射 |
+|------|------|--------------|
+| 标准 | DID/VC 规范、EIP 系列、跨链协议（IBC 等） | 数字身份、智能合约、跨链 |
+| 课程 | 各校分布式系统、形式化验证、区块链相关课程 | 见 AUTHORITY_ALIGNMENT_INDEX 第 3 节 |
+| 官方文档 | Ethereum、Solidity、Chainlink、Polkadot、IPFS 等 | 见下方「本行业证据条目」 |
+
+### 本行业证据条目
+
+本行业相关 evidence 条目： [W3-ETHEREUM-001](../../evidence/W3-ETHEREUM-001.md)、[W3-ETHEREUM-ECOSYSTEM-001](../../evidence/W3-ETHEREUM-ECOSYSTEM-001.md)、[W3-SC-VERIFY](../../evidence/W3-SC-VERIFY.md)、[W3-CHAINLINK-001](../../evidence/W3-CHAINLINK-001.md)、[W3-POLKADOT-001](../../evidence/W3-POLKADOT-001.md)、[W3-IPFS-001](../../evidence/W3-IPFS-001.md)、[W3-DID-001](../../evidence/W3-DID-001.md)、[W3-DEFI-001](../../evidence/W3-DEFI-001.md)、[W3-CROSS-CHAIN](../../evidence/W3-CROSS-CHAIN.md)、[W3-BRIDGE-001](../../evidence/W3-BRIDGE-001.md)、[W3-SOLANA-001](../../evidence/W3-SOLANA-001.md)、[W3-CONSENSUS-POS](../../evidence/W3-CONSENSUS-POS.md)、[W3-UNISWAP-001](../../evidence/W3-UNISWAP-001.md) 等。更多见 [evidence/README](../../evidence/README.md)。

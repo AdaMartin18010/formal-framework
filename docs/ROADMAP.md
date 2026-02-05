@@ -40,8 +40,9 @@
 - **L3标准模型**：10个标准模型，完成度75-95%
 - **L4行业索引**：5个行业索引，完成度80-85%
 - **行业模型**：5个行业模型，完成度70-85%
-- **证据条目**：9个证据条目示例，建立了完整的证据体系
-- **工具生态**：5个文档管理工具，建立了完整的工具支持
+- **证据条目**：完整与待补充证据体系（见 [evidence/README](evidence/README.md)）；近期补全 STD-29119-5、STD-24641、K8S-001 等
+- **工具生态**：文档管理、链接检查、季度检查等脚本（见 [scripts/README](../scripts/README.md)）
+- **递归完善**：L4 映射矩阵模板（[templates/TEMPLATE_映射矩阵](templates/TEMPLATE_映射矩阵.md)）、概念页（监控模型、运行时模型）、本节要点/预计阅读时间补全（L3_D06/D07、L4_D90、monitoring-model theory）、标准/课程↔L2/L3 年度对照表（[reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)）；周期任务见 [RECURSIVE_IMPROVEMENT_KANBAN](RECURSIVE_IMPROVEMENT_KANBAN.md)
 
 ### 2.2 当前挑战
 
@@ -56,6 +57,9 @@
 - **完善L4行业索引**：补充金融、物联网、Web3的具体案例
 - **增加技术栈对比**：建立完整的技术栈对比矩阵
 - **提供实施指南**：为每个行业提供详细的实施指南
+- **高流量文档断链修复**：优先修复 README、QUICK_NAVIGATION、LEARNING_PATHS、AUTHORITY_ALIGNMENT_INDEX、各 L4 索引中的无效链接（见 [RECURSIVE_IMPROVEMENT_KANBAN](RECURSIVE_IMPROVEMENT_KANBAN.md) 季度断链修复任务）
+- **证据条目按优先级补全**：每季度从 [evidence/README 待补充证据优先级列表](evidence/README.md#待补充证据优先级列表) 认领 2–4 条，符合 [CITATION_STANDARDS](CITATION_STANDARDS.md)
+- **权威对标季度刷新**：检查 2–3 门课程链接、标准版本/日期、CNCF 认证页；更新 [AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 核查日期
 
 ### 3.2 工具开发
 
@@ -68,6 +72,7 @@
 - **建立评审机制**：建立文档评审和更新机制
 - **完善证据条目**：为所有技术栈和案例创建对应的证据条目
 - **优化文档结构**：优化文档结构和导航体验
+- **术语首现链检查抽查**：审稿时抽查核心术语首次出现是否链向 [术语表](knowledge-standards/glossary/GLOSSARY.md) 或 [概念索引](knowledge-standards/concept-index/CONCEPT_INDEX.md)；可选纳入质量门禁（见 [DOCUMENT_COMPLETION_CHECK](DOCUMENT_COMPLETION_CHECK.md) 或 [QUALITY_STANDARDS](QUALITY_STANDARDS.md)）
 
 ## 4. 中期目标（3-6个月）
 
@@ -89,11 +94,18 @@
 - **贡献指南**：完善贡献指南和评审流程
 - **知识分享**：建立知识分享和交流平台
 
+### 4.4 文档与学习科学（持续目标）
+
+- **学习路径与认知优化**：审阅 [LEARNING_PATHS](LEARNING_PATHS.md) 与行业路径；统一「5 分钟版」、复习检查点、自测问句；与 AUTHORITY_ALIGNMENT_INDEX 双向链接；**间隔归来建议**（各阶段末提示「若间隔 N 天后回来先做哪几条自测」）；**自测问句扩展**（[CONCEPT_INDEX](knowledge-standards/concept-index/CONCEPT_INDEX.md) 高引用概念补自测问句并维护自测问句汇总表，便于认领与验收）
+- **长文档可读性**：为 3–5 个高流量长文档补全「本节要点」「预计阅读时间」及「5 分钟版」
+- **概念页与术语表补全**：为高引用概念新增概念页；核心术语首现链向术语表/概念索引的抽查与补全
+
 ## 5. 长期目标（6-12个月）
 
 ### 5.1 标准体系
 
 - **国际标准**：推动成为国际标准或行业标准
+- **与最新国际标准与名校课程全面对照**：每年完整过一遍 12207、15288、42010、1012 等及 2–3 所名校形式化/软件工程课程大纲；更新 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md) 与 [PENDING_TRACKING_STANDARDS_COURSES](reference/PENDING_TRACKING_STANDARDS_COURSES.md)
 - **认证体系**：建立文档质量和模型质量的认证体系
 - **培训体系**：建立完整的培训和认证体系
 
@@ -108,6 +120,7 @@
 - **AI集成**：集成人工智能技术提升建模能力
 - **云原生**：支持云原生架构和部署
 - **边缘计算**：支持边缘计算和物联网应用
+- **适应性微学习/按掌握度推荐**（可选研究或工具化方向）：按知识点掌握度动态推荐下一节；不改变当前以文档与看板为主的人为驱动流程
 
 ## 6. 技术路线图
 

@@ -19,8 +19,10 @@
 - **总文档数**：50+
 - **总字数**：200,000+
 - **总行数**：10,000+
-- **证据条目**：9个完整示例
-- **工具脚本**：5个专业工具
+- **证据条目**：见 evidence/README（已完整 + 待补充）；年度对照表见 [reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)
+- **工具脚本**：见 scripts/README；含 internal_link_checker、quarterly_doc_check 等
+- **模板与概念**：TEMPLATE_映射矩阵、监控/运行时概念页；本节要点已补全部分 L3/L4 长文档；概念页新增规则引擎、工作流、契约、不变式（含「出现在哪些 L2/L3 文档」反向链接）；[reference/PENDING_TRACKING_STANDARDS_COURSES](reference/PENDING_TRACKING_STANDARDS_COURSES.md) 待跟踪标准/课程清单已建立
+- **权威对齐与认知改进方案（100% 落地）**：L4_D90 §4.2 CNCF 课程与 L3 映射、AUTHORITY_ALIGNMENT_INDEX CKS 与课程↔L3 链接；LEARNING_AND_REVIEW_TIPS 认知与学习依据（Sweller、Kang 2016）；全 L3 文档（L3_D01–D09）本节要点/预计阅读时间/单次阅读建议；CONCEPT_INDEX 不变式条目；RECURSIVE_IMPROVEMENT_KANBAN §5.1 内容补充任务表；data-model/theory、interaction-model/theory「与标准/课程对照要点」；FORMAL_SPEC_LANGUAGES 预计阅读时间
 
 ## 主要成就
 
@@ -71,7 +73,8 @@
 
 ### ✅ 证据条目体系
 
-1. **证据条目示例**：9个完整的证据条目
+1. **证据条目**：完整与待补充列表见 [evidence/README](evidence/README.md)。近期补全：STD-29119-5（关键词驱动测试）、STD-24641（MBSSE）、K8S-001（Kubernetes L4 引用条目）等；STD-1012、STD-15288、STD-42010 等已有完整条目。
+2. **证据条目示例**（部分）：9个及以上完整示例
    - CN-K8S-BASE.md：Kubernetes基础编排案例
    - AI-SERVING-VERSIONS.md：TensorFlow Serving多版本模型服务案例
    - IOT-DEVICE-ACCESS.md：多协议设备接入案例
@@ -82,7 +85,7 @@
    - IOT-SMARTFACTORY-001.md：智能工厂设备管理案例
    - W3-UNISWAP-001.md：Uniswap去中心化交易所案例
 
-2. **证据条目标准**：建立了完整的证据条目标准
+3. **证据条目标准**：建立了完整的证据条目标准
    - 标准化的元数据格式
    - 完整的对齐维度定义
    - 详细的映射关系说明
@@ -213,6 +216,27 @@
 2. **资源风险**：建立社区贡献机制，寻求合作伙伴
 3. **市场风险**：加强用户调研，积极参与标准制定
 
+## 权威对齐与递归改进方案 100% 完成清单
+
+以下项已全部落地，对应「权威对齐、认知与学习、链接与补充、可持续任务」四类改进：
+
+| 类别 | 完成项 | 位置/说明 |
+| ---- | ------ | --------- |
+| 权威对齐 | 待跟踪标准/课程页 | [reference/PENDING_TRACKING_STANDARDS_COURSES](reference/PENDING_TRACKING_STANDARDS_COURSES.md)；AUTHORITY_ALIGNMENT_INDEX 与 reference/README 已链入 |
+| 权威对齐 | 断链修复优先高流量、待跟踪维护任务 | [RECURSIVE_IMPROVEMENT_KANBAN](RECURSIVE_IMPROVEMENT_KANBAN.md) §4.1 周期表 |
+| 权威对齐 | ROADMAP 短期/中期/长期 | [ROADMAP](ROADMAP.md) 文档完善、质量提升、文档与学习科学、标准体系、适应性微学习 |
+| 认知与学习 | 长文档可读性 | L3_D08、L3_D09、L4_D91、L4_D94 本节要点/预计阅读时间/5 分钟版；L4 全五篇 本行业↔L2/L3 映射表 |
+| 认知与学习 | 概念页与术语链 | 概念页 rule-engine、workflow、contract；[CONCEPT_INDEX](knowledge-standards/concept-index/CONCEPT_INDEX.md) 已更新；[DOCUMENT_COMPLETION_CHECK](DOCUMENT_COMPLETION_CHECK.md)、[QUALITY_STANDARDS](QUALITY_STANDARDS.md) 术语链检查（可选） |
+| 认知与学习 | 学习科学引用 | [learning/LEARNING_AND_REVIEW_TIPS](learning/LEARNING_AND_REVIEW_TIPS.md) 适应性微学习引用补全 |
+| 链接与补充 | L4 本行业↔L2/L3 映射 | 五份 L4 文档顶部映射表并链回 [alignment-L2-L3-matrix](formal-model/alignment-L2-L3-matrix.md)、README §3.1 |
+| 链接与补充 | 表格与标题格式 | PENDING_TRACKING、RECURSIVE_IMPROVEMENT_KANBAN、L4 表 MD060；L4 本行业章节 ## 统一、MD001 消除 |
+| 可持续任务 | 本周期已完成记录 | [RECURSIVE_IMPROVEMENT_KANBAN §5.1](RECURSIVE_IMPROVEMENT_KANBAN.md#51-本周期已完成示例供下周期参考) 已写入本轮 100% 落地说明 |
+| 权威对齐 | AI 标准与 L4_D93 映射 | [AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2 节增加 NIST AI RMF / ISO/IEC 23053 / IEEE 2857 行 |
+| 认知与学习 | 路径→选型→课程闭环 | [LEARNING_PATHS](LEARNING_PATHS.md) 前置依赖图旁链 AUTHORITY_ALIGNMENT_INDEX、FORMAL_SPEC_LANGUAGES §2.1；进阶路径阶段1/2/3 总结增加「本阶段与权威对标」 |
+| 认知与学习 | 专家路径复习与间隔 | [REVIEW_CHECKLIST](learning/REVIEW_CHECKLIST.md) 新增专家路径整节，进阶路径三阶段补全「间隔归来建议」；使用说明统一「先写再对」 |
+| 认知与学习 | 自测问句汇总与 Kang 引用 | [CONCEPT_INDEX](knowledge-standards/concept-index/CONCEPT_INDEX.md) 使用指南链自测问句汇总与认领说明；[LEARNING_AND_REVIEW_TIPS](learning/LEARNING_AND_REVIEW_TIPS.md) §3 增加 Kang (2016) 政策含义 |
+| 链接与补充 | 高流量文档断链 | CITATION_STANDARDS 证据条目模板链接已修正 |
+
 ## 结论
 
 形式化框架项目已经取得了显著的进展，从一个简单的概念框架发展为一个完整、实用、高质量的技术文档体系。项目具备了完整的三层架构、丰富的行业应用、完善的工具生态和严格的质量保证体系。
@@ -221,4 +245,4 @@
 
 ---
 
-*最后更新：2024-12-19*-
+*最后更新：2025-02*（含权威对齐与递归改进方案 100% 落地：AI 标准行、LEARNING_PATHS 与 FORMAL_SPEC/权威闭环、REVIEW_CHECKLIST 专家路径与间隔归来、CONCEPT_INDEX 自测问句汇总与 LEARNING_AND_REVIEW_TIPS Kang 引用、CITATION_STANDARDS 链接修正；详见 RECURSIVE_IMPROVEMENT_KANBAN §5.1 本周期已完成）

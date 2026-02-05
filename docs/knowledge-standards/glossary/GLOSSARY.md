@@ -83,6 +83,21 @@ AutomatedReasoning = (Knowledge, Rules, Inference, Conclusion)
 
 ---
 
+#### 断言 (Assertion)
+
+**英文**: Assertion  
+**分类**: 测试 / 验证
+
+**定义**: 对程序或系统在某一时刻应满足的条件的布尔表达式；用于测试用例中的预期结果判定，或形式化规格中的不变式/后置条件。
+
+**使用场景**: 单元测试、契约测试、形式化验证、L3_D08 测试标准模型中的 TestCase.assertions。
+
+**本框架映射**: [L3_D08 测试标准模型](../../L3_D08_测试标准模型.md)、[测试模型理论](../../formal-model/testing-model/theory.md)；与「不变式」的区别：断言多用于单次执行/用例级，不变式用于模型级约束。参见 [概念索引·测试模型](../concept-index/CONCEPT_INDEX.md#测试模型-testing-model)。
+
+**相关概念**: [形式化验证](#形式化验证-formal-verification), [循环不变式](#循环不变式-loop-invariant)；测试模型见 [概念索引·测试模型](../concept-index/CONCEPT_INDEX.md#测试模型-testing-model)
+
+---
+
 ### B
 
 #### 业务逻辑 (Business Logic)
@@ -553,6 +568,21 @@ SMT求解器：自动求解SMT问题的算法和工具
 
 ### T
 
+#### 状态机 (State Machine)
+
+**英文**: State Machine / Finite State Machine (FSM)  
+**分类**: 功能模型
+
+**定义**: 由状态集合、转移条件与初始/终态组成的离散行为模型；在任意时刻处于唯一状态，事件触发后按转移规则迁移。
+
+**使用场景**: 业务流程、协议行为、L2_D07 控制调度元模型与 L3_D03 功能标准模型中的状态机子域；与工作流、规则引擎并列于功能模型下。
+
+**本框架映射**: [L2_D03 功能元模型](../../L2_D03_功能元模型.md)、[L2_D07 控制调度元模型](../../L2_D07_控制调度元模型.md)、[L3_D03 功能标准模型](../../L3_D03_功能标准模型.md)；[功能模型·状态机](../../formal-model/functional-model/state-machine/theory.md)。参见 [概念索引·功能模型](../concept-index/CONCEPT_INDEX.md#功能模型-functional-model)。
+
+**相关概念**: [业务逻辑](#业务逻辑-business-logic), [规则引擎](#规则引擎-rule-engine), [工作流](../../formal-model/functional-model/workflow/theory.md)
+
+---
+
 #### 时序逻辑 (Temporal Logic)
 
 **英文**: Temporal Logic  
@@ -611,6 +641,145 @@ wp(S, Q) = 最弱的前置条件P，使得{P} S {Q}成立
 
 ---
 
+### 行业与云原生相关术语
+
+#### VirtualService（虚拟服务）
+
+**英文**: VirtualService  
+**分类**: 云原生 / 服务网格
+
+**定义**: Istio 中定义流量路由规则的对象，指定请求如何被路由到某一服务的不同版本或子集（如金丝雀、蓝绿）。
+
+**使用场景**: 服务网格流量治理、金丝雀发布、A/B 测试。
+
+**本框架映射**: [L3_D04 运行时标准模型](../../L3_D04_运行时标准模型.md) 服务网格路由；[云原生案例二：Service Mesh](../../industry-model/cloud-native-architecture/README.md#案例二service-mesh-流量治理istio)。
+
+**相关概念**: [DestinationRule](#destinationrule目标规则), [金丝雀发布](#金丝雀发布-canary-release)
+
+---
+
+#### DestinationRule（目标规则）
+
+**英文**: DestinationRule  
+**分类**: 云原生 / 服务网格
+
+**定义**: Istio 中定义到达目标服务后的流量策略（负载均衡、连接池、熔断、子集）的配置对象。
+
+**使用场景**: 服务网格、弹性与容错策略。
+
+**本框架映射**: [L3_D04 运行时标准模型](../../L3_D04_运行时标准模型.md)；[云原生案例二：Service Mesh](../../industry-model/cloud-native-architecture/README.md#案例二service-mesh-流量治理istio)。
+
+**相关概念**: [VirtualService](#virtualservice虚拟服务), [熔断器](#熔断器-circuit-breaker)
+
+---
+
+#### GitOps
+
+**英文**: GitOps  
+**分类**: 云原生 / 部署
+
+**定义**: 以 Git 为唯一事实来源的声明式持续交付方式：期望状态存于 Git，集群通过控制器与 Git 同步并自愈。
+
+**使用场景**: 多环境部署、审计、回滚、质量门禁（如 PR 审批）。
+
+**本框架映射**: [L3_D05 部署标准模型](../../L3_D05_部署标准模型.md)、[L3_D09 CI/CD 标准模型](../../L3_D09_CICD标准模型.md)；[云原生案例三：GitOps（ArgoCD）](../../industry-model/cloud-native-architecture/README.md#案例三gitops-持续交付argocd)。
+
+**相关概念**: [部署模型](../../formal-model/deployment-model/theory.md), [CI/CD 模型](../../formal-model/cicd-model/theory.md)
+
+---
+
+#### 可观测性 (Observability)
+
+**英文**: Observability  
+**分类**: 可观测性 / 监控
+
+**定义**: 通过外部输出（指标、日志、追踪等）推断系统内部状态的能力；通常归纳为 Metrics、Logs、Traces 三大支柱，辅以 Dashboard 与告警。
+
+**使用场景**: 运维监控、故障诊断、SLO 管理、L3_D06 监控标准模型与 L4 各行业可观测性实践。
+
+**本框架映射**: [L2_D06 监控元模型](../../L2_D06_监控元模型.md)、[L3_D06 监控标准模型](../../L3_D06_监控标准模型.md)、[监控模型理论](../../formal-model/monitoring-model/theory.md)；[概念索引·监控模型](../concept-index/CONCEPT_INDEX.md#监控模型-monitoring-model)。云原生见 [案例四：可观测性](../../industry-model/cloud-native-architecture/README.md#案例四可观测性一体化prometheusotel)。
+
+**相关概念**: [SLO（服务等级目标）](#slo服务等级目标), [监控模型](../../formal-model/monitoring-model/theory.md)
+
+---
+
+#### SLO（服务等级目标）
+
+**英文**: Service Level Objective  
+**缩写**: SLO  
+**分类**: 可观测性 / 监控
+
+**定义**: 服务等级目标的量化指标（如可用性 99.9%、P99 延迟 &lt; 500ms），用于驱动告警与容量规划。
+
+**使用场景**: 监控、告警、容量与稳定性管理。
+
+**本框架映射**: [L3_D06 监控标准模型](../../L3_D06_监控标准模型.md)；[云原生案例四：可观测性](../../industry-model/cloud-native-architecture/README.md#案例四可观测性一体化prometheusotel)。
+
+**相关概念**: [可观测性](#可观测性-observability)、监控模型、SLI（服务等级指标）；[监控模型](../../formal-model/monitoring-model/theory.md)
+
+---
+
+#### FaaS（函数即服务）
+
+**英文**: Function as a Service  
+**缩写**: FaaS  
+**分类**: 云原生 / Serverless
+
+**定义**: 以函数为部署与计费单位的云服务形态；由事件触发，自动扩缩容，按调用与执行时长计费。
+
+**使用场景**: 事件驱动、API 后端、定时任务、轻量计算。
+
+**本框架映射**: [L3_D04 运行时标准模型](../../L3_D04_运行时标准模型.md)、[L3_D03 功能标准模型](../../L3_D03_功能标准模型.md)；[云原生案例五：Serverless](../../industry-model/cloud-native-architecture/README.md#案例五serverless-函数计算aws-lambdaknative)。
+
+**相关概念**: [Serverless](../../industry-model/cloud-native-architecture/serverless/theory.md), [冷启动](#冷启动-cold-start)
+
+---
+
+#### 冷启动 (Cold Start)
+
+**英文**: Cold Start  
+**分类**: 云原生 / Serverless
+
+**定义**: 函数实例从零启动或从休眠恢复时的延迟，影响首请求或低频调用的响应时间。
+
+**使用场景**: Serverless 性能优化、预留并发与预热策略。
+
+**本框架映射**: [L3_D04 运行时标准模型](../../L3_D04_运行时标准模型.md)；[云原生案例五：Serverless](../../industry-model/cloud-native-architecture/README.md#案例五serverless-函数计算aws-lambdaknative)。
+
+**相关概念**: [FaaS](#faas函数即服务), [弹性伸缩](../../formal-model/runtime-model/theory.md)
+
+---
+
+#### 金丝雀发布 (Canary Release)
+
+**英文**: Canary Release  
+**分类**: 云原生 / 部署与流量
+
+**定义**: 将小比例流量导向新版本，观察指标与错误率后再逐步放量的发布策略。
+
+**使用场景**: 服务网格、API 网关、蓝绿/金丝雀发布。
+
+**本框架映射**: [L3_D01 交互标准模型](../../L3_D01_交互标准模型.md)、[L3_D04 运行时标准模型](../../L3_D04_运行时标准模型.md)；[云原生案例二：Service Mesh](../../industry-model/cloud-native-architecture/README.md#案例二service-mesh-流量治理istio)、[案例六：API 网关](../../industry-model/cloud-native-architecture/README.md#案例六api-网关流量治理kongenvoy)。
+
+**相关概念**: [VirtualService](#virtualservice虚拟服务), [蓝绿发布](https://martinfowler.com/bliki/BlueGreenDeployment.html)
+
+---
+
+#### 熔断器 (Circuit Breaker)
+
+**英文**: Circuit Breaker  
+**分类**: 分布式 / 弹性
+
+**定义**: 当下游失败率或延迟超过阈值时，暂时拒绝请求并快速失败，避免级联故障的模式。
+
+**使用场景**: 服务间调用、API 网关、服务网格。
+
+**本框架映射**: [L3_D04 运行时标准模型](../../L3_D04_运行时标准模型.md)、[L3_D10 分布式模式标准模型](../../L3_D10_分布式模式标准模型.md)；[云原生案例二、案例六](../../industry-model/cloud-native-architecture/README.md)。
+
+**相关概念**: [DestinationRule](#destinationrule目标规则), [重试与超时](../../formal-model/distributed-pattern-model/theory.md)
+
+---
+
 ## 术语分类
 
 ### 按类别分类
@@ -647,6 +816,16 @@ wp(S, Q) = 最弱的前置条件P，使得{P} S {Q}成立
 #### 工具
 - [SAT求解器](#sat求解器-sat-solver)
 - [SMT求解器](#smt求解器-smt-solver)
+
+#### 云原生 / 行业
+- [VirtualService](#virtualservice虚拟服务)
+- [DestinationRule](#destinationrule目标规则)
+- [GitOps](#gitops)
+- [SLO（服务等级目标）](#slo服务等级目标)
+- [FaaS（函数即服务）](#faas函数即服务)
+- [冷启动](#冷启动-cold-start)
+- [金丝雀发布](#金丝雀发布-canary-release)
+- [熔断器](#熔断器-circuit-breaker)
 
 ## 相关文档
 

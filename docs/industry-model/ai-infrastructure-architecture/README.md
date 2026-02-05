@@ -1,9 +1,14 @@
 # AI 基础设施行业模型 - 案例库
 
+**本节要点**：（1）数据管道、分布式训练、特征库、MLOps、模型服务五类核心领域；（2）三个案例（TensorFlow Serving、Feast、Kubeflow/Airflow）与 L3 的映射；（3）与通用模型及行业标准的映射关系；（4）数据管道、训练、服务、特征库的最佳实践。  
+**预计阅读时间**：全文约 25–35 分钟；仅读「核心业务领域」+「技术架构组件」+ 标准映射约 12 分钟。
+
 ## 概述
 
 AI基础设施行业模型基于通用形式化建模体系，为AI/ML工作流提供统一的理论基础和工程实践框架。
 本模型涵盖数据管道、分布式训练、特征库、MLOps、模型服务等核心AI基础设施要素。
+
+**行业↔通用模型对齐一览表**：本行业与通用 L2/L3 的映射见 [formal-model 通用形式化建模](../../formal-model/)（数据、运行时、部署、监控、CI/CD 等）；对象/属性/不变式级对齐见 [L2↔L3 映射总表](../../formal-model/alignment-L2-L3-matrix.md)。L4 索引与权威对标见 [L4_D93_AI_行业索引与对标](../../L4_D93_AI_行业索引与对标.md)。
 
 ## 目录
 
@@ -331,8 +336,23 @@ training_pipeline:
 
 ---
 
+## 本行业权威来源一览
+
+本行业与权威标准、课程及官方文档的对齐见下表；完整索引见 [reference/AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)。
+
+| 类型 | 来源 | 与本行业映射 |
+|------|------|--------------|
+| 标准 | ISO/IEC 12207、15288（生命周期）；ISO/IEC 25010（质量） | MLOps 流程、模型质量与监控 |
+| 课程 | 各校软件工程、分布式系统、ML 相关课程 | 见 AUTHORITY_ALIGNMENT_INDEX 第 3 节 |
+| 官方文档 | TensorFlow、MLflow、Kubeflow、Feast、Airflow 等官方文档 | 见下方「本行业证据条目」 |
+
+### 本行业证据条目
+
+本行业相关 evidence 条目： [AI-SERVING-001](../../evidence/AI-SERVING-001.md)、[AI-SERVING-VERSIONS](../../evidence/AI-SERVING-VERSIONS.md)、[AI-MLFLOW](../../evidence/AI-MLFLOW.md)、[AI-MLFLOW-001](../../evidence/AI-MLFLOW-001.md)、[AI-KUBEFLOW-001](../../evidence/AI-KUBEFLOW-001.md)、[AI-PIPELINE-KF](../../evidence/AI-PIPELINE-KF.md)、[AI-FEAST-001](../../evidence/AI-FEAST-001.md)、[AI-FEAST-CONSISTENCY](../../evidence/AI-FEAST-CONSISTENCY.md)、[AI-AIRFLOW-001](../../evidence/AI-AIRFLOW-001.md)、[AI-REGISTRY-001](../../evidence/AI-REGISTRY-001.md)、[AI-EVIDENTLY-001](../../evidence/AI-EVIDENTLY-001.md)、[AI-GE-001](../../evidence/AI-GE-001.md)。更多见 [evidence/README](../../evidence/README.md)。
+
 **相关链接**：
 
 - [AI基础设施理论文档](./theory.md)
 - [通用形式化建模体系](../../formal-model/README.md)
 - [AI行业索引与对标](../../L4_D93_AI_行业索引与对标.md)
+- [权威对标总索引](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)

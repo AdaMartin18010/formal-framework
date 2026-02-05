@@ -18,6 +18,7 @@
 2. **结构一致性**：必须包含"术语/映射/方法/DSL/验证/案例/开放问题/引用"
 3. **评审记录**：至少一次专家评审记录与结论
 4. **质量规范**：语言风格、表述一致、图表正确、链接有效
+5. **术语链检查**（可选）：审稿或门禁时可抽查「核心术语首次出现是否链向 [术语表](knowledge-standards/glossary/GLOSSARY.md) 或 [概念索引](knowledge-standards/concept-index/CONCEPT_INDEX.md)」；详见 [QUALITY_STANDARDS](QUALITY_STANDARDS.md) 与 [ROADMAP 质量提升](ROADMAP.md#33-质量提升)
 
 ## 当前完成度状态
 

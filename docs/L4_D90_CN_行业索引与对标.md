@@ -8,7 +8,24 @@ version: V0.1
 status: draft
 ---
 
+**本节要点**：（1）云原生核心对象（Kubernetes、Istio、Prometheus、Knative、ArgoCD）与 L3 模型映射；（2）术语对齐与标准/项目映射矩阵；（3）CNCF 认证与 L3 映射；（4）技术栈详细映射（容器编排、服务网格等）。  
+**预计阅读时间**：全文约 20–30 分钟；仅读 §1–§4 与映射表约 10 分钟。  
+**5 分钟版**：§4 标准/项目映射矩阵 + §4.1 CNCF 认证与 L3 映射表；详见 [templates/TEMPLATE_映射矩阵](templates/TEMPLATE_映射矩阵.md)。
+
+## 本行业 ↔ L2/L3 映射
+
+| 本行业（云原生） | L2 元模型 | L3 标准模型 | 说明 |
+| ---------------- | --------- | ----------- | ---- |
+| 容器编排、服务网格、Serverless | L2_D04 运行时、L2_D01 交互 | [L3_D04 运行时](L3_D04_运行时标准模型.md)、[L3_D01 交互](L3_D01_交互标准模型.md) | Pod/Service/Ingress、mTLS、Scale-to-zero |
+| 部署、GitOps | L2_D05 部署 | [L3_D05 部署](L3_D05_部署标准模型.md)、[L3_D09 CI/CD](L3_D09_CICD标准模型.md) | Argo CD、Desired State |
+| 可观测性 | L2_D06 监控 | [L3_D06 监控](L3_D06_监控标准模型.md) | Prometheus、OpenTelemetry |
+| 测试、安全 | L2_D08 测试、L2_D05 | L3_D08、L3_D04 安全 | 验证与合规 |
+
+完整对象/属性/不变式对齐见 [L2↔L3 映射总表](formal-model/alignment-L2-L3-matrix.md)；L2 元模型见 [README §3.1](README.md#31-l2元模型快速导航)。
+
 ## 目录
+
+- [1. 范围与对象](#1-范围与对象)
 
 ## 1. 范围与对象
 
@@ -19,6 +36,8 @@ status: draft
 - CNCF Landscape / TOC 指南
 - Kubernetes / Istio / Prometheus 官方文档
 - NIST SP 800-190, ISO/IEC 27001 相关安全条款（参考）
+
+**本段检查点**：此处可暂停；建议先能根据「本行业 ↔ L2/L3 映射」表说出至少 3 个云原生对象（如 K8s、Istio、Prometheus）对应的 L3 文档，再继续 §3。自测可参考 [LEARNING_PATHS 云原生专项](LEARNING_PATHS.md#云原生专项) 与 [REVIEW_CHECKLIST](learning/REVIEW_CHECKLIST.md)。
 
 ## 3. 术语对齐（中英）
 
@@ -34,7 +53,7 @@ status: draft
 
 ## 4. 标准/项目映射矩阵（模板）
 
-见 `docs/TEMPLATE_映射矩阵.md`，本行业矩阵草案：
+见 [templates/TEMPLATE_映射矩阵.md](templates/TEMPLATE_映射矩阵.md)，本行业矩阵草案：
 
 | 领域/能力 | 国际标准/项目 | 本框架模型(Lx_Dyy_Mzz) | 关键术语 | 证据条目 | 备注 |
 | --- | --- | --- | --- | --- | --- |
@@ -43,6 +62,45 @@ status: draft
 | 可观测 | Prometheus | L3_D06_监控标准模型 | Metric/Alert/Rule | evidence:PROM-001 | SLO 监控 |
 | Serverless | Knative | L3_D04 + L3_D05 | Scale-to-zero/Revisions | evidence:KNA-001 | 弹性实践 |
 | GitOps | ArgoCD | L3_D05_部署标准模型 | Desired/Sync/PR Gate | evidence:ARGO-001 | 合规门禁 |
+
+## 4.1 CNCF 认证与 L3 映射（全面覆盖）
+
+完整认证列表与链接见 [AUTHORITY_ALIGNMENT_INDEX 第 4 节](reference/AUTHORITY_ALIGNMENT_INDEX.md#4-云原生与-cncf-资源)。下表为本框架 L3 与 CNCF 认证的映射摘要：
+
+| 认证 | 全称 | 本框架映射 |
+| ---- | ---- | ---------- |
+| KCNA | Kubernetes and Cloud Native Associate | L4_D90、容器/基础概念 |
+| CKA | Certified Kubernetes Administrator | L3_D04 运行时、编排 |
+| CKAD | Certified Kubernetes Application Developer | L3_D04、L3_D05 部署 |
+| PCA | Prometheus Certified Associate | L3_D06 监控 |
+| ICA | Istio Certified Associate | L3_D04+L3_D01 服务网格 |
+| CGOA | GitOps Certified Associate | L3_D05 部署、L3_D09 GitOps |
+| CAPA | Certified Argo Project Associate | L3_D05、L3_D09 GitOps/Argo |
+| OTCA | OpenTelemetry Certified Associate | L3_D06 监控、可观测性 |
+| CBA | Certified Backstage Associate | L3_D05 部署、开发者门户 |
+| KCA | Kyverno Certified Associate | L3_D04 策略、L3_D05 合规 |
+| KCSA | Kubernetes and Cloud Native Security Associate | L3_D04、L4_D90 安全 |
+| CNPA | Cloud Native Platform Engineering Associate | L3_D04、L3_D05、L3_D09 平台工程 |
+| CNPE | Certified Cloud Native Platform Engineer | L3_D04/D05/D06/D09 综合 |
+| CKS | Certified Kubernetes Security Specialist | L3_D04 运行时安全、L4_D90 安全 |
+
+## 4.2 CNCF 课程与 L3 映射
+
+CNCF 提供 30+ 门培训课程（[CNCF Training](https://www.cncf.io/training/courses/)），以下按主题与本框架 L3 标准模型对应，便于「学完某课程可对标本框架哪几节」。
+
+| 课程主题/类型 | 主要 L3 映射 | 说明 |
+| -------------- | ------------ | ---- |
+| Kubernetes 基础 / 入门 | L3_D04 运行时标准模型 | 容器、Pod、Service、编排概念 |
+| Kubernetes 运维 / 管理 | L3_D04、L3_D05 部署 | 集群管理、配置、升级 |
+| Istio / 服务网格 | L3_D04、L3_D01 交互 | 流量治理、mTLS、可观测 |
+| Prometheus / 监控 | L3_D06 监控标准模型 | 指标、告警、SLO |
+| OpenTelemetry / 可观测 | L3_D06 监控 | 追踪、日志、指标一体化 |
+| GitOps / Argo CD / Argo Workflows | L3_D05 部署、L3_D09 CI/CD | 期望状态、同步、流水线 |
+| Serverless / Knative | L3_D04、L3_D05 | 弹性伸缩、Revision、事件 |
+| 平台工程 / Backstage | L3_D05、L3_D09 | 开发者门户、自助能力 |
+| 安全 / Kyverno / 策略 | L3_D04 策略、L3_D05 合规 | 策略即代码、准入控制 |
+
+完整课程列表与最新名称以 [CNCF Training](https://www.cncf.io/training/courses/) 为准；认证大纲见 [cncf/curriculum](https://github.com/cncf/curriculum)。与权威索引的对应见 [AUTHORITY_ALIGNMENT_INDEX 第 4 节](reference/AUTHORITY_ALIGNMENT_INDEX.md#4-云原生与-cncf-资源)。
 
 ## 5. 成熟案例与证据（模板）
 

@@ -5,7 +5,7 @@
 
 ## 概述
 
-本文档使用Mermaid图可视化形式化框架项目中所有核心概念间的关系，包括概念依赖图、学习路径图和概念分类图。
+本文档使用 Mermaid 图可视化形式化框架项目中所有核心概念间的关系，包括概念依赖图、学习路径图和概念分类图。**与概念索引一致**：概念名称、难度与依赖关系与 [概念索引 CONCEPT_INDEX](../concept-index/CONCEPT_INDEX.md) 及 `concept-index/concepts/` 下概念页对齐；审稿时请两处同步维护。自测问句与定义位置以 CONCEPT_INDEX 为准。
 
 ## 概念依赖关系图
 
@@ -330,10 +330,10 @@ graph TD
 
 ## 相关文档
 
-- [概念索引](../concept-index/CONCEPT_INDEX.md)
-- [学习路径](../../LEARNING_PATHS.md)
-- [术语表](../glossary/GLOSSARY.md)
+- [概念索引 CONCEPT_INDEX](../concept-index/CONCEPT_INDEX.md) — 概念定义、自测问句汇总与前置知识（单点真相）
+- [学习路径 LEARNING_PATHS](../../LEARNING_PATHS.md)
+- [术语表 GLOSSARY](../glossary/GLOSSARY.md)
 
 ---
 
-**维护说明**：本概念关系图谱应定期更新，确保概念关系的准确性和完整性。
+**维护说明**：本概念关系图谱应定期更新，确保概念关系的准确性和完整性。与 CONCEPT_INDEX、concepts/ 保持一致；新增或重命名概念时请同步更新本图与 CONCEPT_INDEX，避免悬空链接。

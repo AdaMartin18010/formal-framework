@@ -1,8 +1,13 @@
 # 金融行业模型 - 案例库
 
+**本节要点**：（1）核心银行、支付、风控合规、数字银行、区块链金融五类核心领域；（2）与 L3 数据/交互/功能/测试模型的映射及 PCI-DSS、Open Banking 等标准；（3）行业案例库与标准映射关系；（4）合规与风控最佳实践。  
+**预计阅读时间**：全文约 30–40 分钟；仅读「核心业务领域」+「技术架构组件」约 10 分钟。
+
 ## 概述
 
 金融行业模型基于通用形式化建模体系，为金融系统提供统一的理论基础和工程实践框架。本模型涵盖核心银行、支付系统、风控合规、数字银行、区块链金融等核心金融技术要素。
+
+**行业↔通用模型对齐一览表**：本行业与通用 L2/L3 的映射见 [formal-model 通用形式化建模](../../formal-model/)（数据、交互、功能、测试等）；对象/属性/不变式级对齐见 [L2↔L3 映射总表](../../formal-model/alignment-L2-L3-matrix.md)。L4 索引与权威对标见 [L4_D91_FIN_行业索引与对标](../../L4_D91_FIN_行业索引与对标.md)。
 
 ## 目录
 
@@ -363,3 +368,17 @@ risk_management:
 - **规则管理**：实现规则的可视化配置和管理
 - **模型管理**：建立风险模型的版本管理和验证
 - **合规报告**：自动化合规报告生成和提交
+
+## 本行业权威来源一览
+
+本行业与权威标准、课程及官方文档的对齐见下表；完整索引见 [reference/AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)。
+
+| 类型 | 来源 | 与本行业映射 |
+|------|------|--------------|
+| 标准 | PCI-DSS、Open Banking、巴塞尔、ISO 20022、ISO/IEC 27001 | 支付、开放银行、风控合规、信息安全 |
+| 课程 | 各校软件工程、金融科技相关课程 | 见 AUTHORITY_ALIGNMENT_INDEX 第 3 节 |
+| 官方文档 | Fineract、Mambu、Hyperledger、Quorum 等 | 见下方「本行业证据条目」 |
+
+### 本行业证据条目
+
+本行业相关 evidence 条目： [FIN-CORE-001](../../evidence/FIN-CORE-001.md)、[FIN-API-001](../../evidence/FIN-API-001.md)、[FIN-PCI-001](../../evidence/FIN-PCI-001.md)、[FIN-PAY-GW](../../evidence/FIN-PAY-GW.md)、[FIN-OPENBANKING-001](../../evidence/FIN-OPENBANKING-001.md)、[FIN-TRADE-MATCH](../../evidence/FIN-TRADE-MATCH.md)、[FIN-RISK-REALTIME](../../evidence/FIN-RISK-REALTIME.md)、[FIN-CBDC-001](../../evidence/FIN-CBDC-001.md)、[FIN-DLT-001](../../evidence/FIN-DLT-001.md)、[FIN-QUORUM-001](../../evidence/FIN-QUORUM-001.md)。更多见 [evidence/README](../../evidence/README.md)。

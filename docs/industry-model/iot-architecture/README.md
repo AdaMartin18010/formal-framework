@@ -1,8 +1,13 @@
 # 物联网行业模型 - 案例库
 
+**本节要点**：（1）设备接入、边缘计算、数据采集、实时控制、安全与隐私五类核心领域；（2）与 L3 运行时、控制调度、监控模型的映射及 EdgeX、KubeEdge、OPC UA 等；（3）行业案例库与标准映射关系；（4）设备管理与边缘计算最佳实践。  
+**预计阅读时间**：全文约 28–38 分钟；仅读「核心业务领域」+「技术架构组件」约 10 分钟。
+
 ## 概述
 
 物联网行业模型基于通用形式化建模体系，为物联网系统提供统一的理论基础和工程实践框架。本模型涵盖设备接入、边缘计算、数据采集、实时控制、安全通信等核心物联网技术要素。
+
+**行业↔通用模型对齐一览表**：本行业与通用 L2/L3 的映射见 [formal-model 通用形式化建模](../../formal-model/)（运行时、控制调度、监控等）；对象/属性/不变式级对齐见 [L2↔L3 映射总表](../../formal-model/alignment-L2-L3-matrix.md)。L4 索引与权威对标见 [L4_D92_IOT_行业索引与对标](../../L4_D92_IOT_行业索引与对标.md)。
 
 ## 目录
 
@@ -352,3 +357,17 @@ data_collection:
 - **存储优化**：采用合适的数据压缩和存储策略
 - **同步策略**：设计可靠的数据同步和备份机制
 - **隐私保护**：实施数据脱敏和隐私保护措施
+
+## 本行业权威来源一览
+
+本行业与权威标准、课程及官方文档的对齐见下表；完整索引见 [reference/AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)。
+
+| 类型 | 来源 | 与本行业映射 |
+|------|------|--------------|
+| 标准 | OPC UA、LwM2M、MQTT、ISO/IEC 27001 | 设备接入、数据采集、安全 |
+| 课程 | 各校分布式系统、嵌入式/实时系统相关课程 | 见 AUTHORITY_ALIGNMENT_INDEX 第 3 节；ETH Distributed Systems |
+| 官方文档 | EdgeX、KubeEdge、EMQX、ThingsBoard、Eclipse Mosquitto 等 | 见下方「本行业证据条目」 |
+
+### 本行业证据条目
+
+本行业相关 evidence 条目： [IOT-EDGEX-001](../../evidence/IOT-EDGEX-001.md)、[IOT-KUBEEDGE-001](../../evidence/IOT-KUBEEDGE-001.md)、[IOT-EMQX-001](../../evidence/IOT-EMQX-001.md)、[IOT-MOSQUITTO-001](../../evidence/IOT-MOSQUITTO-001.md)、[IOT-OPCUA-001](../../evidence/IOT-OPCUA-001.md)、[IOT-LWM2M-001](../../evidence/IOT-LWM2M-001.md)、[IOT-THINGSBOARD-001](../../evidence/IOT-THINGSBOARD-001.md)、[IOT-IOTDB-001](../../evidence/IOT-IOTDB-001.md)、[IOT-DATA-COLLECT](../../evidence/IOT-DATA-COLLECT.md)、[IOT-DEVICE-ACCESS](../../evidence/IOT-DEVICE-ACCESS.md)、[IOT-EDGE-RT](../../evidence/IOT-EDGE-RT.md)、[IOT-SMARTCITY-001](../../evidence/IOT-SMARTCITY-001.md)、[IOT-AGRICULTURE-001](../../evidence/IOT-AGRICULTURE-001.md) 等。更多见 [evidence/README](../../evidence/README.md)。

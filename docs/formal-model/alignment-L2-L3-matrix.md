@@ -11,7 +11,7 @@ status: stable
 
 ## 2. 映射视图
 
-### 2.1 交互（D01）
+### 2.1 交互（D01） {#21-交互d01}
 
 - 对象映射
   - L2.Endpoint ↔ L3.APIEndpointStandard.REST/GraphQL/gRPC
@@ -27,7 +27,7 @@ status: stable
   - MessageTypeSafety ↔ C4
   - ProtocolStateConsistency ↔ C5
 
-### 2.2 数据（D02）
+### 2.2 数据（D02） {#22-数据d02}
 
 - 对象映射
   - L2.Entity/Field/Relation/Index ↔ L3.EntityDesign/FieldDefinition/RelationshipModeling
@@ -40,7 +40,7 @@ status: stable
   - ForeignKeyIntegrity ↔ D2
   - MigrationReversibility ↔ D3
 
-### 2.3 运行时（D04）
+### 2.3 运行时（D04） {#23-运行时d04}
 
 - 对象映射
   - L2.Workload/Service/Network/Storage ↔ L3.Orchestration/Service/Network/Storage
@@ -55,7 +55,7 @@ status: stable
   - LBHealthy ↔ SS3
   - ResourceLimitsSLA ↔ QoS1
 
-### 2.4 部署（D05）
+### 2.4 部署（D05） {#24-部署d05}
 
 - 对象映射
   - L2.Environment/Configuration/DeploymentStrategy/VersionControl/Rollback ↔ L3 Release/DeploymentStrategy/Configuration/Infrastructure/Environment/Rollback
@@ -69,7 +69,7 @@ status: stable
   - RollbackSafety ↔ DEP3
   - EnvironmentReady ↔ DEP4
 
-### 2.5 监控（D06）
+### 2.5 监控（D06） {#25-监控d06}
 
 - 对象映射
   - L2.Metric/Alert/Trace/Dashboard ↔ L3 ObservabilityStandard
@@ -82,7 +82,7 @@ status: stable
   - RunbookPresence ↔ MON3
   - MetricNaming ↔ MON4
 
-### 2.6 控制调度（D07）
+### 2.6 控制调度（D07） {#26-控制调度d07}
 
 - 对象映射
   - L2.Scheduler/Task/StateMachine/Transition/Queue ↔ L3 TaskScheduling/StateMachine
@@ -93,7 +93,7 @@ status: stable
   - DeterministicStateMachine ↔ StateConsistency
   - EventLatencyBound ↔ 性能与实时约束
 
-### 2.7 测试（D08）
+### 2.7 测试（D08） {#27-测试d08}
 
 - 对象映射
   - L2.TestCase/TestSuite/Coverage/PerformanceProfile ↔ L3 TestingCore
@@ -105,7 +105,7 @@ status: stable
   - LatencySLA ↔ T4
   - RegressionSafety ↔ T5
 
-### 2.8 CI/CD（D09）
+### 2.8 CI/CD（D09） {#28-cicdd09}
 
 - 对象映射
   - L2.DeploymentPipeline/Stage ↔ L3 Pipeline/Stage
@@ -121,3 +121,9 @@ status: stable
 - 变更控制：L2/L3 任一侧更新需同步更新本映射表
 - 质量门禁：PR 中新增/修改不变式需更新映射项
 - 版本化：对齐表版本与 L2/L3 文档版本关联
+
+## 4. 参见
+
+- [项目总览 (docs/README)](../README.md#-快速导航) - 快速导航中含本映射表入口
+- [快速导航系统 (QUICK_NAVIGATION)](../QUICK_NAVIGATION.md#l2l3-映射总表) - L2/L3 文档列表与映射总表
+- 各 L2/L3 文档末尾均含「参见：L2↔L3 映射总表」链接，便于从单篇文档返回本表

@@ -1,8 +1,13 @@
 # 云原生行业模型 - 案例库
 
+**本节要点**：（1）容器编排、服务网格、API 网关、可观测性、Serverless 五类核心领域；（2）六个案例与 L3 标准模型及证据条目的对应关系；（3）本行业与通用模型对照及与 CNCF 认证/课程知识域映射；（4）开源技术栈与架构模式总览。  
+**预计阅读时间**：全文约 35–45 分钟；仅读「核心业务领域」+「技术架构组件」+ 任一案例约 15 分钟。
+
 ## 概述
 
 云原生行业模型基于通用形式化建模体系，为云原生应用提供统一的理论基础和工程实践框架。本模型涵盖容器编排、服务网格、API网关、可观测性、Serverless等核心云原生技术要素。
+
+**行业↔通用模型对齐一览表**：本行业与通用 L2/L3 的映射见 [formal-model 通用形式化建模](../../formal-model/)（交互、运行时、部署、监控、测试、CI/CD、分布式模式）；对象/属性/不变式级对齐见 [L2↔L3 映射总表](../../formal-model/alignment-L2-L3-matrix.md)。L4 索引与权威对标见 [L4_D90_CN_行业索引与对标](../../L4_D90_CN_行业索引与对标.md)。
 
 ## 目录
 
@@ -27,40 +32,40 @@
       - [验证与度量](#验证与度量)
       - [证据与引用](#证据与引用)
   - [案例二：Service Mesh 流量治理（Istio）](#案例二service-mesh-流量治理istio)
-    - [场景与目标2](#场景与目标2)
-    - [术语与概念对齐2](#术语与概念对齐2)
-    - [结构与约束2](#结构与约束2)
-    - [接口与 DSL 片段2](#接口与-dsl-片段2)
-    - [验证与度量2](#验证与度量2)
-    - [证据与引用2](#证据与引用2)
+    - [场景与目标（Service Mesh）](#场景与目标service-mesh)
+    - [术语与概念对齐（Service Mesh）](#术语与概念对齐service-mesh)
+    - [结构与约束（Service Mesh）](#结构与约束service-mesh)
+    - [接口与 DSL 片段（Service Mesh）](#接口与-dsl-片段service-mesh)
+    - [验证与度量（Service Mesh）](#验证与度量service-mesh)
+    - [证据与引用（Service Mesh）](#证据与引用service-mesh)
   - [案例三：GitOps 持续交付（ArgoCD）](#案例三gitops-持续交付argocd)
-    - [场景与目标3](#场景与目标3)
-    - [术语与概念对齐3](#术语与概念对齐3)
-    - [结构与约束3](#结构与约束3)
-    - [接口与 DSL 片段3](#接口与-dsl-片段3)
-    - [验证与度量3](#验证与度量3)
-    - [证据与引用3](#证据与引用3)
+    - [场景与目标（GitOps）](#场景与目标gitops)
+    - [术语与概念对齐（GitOps）](#术语与概念对齐gitops)
+    - [结构与约束（GitOps）](#结构与约束gitops)
+    - [接口与 DSL 片段（GitOps）](#接口与-dsl-片段gitops)
+    - [验证与度量（GitOps）](#验证与度量gitops)
+    - [证据与引用（GitOps）](#证据与引用gitops)
   - [案例四：可观测性一体化（Prometheus+OTel）](#案例四可观测性一体化prometheusotel)
-    - [场景与目标4](#场景与目标4)
-    - [术语与概念对齐4](#术语与概念对齐4)
-    - [结构与约束4](#结构与约束4)
-    - [接口与 DSL 片段4](#接口与-dsl-片段4)
-    - [验证与度量4](#验证与度量4)
-    - [证据与引用4](#证据与引用4)
+    - [场景与目标（可观测性）](#场景与目标可观测性)
+    - [术语与概念对齐（可观测性）](#术语与概念对齐可观测性)
+    - [结构与约束（可观测性）](#结构与约束可观测性)
+    - [接口与 DSL 片段（可观测性）](#接口与-dsl-片段可观测性)
+    - [验证与度量（可观测性）](#验证与度量可观测性)
+    - [证据与引用（可观测性）](#证据与引用可观测性)
   - [案例五：Serverless 函数计算（AWS Lambda/Knative）](#案例五serverless-函数计算aws-lambdaknative)
-    - [场景与目标5](#场景与目标5)
-    - [术语与概念对齐5](#术语与概念对齐5)
-    - [结构与约束5](#结构与约束5)
-    - [接口与 DSL 片段5](#接口与-dsl-片段5)
-    - [验证与度量5](#验证与度量5)
-    - [证据与引用5](#证据与引用5)
+    - [场景与目标（Serverless）](#场景与目标serverless)
+    - [术语与概念对齐（Serverless）](#术语与概念对齐serverless)
+    - [结构与约束（Serverless）](#结构与约束serverless)
+    - [接口与 DSL 片段（Serverless）](#接口与-dsl-片段serverless)
+    - [验证与度量（Serverless）](#验证与度量serverless)
+    - [证据与引用（Serverless）](#证据与引用serverless)
   - [案例六：API 网关流量治理（Kong/Envoy）](#案例六api-网关流量治理kongenvoy)
-    - [场景与目标6](#场景与目标6)
-    - [术语与概念对齐6](#术语与概念对齐6)
-    - [结构与约束6](#结构与约束6)
-    - [接口与 DSL 片段6](#接口与-dsl-片段6)
-    - [验证与度量6](#验证与度量6)
-    - [证据与引用6](#证据与引用6)
+    - [场景与目标（API 网关）](#场景与目标api-网关)
+    - [术语与概念对齐（API 网关）](#术语与概念对齐api-网关)
+    - [结构与约束（API 网关）](#结构与约束api-网关)
+    - [接口与 DSL 片段（API 网关）](#接口与-dsl-片段api-网关)
+    - [验证与度量（API 网关）](#验证与度量api-网关)
+    - [证据与引用（API 网关）](#证据与引用api-网关)
   - [相关概念](#相关概念)
   - [子模块导航](#子模块导航)
   - [参考文献](#参考文献)
@@ -228,26 +233,26 @@ kubernetes_cluster:
 
 ## 案例二：Service Mesh 流量治理（Istio）
 
-### 场景与目标2
+### 场景与目标（Service Mesh）
 
 - **业务场景**：微服务间通信治理，支持蓝绿部署、金丝雀发布、流量管理
 - **技术目标**：实现服务间安全通信、流量路由、故障隔离、可观测性
 - **质量目标**：服务可用性 > 99.9%，零停机部署，自动故障恢复
 
-### 术语与概念对齐2
+### 术语与概念对齐（Service Mesh）
 
-- **VirtualService/DestinationRule** ↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 服务网格
+- **VirtualService** / **DestinationRule**（[术语表：VirtualService、DestinationRule](../../knowledge-standards/glossary/GLOSSARY.md#virtualservice虚拟服务)）↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 服务网格
 - **Gateway/Ingress** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 网关路由
 - **PeerAuthentication** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 安全认证
 - **AuthorizationPolicy** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 访问控制
 
-### 结构与约束2
+### 结构与约束（Service Mesh）
 
 - **流量管理约束**：路由规则一致性、负载均衡策略、超时配置
 - **安全策略约束**：mTLS强制、证书管理、访问控制规则
 - **可观测性约束**：指标收集、链路追踪、日志聚合
 
-### 接口与 DSL 片段2
+### 接口与 DSL 片段（Service Mesh）
 
 ```yaml
 service_mesh:
@@ -308,14 +313,14 @@ service_mesh:
           hosts: ["api.company.com"]
 ```
 
-### 验证与度量2
+### 验证与度量（Service Mesh）
 
 - **错误率SLO**：错误率 < 0.1%，5xx错误 < 0.05%
 - **延迟SLO**：P99延迟 < 500ms，P95延迟 < 200ms
 - **成功率SLO**：成功率 > 99.9%，可用性 > 99.95%
 - **流量切换**：金丝雀发布成功率 > 95%，回滚时间 < 1分钟
 
-### 证据与引用2
+### 证据与引用（Service Mesh）
 
 - **evidence:CN-ISTIO-TRAFFIC**：Istio官方文档
 - **交叉链接**：[运行时建模理论](../../formal-model/runtime-model/theory.md)、[服务网格理论](service-mesh/theory.md)
@@ -323,26 +328,26 @@ service_mesh:
 
 ## 案例三：GitOps 持续交付（ArgoCD）
 
-### 场景与目标3
+### 场景与目标（GitOps）
 
 - **业务场景**：基于Git的持续交付，支持多环境部署、自动同步、质量门禁
 - **技术目标**：实现GitOps工作流、期望状态管理、自动回滚、质量检查
 - **质量目标**：部署成功率 > 95%，同步延迟 < 5分钟，回滚时间 < 2分钟
 
-### 术语与概念对齐3
+### 术语与概念对齐（GitOps）
 
-- **Application/SyncPolicy** ↔ [L3_D05_部署标准模型](../../L3_D05_部署标准模型.md) GitOps 部署
+- **GitOps**（[术语表：GitOps](../../knowledge-standards/glossary/GLOSSARY.md#gitops)）：以 Git 为唯一事实来源的声明式持续交付。**Application/SyncPolicy** ↔ [L3_D05_部署标准模型](../../L3_D05_部署标准模型.md) GitOps 部署
 - **HealthCheck/SyncStatus** ↔ [L3_D06_监控标准模型](../../L3_D06_监控标准模型.md) 健康检查
 - **QualityGate/PR** ↔ [L3_D09_CICD标准模型](../../L3_D09_CICD标准模型.md) 质量门禁
 - **Rollback/History** ↔ [L3_D05_部署标准模型](../../L3_D05_部署标准模型.md) 版本回滚
 
-### 结构与约束3
+### 结构与约束（GitOps）
 
 - **GitOps约束**：期望状态一致性、不可变制品、声明式配置
 - **同步约束**：自动同步策略、健康检查、冲突解决
 - **质量约束**：门禁检查、PR审批、测试验证
 
-### 接口与 DSL 片段3
+### 接口与 DSL 片段（GitOps）
 
 ```yaml
 gitops:
@@ -394,14 +399,14 @@ gitops:
           kind: "Namespace"
 ```
 
-### 验证与度量3
+### 验证与度量（GitOps）
 
 - **同步成功率**：应用同步成功率 > 98%，自动修复成功率 > 95%
 - **回滚时间**：紧急回滚时间 < 2分钟，正常回滚时间 < 5分钟
 - **漂移检测**：配置漂移检测准确率 > 99%，检测延迟 < 1分钟
 - **合规性**：GitOps合规性 > 99%，审计日志完整性 100%
 
-### 证据与引用3
+### 证据与引用（GitOps）
 
 - **evidence:CN-ARGO-GITOPS**：ArgoCD官方文档
 - **交叉链接**：[部署建模理论](../../formal-model/deployment-model/theory.md)
@@ -409,26 +414,26 @@ gitops:
 
 ## 案例四：可观测性一体化（Prometheus+OTel）
 
-### 场景与目标4
+### 场景与目标（可观测性）
 
 - **业务场景**：统一可观测性平台，支持指标监控、链路追踪、日志聚合、智能告警
 - **技术目标**：实现OpenTelemetry标准、Prometheus指标、Jaeger追踪、ELK日志
 - **质量目标**：监控覆盖率 > 95%，告警准确率 > 90%，MTTR < 15分钟
 
-### 术语与概念对齐4
+### 术语与概念对齐（可观测性）
 
 - **Metric/Alert** ↔ [L3_D06_监控标准模型](../../L3_D06_监控标准模型.md) 指标监控
 - **Trace/Span** ↔ [L3_D06_监控标准模型](../../L3_D06_监控标准模型.md) 链路追踪
 - **Log/Event** ↔ [L3_D06_监控标准模型](../../L3_D06_监控标准模型.md) 日志管理
 - **Dashboard/Visualization** ↔ [L3_D06_监控标准模型](../../L3_D06_监控标准模型.md) 可视化
 
-### 结构与约束4
+### 结构与约束（可观测性）
 
 - **指标约束**：指标命名规范、标签一致性、采样策略
 - **追踪约束**：采样率控制、上下文传播、性能影响
 - **日志约束**：日志格式标准、存储策略、检索性能
 
-### 接口与 DSL 片段4
+### 接口与 DSL 片段（可观测性）
 
 ```yaml
 observability:
@@ -459,14 +464,14 @@ observability:
       runbook: "https://runbooks.company.com/high-error-rate"
 ```
 
-### 验证与度量4
+### 验证与度量（可观测性）
 
 - **告警质量**：告警噪声 < 5%，误报率 < 2%
 - **SLO覆盖率**：关键服务SLO覆盖率 > 95%
 - **追踪采样率**：生产环境采样率 1-10%，开发环境 100%
 - **指标基数**：标签基数 < 1000，避免基数爆炸
 
-### 证据与引用4
+### 证据与引用（可观测性）
 
 - **evidence:CN-OBS-OTEL**：OpenTelemetry官方文档
 - **交叉链接**：[监控建模理论](../../formal-model/monitoring-model/theory.md)
@@ -474,26 +479,26 @@ observability:
 
 ## 案例五：Serverless 函数计算（AWS Lambda/Knative）
 
-### 场景与目标5
+### 场景与目标（Serverless）
 
 - **业务场景**：事件驱动函数计算，支持 HTTP 触发、消息队列、定时任务、对象存储事件
 - **技术目标**：实现函数即服务（FaaS）、自动扩缩容、按需计费、冷启动优化
 - **质量目标**：冷启动 < 500ms，成功率 > 99.9%，成本按实际调用量计费
 
-### 术语与概念对齐5
+### 术语与概念对齐（Serverless）
 
 - **Function/Handler** ↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 函数计算
 - **Trigger/Event** ↔ [L3_D03_功能标准模型](../../L3_D03_功能标准模型.md) 事件驱动
 - **Scaling/Concurrency** ↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 弹性伸缩
 - **StateMachine/Workflow** ↔ [L3_D03_功能标准模型](../../L3_D03_功能标准模型.md) 工作流编排
 
-### 结构与约束5
+### 结构与约束（Serverless）
 
 - **函数约束**：内存限制、超时配置、并发限制、冷启动阈值
 - **事件约束**：触发器类型、过滤条件、重试策略、死信队列
 - **扩缩容约束**：最小/最大实例、预留并发、突发容量
 
-### 接口与 DSL 片段5
+### 接口与 DSL 片段（Serverless）
 
 ```yaml
 serverless:
@@ -539,14 +544,14 @@ serverless:
             type: "succeed"
 ```
 
-### 验证与度量5
+### 验证与度量（Serverless）
 
 - **冷启动指标**：P99 冷启动 < 500ms，预热策略有效性
 - **成功率**：函数调用成功率 > 99.9%，错误重试率 < 1%
 - **成本**：按调用次数与执行时长计费，预留并发成本优化
 - **扩展性**：突发扩缩容 < 30s，预留实例预热覆盖率 > 80%
 
-### 证据与引用5
+### 证据与引用（Serverless）
 
 - **evidence:CN-SERVERLESS-LAMBDA**：AWS Lambda 官方文档
 - **evidence:CN-SERVERLESS-KNATIVE**：Knative 官方文档
@@ -555,26 +560,26 @@ serverless:
 
 ## 案例六：API 网关流量治理（Kong/Envoy）
 
-### 场景与目标6
+### 场景与目标（API 网关）
 
 - **业务场景**：统一 API 入口、请求路由、认证鉴权、限流熔断、灰度发布
 - **技术目标**：实现 API 网关、JWT/OAuth2 认证、速率限制、熔断器、请求追踪
 - **质量目标**：P99 延迟 < 100ms，错误率 < 0.1%，零停机配置更新
 
-### 术语与概念对齐6
+### 术语与概念对齐（API 网关）
 
 - **Route/Service** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 网关路由
 - **Plugin/Policy** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 安全策略
 - **RateLimit/CircuitBreaker** ↔ [L3_D04_运行时标准模型](../../L3_D04_运行时标准模型.md) 流量控制
 - **Auth/JWT** ↔ [L3_D01_交互标准模型](../../L3_D01_交互标准模型.md) 认证授权
 
-### 结构与约束6
+### 结构与约束（API 网关）
 
 - **路由约束**：匹配优先级、路径规范、方法过滤
 - **安全约束**：认证前置、权限最小化、CORS 策略
 - **流量约束**：限流阈值、熔断条件、重试策略
 
-### 接口与 DSL 片段6
+### 接口与 DSL 片段（API 网关）
 
 ```yaml
 api_gateway:
@@ -617,14 +622,14 @@ api_gateway:
       sampling_rate: 0.1
 ```
 
-### 验证与度量6
+### 验证与度量（API 网关）
 
 - **延迟指标**：P99 网关延迟 < 100ms，P95 < 50ms
 - **错误率**：5xx 错误率 < 0.1%，认证失败率 < 1%
 - **限流有效性**：超限请求拒绝率准确，无漏限流
 - **可用性**：网关可用性 > 99.99%，配置热更新零中断
 
-### 证据与引用6
+### 证据与引用（API 网关）
 
 - **evidence:CN-API-KONG**：Kong 官方文档
 - **evidence:CN-API-ENVOY**：Envoy 官方文档
@@ -651,6 +656,60 @@ api_gateway:
 | 可观测性 | [observability/theory.md](observability/theory.md) | [observability/dsl-draft.md](observability/dsl-draft.md) |
 | Serverless | [serverless/theory.md](serverless/theory.md) | [serverless/dsl-draft.md](serverless/dsl-draft.md) |
 
+## 与 CNCF 课程/认证知识域映射
+
+| 本模型案例/领域 | CNCF 认证/课程 | 对应知识域（大纲要点） | 本仓库文档 |
+|-----------------|----------------|------------------------|------------|
+| 案例一：Kubernetes 集群编排 | CKA、CKAD、KCNA | 工作负载、Service、Ingress、ConfigMap/Secret、调度 | [案例一](#案例一kubernetes-集群编排基础)、[container-orchestration](container-orchestration/theory.md) |
+| 案例二：Service Mesh（Istio） | ICA (Istio Certified Associate) | VirtualService、DestinationRule、Gateway、mTLS、可观测性 | [案例二](#案例二service-mesh-流量治理istio)、[service-mesh](service-mesh/theory.md) |
+| 案例三：GitOps（ArgoCD） | CGOA (GitOps Certified Associate) | Application、Sync、Health、Rollback、PR 门禁 | [案例三](#案例三gitops-持续交付argocd)、[L3_D05](../../L3_D05_部署标准模型.md)、[L3_D09](../../L3_D09_CICD标准模型.md) |
+| 案例四：可观测性（Prometheus+OTel） | PCA (Prometheus Certified Associate) | 指标、告警、追踪、日志、SLO | [案例四](#案例四可观测性一体化prometheusotel)、[observability](observability/theory.md)、[L3_D06](../../L3_D06_监控标准模型.md) |
+| 案例五：Serverless（Knative） | CNCF Serverless / Knative 课程 | Scale-to-zero、Revision、Eventing | [案例五](#案例五serverless-函数计算aws-lambdaknative)、[serverless](serverless/theory.md) |
+| 案例六：API 网关（Kong/Envoy） | 通用 API/网关课程、Envoy 文档 | 路由、认证、限流、熔断、追踪 | [案例六](#案例六api-网关流量治理kongenvoy)、[api-gateway](api-gateway/theory.md) |
+
+## 本行业权威来源一览
+
+本行业与权威标准、课程及官方文档的对齐见下表；完整索引见 [reference/AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)。
+
+| 类型 | 来源 | 与本行业映射 |
+|------|------|--------------|
+| 标准 | ISO/IEC/IEEE 42010（架构描述）、15288（系统生命周期）；NIST SP 800-190（容器安全） | L3 架构视图、部署与安全 |
+| 认证/课程 | CNCF 认证（CKA、CKAD、PCA、ICA、CGOA 等）、CNCF Training | L4_D90、容器编排、服务网格、可观测性、GitOps |
+| 官方文档 | Kubernetes、Istio、Prometheus、Argo CD、Knative、Envoy 等 | 见下方「本行业证据条目」 |
+
+### 本行业证据条目
+
+本行业相关 evidence 条目（便于从行业反查证据与标准）：
+
+| 证据编号 | 主题 | 对应案例/领域 |
+|----------|------|----------------|
+| [CN-K8S-BASE](../../evidence/CN-K8S-BASE.md) | Kubernetes 基础 | 案例一 容器编排 |
+| [K8S-001](../../evidence/K8S-001.md) | Kubernetes 扩展 | 案例一 |
+| [CN-ISTIO-TRAFFIC](../../evidence/CN-ISTIO-TRAFFIC.md) | Istio 流量治理 | 案例二 Service Mesh |
+| [ISTIO-001](../../evidence/ISTIO-001.md) | Istio 扩展 | 案例二 |
+| [CN-ARGO-GITOPS](../../evidence/CN-ARGO-GITOPS.md) | Argo CD GitOps | 案例三 GitOps |
+| [CN-ARGO](../../evidence/CN-ARGO.md) | Argo 项目 | 案例三 |
+| [CN-OBS-OTEL](../../evidence/CN-OBS-OTEL.md)、[CN-OTEL](../../evidence/CN-OTEL.md) | OpenTelemetry / 可观测性 | 案例四 |
+| [PROM-001](../../evidence/PROM-001.md) | Prometheus | 案例四 |
+| [CN-SERVERLESS-KNATIVE](../../evidence/CN-SERVERLESS-KNATIVE.md)、[CN-SERVERLESS-LAMBDA](../../evidence/CN-SERVERLESS-LAMBDA.md) | Serverless | 案例五 |
+| [KNA-001](../../evidence/KNA-001.md) | Knative | 案例五 |
+| [CN-API-ENVOY](../../evidence/CN-API-ENVOY.md)、[CN-API-KONG](../../evidence/CN-API-KONG.md) | API 网关 | 案例六 |
+
+更多见 [evidence/README](../../evidence/README.md)。
+
+## 本行业与通用模型对照小结
+
+| 业务域 | L3 标准模型 | 典型技术栈 |
+|--------|-------------|------------|
+| 容器编排 | L3_D04 运行时、L3_D05 部署 | Kubernetes、Helm、Kustomize |
+| 服务网格 | L3_D04 + L3_D01 交互 | Istio、Linkerd、Consul Connect |
+| API 网关 | L3_D01 交互 | Envoy、Kong、Traefik |
+| 可观测性 | L3_D06 监控 | Prometheus、OpenTelemetry、Grafana、Jaeger |
+| Serverless | L3_D04 运行时 + L3_D03 功能 | Knative、AWS Lambda |
+| GitOps/持续交付 | L3_D05 部署、L3_D09 CI/CD | Argo CD、Flux |
+
+详见 [L4_D90_CN_行业索引与对标](../../L4_D90_CN_行业索引与对标.md) 与 [学习路径](../../LEARNING_PATHS.md)。
+
 ## 参考文献
 
 1. Kubernetes Documentation (2023). "Kubernetes Concepts"
@@ -661,3 +720,5 @@ api_gateway:
 6. Knative Documentation (2023). "Knative Serving"
 7. Kong Documentation (2023). "Kong Gateway"
 8. Envoy Documentation (2023). "Envoy Proxy"
+
+更多权威对标见 [reference/AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)。

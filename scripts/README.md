@@ -92,7 +92,29 @@ generator = EvidenceTemplateGenerator()
 generator.create_evidence_file("EVIDENCE-001", "标题", "应用", "来源", "A")
 ```
 
-### 5. 文档管理综合工具 (`doc_manager.py`)
+### 5. 季度/年度文档检查 (`quarterly_doc_check.py`)
+
+用于周期性（季度或年度）运行：标准文档存在性、证据引用与 `docs/evidence/` 文件一致性扫描，并可生成改进任务建议。
+
+**功能：**
+
+- 检查 CITATION_STANDARDS、QUALITY_STANDARDS、EXPERT_REVIEW_SYSTEM、CODE_REVIEW_GUIDE 是否存在
+- 扫描所有 .md 中引用的 evidence:ID，与 docs/evidence/*.md 对比，列出缺失与未引用
+- 输出 Markdown 报告
+
+**使用方法：**
+
+```bash
+# 仅检查标准文档
+python scripts/quarterly_doc_check.py --root docs
+
+# 含 evidence 引用扫描并写报告
+python scripts/quarterly_doc_check.py --root docs --evidence-scan --output docs/quarterly_report.md
+```
+
+**与看板配合**：报告中的「缺失」可转为 [季度/年度文档完善任务](../.github/ISSUE_TEMPLATE/quarterly-doc-task.md) Issue，参见 [RECURSIVE_IMPROVEMENT_KANBAN.md](../docs/RECURSIVE_IMPROVEMENT_KANBAN.md)。
+
+### 6. 文档管理综合工具 (`doc_manager.py`)
 
 整合所有文档管理功能的综合工具。
 

@@ -10,15 +10,27 @@ date: 2024-12-19
 tags: [ci, cd, pipeline, gitops, quality-gates]
 ---
 
+**本节要点**：（1）流水线、阶段、触发、环境与工件、质量门禁的形式化结构及与 L2_D05/D08 的映射；（2）GitOps、SLSA/SBOM 与 12207/15288 的对齐；（3）不变式（ImmutableArtifact、QualityGateEnforcement、RollbackSafety）；（4）行业映射（云原生、AI MLOps）。  
+**预计阅读时间**：全文约 32–42 分钟；仅读 §1–§2 约 12 分钟。  
+**单次阅读建议**：建议分 2–4 次阅读，每次 1–2 节，避免单次超过 40 分钟；结合 [REVIEW_CHECKLIST](learning/REVIEW_CHECKLIST.md) 做阶段自测。  
+**5 分钟版**：§1 概述 + §2 核心结构（Pipeline/Stage/Trigger）；完整不变式见 §3–§4；权威对标见 [AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md)、[evidence/STD-12207](evidence/STD-12207.md)、[evidence/STD-15288](evidence/STD-15288.md)。
+
 ## 1. 概述
 
 CI/CD 标准模型定义持续集成与持续交付/部署的标准化结构，包括流水线描述、阶段职责、触发策略、环境与工件管理、质量门禁与合规审计。
 
-### 1.1 国际标准对齐
+### 1.1 前置与关联
+
+- **对应 L2**：部署与测试元模型（L2_D05、L2_D08）；对象/属性/不变式映射详情见 [L2↔L3 映射总表 2.8 节（CI/CD）](formal-model/alignment-L2-L3-matrix.md#28-cicdd09)。
+- **对应理论**：[formal-model/cicd-model/theory.md](formal-model/cicd-model/theory.md)；生命周期过程见 [evidence/STD-12207](evidence/STD-12207.md)、[evidence/STD-15288](evidence/STD-15288.md)
+
+### 1.2 国际标准对齐
 
 - GitOps 工作流规范（声明式、拉动式部署）
 - SLSA/SBOM 供应链安全
 - CNCF 基础设施与工作流实践
+
+**本段检查点**：此处可暂停；建议先能说出 L2_D05/D08 与 L3_D09 的对应关系及流水线、阶段、质量门禁的含义，再继续 §2。自测可参考 [概念索引·CI/CD模型](knowledge-standards/concept-index/CONCEPT_INDEX.md#cicd模型-cicd-model) 与 [REVIEW_CHECKLIST](learning/REVIEW_CHECKLIST.md)。
 
 ## 2. 核心结构
 
@@ -635,3 +647,15 @@ SecurityComplianceTools:
 - **物联网**：分批发布、设备分组、离线包签名
 - **AI基础设施**：模型部署、数据管道、MLOps
 - **Web3**：智能合约部署、跨链部署、安全验证
+
+### 10.3 引用本模型的行业案例
+
+- [云原生案例三：GitOps 持续交付（ArgoCD）](industry-model/cloud-native-architecture/README.md#案例三gitops-持续交付argocd)
+- 金融（合规门禁、审计）、IoT（分批发布）、AI（MLOps）、Web3（合约部署）— 见各 [industry-model](industry-model/) README。
+
+## 11. 权威对标
+
+- **标准与证据**：本模型与 ISO/IEC/IEEE 12207 软件生命周期、L2_D05 部署元模型及 L3_D05 部署标准对应。参见 [权威对标总索引](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2 节、[evidence/STD-12207](evidence/STD-12207.md)；CNCF CGOA、CAPA 见第 4 节。
+- **课程映射**：CI/CD/GitOps 对应 LEARNING_PATHS 云原生专项、初学者阶段2；认证见 AUTHORITY_ALIGNMENT_INDEX 第 4 节。
+
+参见：[L2↔L3 映射总表](formal-model/alignment-L2-L3-matrix.md)
