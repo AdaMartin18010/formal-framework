@@ -41,7 +41,7 @@ flowchart LR
 | ISO/IEC 25012 | 现行 | 数据质量模型 | L3_D02 数据标准模型 | L3_D02 数据质量维度 | 数据质量 |
 | ISO/IEC 12207 | 2017（**FDIS 新版在批，发布后更新本表**） | 软件生命周期过程 | L3_D09_CICD、practice-guides | L3_D09 流程、生命周期阶段 | evidence:STD-12207 |
 | ISO/IEC/IEEE 15288 | 2023 | 系统生命周期过程 | L3 各模型、系统视角 | L3 系统级过程与 L2 元模型对应 | evidence:STD-15288 |
-| ISO/IEC/IEEE 24748-2 | 2024 | 15288 应用指南 | 同上 | 与 15288 配套使用 | evidence:STD-24748 |
+| ISO/IEC/IEEE 24748-2 | 2024 | 15288 应用指南 | 同上 | 与 15288 配套使用 | [evidence:STD-24748](../evidence/STD-24748.md) |
 | ISO/IEC 27001 | 2022 | 信息安全管理 | L2_D05 部署/配置安全、L2_D06 监控/审计 | L2_D05/L2_D06 安全与审计 | evidence:STD-27001 |
 | IEEE 1471 / ISO/IEC/IEEE 42010 | 2022 | 架构描述（软件、系统与企业） | L3 交互/运行时/部署、架构视图 | L3 视图与视角、架构描述 | evidence:STD-42010 |
 | IEEE 830 | 现行 | 软件需求规格说明 | L2 需求相关、L3 契约 | L3_D01 契约、需求可追溯 | 需求 |
@@ -95,6 +95,7 @@ flowchart LR
 | CMU | 15-317 | 构造逻辑 | 构造逻辑 | L2 逻辑基础 | CMU 课程目录 | 进阶·逻辑 |
 | CMU | 15-312 | 编程语言基础 | 类型、语义 | 类型、语义、formal-model | CMU 课程目录 | 进阶·类型论 |
 | CMU | 15-413 | 软件工程 | 工程、过程 | L3、行业模型 | CMU 课程目录 | 初学者·阶段2 |
+| CMU | 17-712 | Fantastic Bugs and How to Find Them | 软件缺陷与安全漏洞、程序分析、多域（移动/数据库/浏览器/自动驾驶/AI） | L2/L3 验证、测试、程序分析 | [17-712 archives](https://cmu-fantastic-bugs.github.io/archives/s25) | 进阶路径·验证与安全（可选） |
 | MIT | 6.042 | 数学基础 | 离散、证明 | L2 数学与逻辑 | MIT OCW | 初学者·阶段1 前置 |
 | MIT | 6.170 | 软件工作室 | 架构、实践 | L3、实践 | MIT 课程页 | 初学者·阶段2 |
 | MIT | 6.035 | 计算机语言工程 | DSL、编译器、AST | DSL、解析、formal-model | MIT 课程页 | 进阶·DSL |
@@ -106,6 +107,7 @@ flowchart LR
 | UW (Washington) | CSE 507 | Computer-Aided Reasoning for Software Engineering | SAT/SMT、定理证明、模型检验、程序综合 | L2/L3 形式化验证、规约 | [CSE 507](https://courses.cs.washington.edu/courses/cse507/) | 进阶路径·形式化验证 |
 | 清华大学 | M510006B / 软件学院 | 软件工程建模与形式化方法 | 形式化建模、函数式验证、TLA+/UPPAAL | L2/L3 建模与验证 | [课程大纲示例](https://formals.lilingkun.com/syllabus.html)；清华软件学院培养方案 | 进阶·形式化与建模 |
 | 上海交通大学 | — | 软件工程原理与实践 | 软件架构、工程实践、设计文档 | L3、practice-guides | [SE 模板与资源](https://base.sjtu.edu.cn/se/Templates.html) | 初学者·阶段2 后 |
+| ACM/IEEE-CS | CS2023 SE313-FM | 形式化方法（Formal Methods，软件工程专题） | 形式化规格、验证、软件工程课程体系 | L2 逻辑与规格、L3_D08 验证 | [ACM/IEEE-CS 课程建议](https://acm.org/education/curricula-recommendations)、[CS2023](https://csed.acm.org/) | 课程体系对标·形式化方法 |
 
 ### 3.1 课程与 LEARNING_PATHS、L2/L3 知识点对应（选列）
 
@@ -115,10 +117,12 @@ flowchart LR
 | Stanford CS 238V | 进阶路径·验证与安全关键 | 时序逻辑规格、falsification、model checking ↔ L3_D08、安全关键系统 |
 | Stanford CS 357S | 进阶路径·阶段3（验证工具） | SAT/SMT、定理证明 ↔ L3_D08、[FORMAL_SPEC_LANGUAGES](FORMAL_SPEC_LANGUAGES.md) |
 | CMU 15-414 | 进阶路径·阶段1–3 | Why3、规约、演绎验证 ↔ L2 不变式、L3_D08 |
+| CMU 17-712 | 进阶路径·验证与安全（可选） | 软件缺陷与安全、程序分析 ↔ L2/L3 验证、L3_D08 测试 |
 | Berkeley EECS 219C | 进阶路径·形式化验证 | 形式化方法与 AI 安全 ↔ L2/L3 验证、L3_D08 |
 | MIT 6.042 / Berkeley CS 70 | 初学者·阶段1 前置 | 离散、逻辑、证明 ↔ L2 数学基础 |
 | Stanford CS 210 / CMU 15-413 | 初学者·阶段2 后 | 工程实践 ↔ L3 各模型、practice-guides |
 | ETH Distributed Systems | 行业专项·分布式 | 分布式、一致性、容错 ↔ L3_D10、L4 各行业 |
+| ACM/IEEE-CS CS2023 SE313-FM | 课程体系对标 | 形式化方法专题 ↔ L2 逻辑/规格、L3_D08 验证 |
 
 完整路径与阶段见 [LEARNING_PATHS](../LEARNING_PATHS.md)；复习检查点见 [REVIEW_CHECKLIST](../learning/REVIEW_CHECKLIST.md)。**双向对应**：本表与 LEARNING_PATHS 各阶段总结中的「本阶段与权威对标」一一对应——学习路径中每阶段列出 1–2 条课程/标准，本表提供完整列表与大纲链接；审稿或更新时请同步维护两处。
 

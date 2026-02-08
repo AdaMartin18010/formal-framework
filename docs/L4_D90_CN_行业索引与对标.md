@@ -10,6 +10,7 @@ status: draft
 
 **本节要点**：（1）云原生核心对象（Kubernetes、Istio、Prometheus、Knative、ArgoCD）与 L3 模型映射；（2）术语对齐与标准/项目映射矩阵；（3）CNCF 认证与 L3 映射；（4）技术栈详细映射（容器编排、服务网格等）。  
 **预计阅读时间**：全文约 20–30 分钟；仅读 §1–§4 与映射表约 10 分钟。  
+**单次阅读建议**：若一次读完超过 40 分钟，建议分 2–3 次阅读，每次 1–2 节；结合 [REVIEW_CHECKLIST](learning/REVIEW_CHECKLIST.md) 做阶段自测。  
 **5 分钟版**：§4 标准/项目映射矩阵 + §4.1 CNCF 认证与 L3 映射表；详见 [templates/TEMPLATE_映射矩阵](templates/TEMPLATE_映射矩阵.md)。
 
 ## 本行业 ↔ L2/L3 映射

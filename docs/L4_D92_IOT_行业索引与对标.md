@@ -10,6 +10,7 @@ status: draft
 
 **本节要点**：（1）物联网核心对象（设备接入、边缘计算、控制调度、数据采集）与 L3 模型映射；（2）术语对齐与标准/项目映射矩阵；（3）工业协议与开源项目（EdgeX、KubeEdge、OPC UA、LwM2M 等）；（4）技术栈详细映射与成熟案例。  
 **预计阅读时间**：全文约 18–25 分钟；仅读 §1–§4 约 8 分钟。  
+**单次阅读建议**：若一次读完超过 40 分钟，建议分 2–3 次阅读，每次 1–2 节；结合 [REVIEW_CHECKLIST](learning/REVIEW_CHECKLIST.md) 做阶段自测。  
 **5 分钟版**：§4 标准/项目映射矩阵 + [templates/TEMPLATE_映射矩阵](templates/TEMPLATE_映射矩阵.md)；权威对标见 [AUTHORITY_ALIGNMENT_INDEX 第 5 节](reference/AUTHORITY_ALIGNMENT_INDEX.md#5-行业与-l4-索引映射)。
 
 ## 本行业 ↔ L2/L3 映射

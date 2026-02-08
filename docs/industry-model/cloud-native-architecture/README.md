@@ -710,6 +710,10 @@ api_gateway:
 
 详见 [L4_D90_CN_行业索引与对标](../../L4_D90_CN_行业索引与对标.md) 与 [学习路径](../../LEARNING_PATHS.md)。
 
+## 与标准/课程对照要点
+
+本行业与国际标准、名校课程及 CNCF 认证的对照要点：标准/课程与 L2/L3 知识点的年度对照表见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)；云原生对应 L3_D04（运行时）、L3_D05（部署）、L3_D06（监控）、L3_D09（CI/CD）及 L3_D01（交互），与 CNCF 认证（CKA、CKAD、CKS、CGOA、PCA、ICA 等）知识域映射见 [L4_D90 §4.2](../../L4_D90_CN_行业索引与对标.md#42-cncf-课程与-l3-映射)；完整列表见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)。
+
 ## 参考文献
 
 1. Kubernetes Documentation (2023). "Kubernetes Concepts"

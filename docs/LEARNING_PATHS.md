@@ -284,9 +284,9 @@ flowchart LR
 - 完成标志：掌握形式化方法的理论基础
 - **为何本顺序**：AST 与自动推理为时序逻辑与程序验证提供语法与推理基础；先打牢基础再学 LTL/CTL 与 Hoare 逻辑。
 - **掌握度标志**：能设计 AST、理解 SAT/SMT 原理、用 LTL/CTL 描述性质或用 Hoare 逻辑做程序证明；或完成进阶路径阶段1 检查点且不需回看。
-- **本阶段与权威对标**：形式化语言按场景选型（结构/数据→Alloy、并发/分布式→TLA+、规约与证明→Why3/Z/VDM）见 [FORMAL_SPEC_LANGUAGES](reference/FORMAL_SPEC_LANGUAGES.md) §2.1；课程与 L2/L3 知识点见 [AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 3 节。
+- **本阶段与权威对标**：形式化语言按场景选型（结构/数据→Alloy、并发/分布式→TLA+、规约与证明→Why3/Z/VDM）见 [FORMAL_SPEC_LANGUAGES](reference/FORMAL_SPEC_LANGUAGES.md) §2.1，便于后续阶段「学完即可选型」；课程与 L2/L3 知识点见 [AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 3 节。
 
-**阶段1 复习检查点**（自测后进入阶段2）：AST 与 DSL 的关系？SAT/SMT 在本框架中对应哪些验证活动？LTL/CTL 与 L2 行为规约的对应？→ 见 [概念索引](knowledge-standards/concept-index/CONCEPT_INDEX.md)、[FORMAL_SPEC_LANGUAGES](reference/FORMAL_SPEC_LANGUAGES.md) §2.1。
+**阶段1 复习检查点**（自测后进入阶段2）：AST 与 DSL 的关系？SAT/SMT 在本框架中对应哪些验证活动？LTL/CTL 与 L2 行为规约的对应？形式化语言选型（Alloy/TLA+/Why3）各适用什么场景？→ 见 [概念索引](knowledge-standards/concept-index/CONCEPT_INDEX.md)、[FORMAL_SPEC_LANGUAGES](reference/FORMAL_SPEC_LANGUAGES.md) §2.1。
 
 **间隔归来建议**：若间隔 3–7 天后回来继续学习，建议先完成上列复习检查点中至少 2 条自测（先写再对），再进入阶段2。
 
@@ -355,7 +355,7 @@ flowchart LR
 - 完成标志：精通验证工具使用
 - **为何本顺序**：模型检验与定理证明工具对应阶段1 的时序逻辑与程序验证；行业模型深入将 L2/L3 应用到具体领域，放在最后综合运用。
 - **掌握度标志**：能使用 TLA+/SPIN 或 Coq/Isabelle 验证或证明，或设计行业特定模型；或完成进阶路径阶段3 检查点且不需回看。
-- **本阶段与权威对标**：形式化语言选型与课程对应见 [FORMAL_SPEC_LANGUAGES](reference/FORMAL_SPEC_LANGUAGES.md) §2.1；主推课程（Stanford CS 357S、CMU 15-414 等）见 [AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 3 节。
+- **本阶段与权威对标**：形式化语言按场景选型（结构/数据→Alloy、并发/分布式→TLA+、规约与证明→Why3/Z/VDM）及与课程对应见 [FORMAL_SPEC_LANGUAGES](reference/FORMAL_SPEC_LANGUAGES.md) §2.1，便于「学完即可选型」；主推课程（Stanford CS 357S、CMU 15-414 等）见 [AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 3 节。
 
 **阶段3 复习检查点**（自测后选择专家路径或项目）：TLA+ 与 Alloy 的选型场景？Why3 与 CMU 15-414 的对应？→ 见 [FORMAL_SPEC_LANGUAGES](reference/FORMAL_SPEC_LANGUAGES.md) §2.1、[AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 3 节。
 
@@ -398,7 +398,7 @@ flowchart LR
    - 📖 [IEEE标准对齐](knowledge-standards/)
    - ⏱️ 学习时间：8-10小时
    - ✅ 检查点：能够参与标准讨论
-   - **说明**：标准制定参与需结合 [ISO/IEC JTC1/SC7](https://www.iso.org/committee/45144.html)、[OMG](https://www.omg.org/) 等实际流程与参与路径，避免仅停留在「对齐标准」而忽视实际参与方式；参见 [AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2.1 节权威机构入口。
+   - **说明**：标准制定参与需结合 [ISO/IEC JTC1/SC7](https://www.iso.org/committee/45144.html)、[OMG](https://www.omg.org/) 等实际流程与参与路径，避免仅停留在「对齐标准」而忽视实际参与方式。具体参与方式（如 SC7 通过各国标准 body 以 P-member/O-member 参与、OMG 会员与技术提案流程）见 [reference/README](reference/README.md) 中的「标准参与方式」；权威机构入口见 [AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2.1 节。
 
 3. **工具开发**
    - 📖 研究现有工具源码

@@ -356,3 +356,7 @@ training_pipeline:
 - [通用形式化建模体系](../../formal-model/README.md)
 - [AI行业索引与对标](../../L4_D93_AI_行业索引与对标.md)
 - [权威对标总索引](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)
+
+## 与标准/课程对照要点
+
+本行业与国际标准、名校课程及 AI/ML 标准的对照要点：标准/课程与 L2/L3 知识点的年度对照表见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)；AI 基础设施对应 L3_D02（数据）、L3_D04（运行时）、L3_D06（监控）、L3_D09（CI/CD），与 NIST AI RMF、ISO/IEC 23053、IEEE 2857 等 AI 可信与风险管理标准的映射见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2 节及 [L4_D93_AI_行业索引与对标](../../L4_D93_AI_行业索引与对标.md)。
