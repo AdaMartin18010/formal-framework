@@ -563,3 +563,8 @@ security_strategy:
 4. Vernon, V. (2013). "Implementing Domain-Driven Design"
 5. Evans, E. (2003). "Domain-Driven Design: Tackling Complexity in the Heart of Software"
 6. Fowler, M. (2006). "Continuous Integration"
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论对应 [L3_D09 CI/CD 标准模型](../../L3_D09_CICD标准模型.md)；与 15288、12207 生命周期过程对应；对象/属性/不变式对齐见 [L2↔L3 映射总表](../alignment-L2-L3-matrix.md)。
+- **标准与课程**：CI/CD 与生命周期相关标准（ISO/IEC 12207、15288、CNCF GitOps 等）及名校课程与 L3_D09 知识点对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md) 与 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–4 节。

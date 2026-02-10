@@ -1,5 +1,7 @@
 # 类型论基础
 
+**本理论与 core-concepts 对应**：本理论支撑 [语义分析](../core-concepts/semantic-analysis.md)、[领域特定语言](../core-concepts/domain-specific-language.md)、[形式化验证](../core-concepts/formal-verification.md) 等核心概念中的类型系统与类型安全。
+
 ## 1. 概述
 
 类型论是数学逻辑和计算机科学的重要分支，为形式化框架中的类型系统、类型安全和类型推导提供理论基础。本文档详细阐述类型论在形式化建模中的应用。
@@ -634,6 +636,13 @@ SQL标准，包含数据库类型系统的定义。
 
 1. Aho, A. V., Lam, M. S., Sethi, R., & Ullman, J. D. (2006). *Compilers: Principles, Techniques, and Tools*. Addison-Wesley.
 2. Appel, A. W. (1998). *Modern Compiler Implementation in ML*. Cambridge University Press.
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论支撑 L2/L3 类型系统与语义；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：类型论与编程语言相关课程（Stanford CS 242、CMU 15-312 等）见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[抽象语法树](../core-concepts/abstract-syntax-tree.md)、[领域特定语言](../core-concepts/domain-specific-language.md)、[语义分析](../core-concepts/semantic-analysis.md)、[形式化验证](../core-concepts/formal-verification.md)。
 
 ---
 

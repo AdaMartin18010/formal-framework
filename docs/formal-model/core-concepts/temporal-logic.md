@@ -1,5 +1,8 @@
 # 时序逻辑 (Temporal Logic)
 
+**本节要点**：（1）时序逻辑的概念、形式化定义与类型（LTL、CTL、CTL*）；（2）与形式化验证、模型检验的对应；（3）国际标准/课程对标与相关概念。  
+**预计阅读时间**：约 40–50 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [时序逻辑 (Temporal Logic)](#时序逻辑-temporal-logic)
@@ -54,7 +57,6 @@
       - [IoT系统](#iot系统)
   - [相关概念](#相关概念)
     - [核心概念关联](#核心概念关联)
-    - [应用领域关联](#应用领域关联)
     - [行业应用关联](#行业应用关联)
   - [思考与练习](#思考与练习)
     - [概念理解](#概念理解)
@@ -75,6 +77,8 @@
 5. **可证明性**：支持形式化证明和验证
 
 ## 理论基础
+
+理论深化见 [逻辑学基础](../theory-enhancement/logic-foundation.md)、[形式化验证理论](../theory-enhancement/formal-verification-theory.md)；与 L2 行为规约、L3_D08 验证的对应见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 3 节课程对标。
 
 ### 形式化定义
 
@@ -525,15 +529,10 @@ AG (request → AF response)
 
 ### 核心概念关联
 
-- **[形式化验证](../formal-verification.md)** - 时序逻辑是形式化验证的重要方法
-- **[自动推理](../automated-reasoning.md)** - 时序逻辑推理是自动推理的应用
-- **[模型检验](#)** - 时序逻辑是模型检验的基础
-
-### 应用领域关联
-
-- **[程序验证](../program-verification.md)** - 时序逻辑用于程序性质验证
-- **[反应式系统](#)** - 时序逻辑特别适用于反应式系统
-- **[并发系统](#)** - 时序逻辑用于并发系统性质描述
+- [逻辑学基础](../theory-enhancement/logic-foundation.md) - 时序逻辑的理论基础；[形式化验证理论](../theory-enhancement/formal-verification-theory.md) - 与本概念对应的理论深化
+- [形式化验证](./formal-verification.md) - 时序逻辑是形式化验证的重要方法；模型检验是形式化验证的核心技术
+- [自动推理](./automated-reasoning.md) - 时序逻辑推理是自动推理的应用
+- [程序验证](./program-verification.md) - 时序逻辑用于程序性质验证；特别适用于反应式系统与并发系统
 
 ### 行业应用关联
 
@@ -579,5 +578,5 @@ AG (request → AF response)
 ---
 
 **难度等级**：⭐⭐⭐⭐ (高级)  
-**前置知识**：[形式化验证](../formal-verification.md), [逻辑学基础](#)  
+**前置知识**：[形式化验证](./formal-verification.md)、[逻辑学基础](../theory-enhancement/logic-foundation.md)  
 **学习时间**：约4-5小时

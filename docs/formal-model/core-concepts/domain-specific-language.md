@@ -1,5 +1,8 @@
 # 领域特定语言 (Domain-Specific Language)
 
+**本节要点**：（1）DSL 的概念、语言理论与设计/实现流程；（2）分类体系、设计原则与国际标准/课程对标；（3）工程实践与相关概念。  
+**预计阅读时间**：约 45–55 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [领域特定语言 (Domain-Specific Language)](#领域特定语言-domain-specific-language)
@@ -68,6 +71,8 @@
 5. **可扩展性**：支持领域概念的自然扩展
 
 ## 理论基础
+
+理论深化与形式化展开见 [领域特定语言理论](../theory-enhancement/domain-specific-language-theory.md)；与 L2/L3 各 model theory/dsl-draft 的对应见该理论文档。
 
 ### 语言理论
 
@@ -538,6 +543,7 @@ spec:
 
 ### 核心概念关联
 
+- [领域特定语言理论](../theory-enhancement/domain-specific-language-theory.md) - 本概念的形式化理论与深化
 - [抽象语法树](./abstract-syntax-tree.md) - AST为DSL解析提供程序结构信息
 - [代码生成](./code-generation.md) - 代码生成与DSL相结合实现从DSL到代码的转换
 - [模型转换](./model-transformation.md) - 模型转换用于DSL的模型处理和转换

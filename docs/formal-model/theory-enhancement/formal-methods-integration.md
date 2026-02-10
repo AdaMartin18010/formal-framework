@@ -1,5 +1,7 @@
 # 形式化方法集成 (Formal Methods Integration)
 
+**本理论与 core-concepts 对应**：本理论整合并支撑 [形式化建模](../core-concepts/formal-modeling.md)、[形式化验证](../core-concepts/formal-verification.md)、[领域特定语言](../core-concepts/domain-specific-language.md) 等核心概念，与 [theory-integration-framework](theory-integration-framework.md) 协同。
+
 ## 概述
 
 本文档建立Formal Model框架与现有形式化方法的深度集成，包括Z Notation、B方法和Alloy的集成，实现形式化规格说明、验证和代码生成的自动化。
@@ -975,6 +977,13 @@ verification_effectiveness:
 6. **效果评估**：验证效果的量化评估
 
 这个形式化方法集成为Formal Model框架提供了强大的验证能力，确保了模型和代码的正确性。
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论整合形式化方法与 L2/L3 各模型；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：形式化方法相关标准（TLA+、Alloy、IEEE 1012 等）及名校课程见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[形式化建模](../core-concepts/formal-modeling.md)、[形式化验证](../core-concepts/formal-verification.md)。
 
 ---
 

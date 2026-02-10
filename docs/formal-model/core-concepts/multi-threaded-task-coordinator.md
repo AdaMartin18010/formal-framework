@@ -1,5 +1,8 @@
 # 多线程任务协调器 (Multi-threaded Task Coordinator)
 
+**本节要点**：（1）任务协调的概念、理论与多线程协调架构；（2）核心组件（任务分解、智能调度）；（3）工程实践与应用案例。  
+**预计阅读时间**：约 35–45 分钟；建议分 2–3 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [多线程任务协调器 (Multi-threaded Task Coordinator)](#多线程任务协调器-multi-threaded-task-coordinator)

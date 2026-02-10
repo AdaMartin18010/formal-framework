@@ -1,5 +1,8 @@
 # 性能优化与扩展 (Performance Optimization and Extension)
 
+**本节要点**：（1）性能优化的概念、理论与流程；（2）核心组件（多线程并行、内存优化）与架构；（3）工程实践与应用案例。  
+**预计阅读时间**：约 35–45 分钟；建议分 2–3 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [性能优化与扩展 (Performance Optimization and Extension)](#性能优化与扩展-performance-optimization-and-extension)

@@ -23,6 +23,7 @@ CI/CD 标准模型定义持续集成与持续交付/部署的标准化结构，�
 
 - **对应 L2**：部署与测试元模型（L2_D05、L2_D08）；对象/属性/不变式映射详情见 [L2↔L3 映射总表 2.8 节（CI/CD）](formal-model/alignment-L2-L3-matrix.md#28-cicdd09)。
 - **对应理论**：[formal-model/cicd-model/theory.md](formal-model/cicd-model/theory.md)；生命周期过程见 [evidence/STD-12207](evidence/STD-12207.md)、[evidence/STD-15288](evidence/STD-15288.md)
+- **与权威对标**：本 L3 与标准/课程知识点对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)、[AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–4 节。
 
 ### 1.2 国际标准对齐
 

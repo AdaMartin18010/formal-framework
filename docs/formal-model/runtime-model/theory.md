@@ -1179,3 +1179,8 @@ serverless_case:
 3. Istio Documentation (2023). "Istio Concepts"
 4. Prometheus Documentation (2023). "Prometheus Concepts"
 5. OpenTelemetry Documentation (2023). "OpenTelemetry Concepts"
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论对应 [L2_D04 运行时元模型](../../L2_D04_运行时元模型.md)、[L3_D04 运行时标准模型](../../L3_D04_运行时标准模型.md)；对象/属性/不变式对齐见 [L2↔L3 映射总表](../alignment-L2-L3-matrix.md)。
+- **标准与课程**：运行时与容器/编排相关标准（NIST SP 800-190、CNCF 等）及名校课程与 L2_D04/L3_D04 知识点对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md) 与 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–4 节。

@@ -1,5 +1,7 @@
 # 图论基础
 
+**本理论与 core-concepts 对应**：本理论支撑 [知识图谱](../core-concepts/knowledge-graph.md)、[抽象语法树](../core-concepts/abstract-syntax-tree.md)、[递归建模](../core-concepts/recursive-modeling.md) 等核心概念中的图结构与遍历。
+
 ## 1. 概述
 
 图论是研究图（Graph）的数学分支，为形式化框架中的模型关系、依赖分析和结构建模提供理论基础。
@@ -503,6 +505,13 @@ RDF查询语言，用于语义网图数据查询。
 
 1. Spivey, J. M. (1992). *The Z Notation: A Reference Manual*. Prentice Hall.
 2. Woodcock, J., & Davies, J. (1996). *Using Z: Specification, Refinement, and Proof*. Prentice Hall.
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论支撑 L2/L3 中图结构、知识图谱与 AST；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：图论与知识表示相关课程（Stanford CS224W、CMU 15-445 等）见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[知识图谱](../core-concepts/knowledge-graph.md)、[抽象语法树](../core-concepts/abstract-syntax-tree.md)、[模型转换](../core-concepts/model-transformation.md)。
 
 ---
 

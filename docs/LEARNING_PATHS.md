@@ -198,7 +198,7 @@ flowchart LR
 
 ## 行业专项路径 (Industry-Focused Paths)
 
-在完成**阶段1（基础概念）**后，可按行业兴趣选择以下路径之一；每条路径先读对应 L3 文档，再读该行业 README 与指定案例。
+在完成**阶段1（基础概念）**后，可按行业兴趣选择以下路径之一；每条路径先读对应 L3 文档，再读该行业 README 与指定案例。**为何本顺序**：先掌握 L3 通用模型再读行业 README 与案例，由抽象到具体；案例顺序按复杂度与依赖关系编排，便于逐步建立行业映射能力。
 
 ### 云原生专项
 
@@ -242,6 +242,8 @@ flowchart LR
 ## 进阶路径 (Intermediate Path)
 
 **形式化验证方向主推课程**（与 [AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 3 节一致）：Stanford CS 357S（2024-2025 Winter，SAT/SMT、定理证明、fuzzing）、CMU 15-414（Spring 2024，Why3、演绎验证）；选课时可优先对照上述课程大纲。
+
+**可选学习策略（交错学习）**：阶段2/阶段3 可交替进行不同主题（例如 AST+DSL 与 形式化验证+LTL 交替），通过区分对比促进长期记忆；与一次只学一个主题的块状学习互补，按个人习惯选择。详见 [REVIEW_CHECKLIST](learning/REVIEW_CHECKLIST.md) 进阶路径说明。
 
 ### 目标
 

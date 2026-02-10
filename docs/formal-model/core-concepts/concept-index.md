@@ -1,5 +1,10 @@
 # 概念索引与关系 (Concept Index and Relationships)
 
+本文档侧重**概念索引与关系的理论**（关系图谱、分类体系、国际标准/名校对标、工程实践）。按字母顺序的**形式化框架概念索引**（定义位置、前置知识、自测问句、概念页入口）见 [CONCEPT_INDEX](../../knowledge-standards/concept-index/CONCEPT_INDEX.md)；两文档互为补充，避免混淆。
+
+**本节要点**：（1）概念索引的理论、关系图谱与分类体系；（2）核心组件（概念定义、关系定义）与 CONCEPT_INDEX 对应；（3）工程实践与相关概念。  
+**预计阅读时间**：约 50–60 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [概念索引与关系 (Concept Index and Relationships)](#概念索引与关系-concept-index-and-relationships)

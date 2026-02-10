@@ -1,5 +1,7 @@
 # 理论集成框架
 
+**本理论与 core-concepts 对应**：本框架整合各 theory-enhancement 文档，并对应 [形式化建模](../core-concepts/formal-modeling.md)、[形式化验证](../core-concepts/formal-verification.md)、[模型驱动工程](../core-concepts/model-driven-engineering.md) 等核心概念所依赖的理论层。
+
 ## 1. 概述
 
 理论集成框架将形式化框架中的各种理论（集合论、范畴论、同伦类型论、形式建模理论等）进行统一整合，建立一个完整的理论体系，确保各理论间的协调一致性和相互支撑。
@@ -867,3 +869,10 @@ TheoryIntegrationMethods = {
 5. **实用性**：确保理论体系能够指导实际应用和工程实践
 
 通过理论集成框架，形式化框架能够更好地支持系统建模、验证和工程实践，为构建高质量、高可靠性的软件系统提供坚实的理论基础。
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本框架整合各 theory-enhancement，对应 L2/L3 全域；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：形式化方法、架构与生命周期标准（42010、15288、CS2023 等）见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[形式化建模](../core-concepts/formal-modeling.md)、[形式化验证](../core-concepts/formal-verification.md)、[模型驱动工程](../core-concepts/model-driven-engineering.md)。

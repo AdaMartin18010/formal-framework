@@ -1120,3 +1120,8 @@ cloud_native_orchestration:
 4. Kubernetes Documentation (2023). "Kubernetes Documentation"
 5. Docker Documentation (2023). "Docker Swarm Documentation"
 6. Apache Mesos Documentation (2023). "Apache Mesos Documentation"
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：编排建模属运行时域，对应 [L2_D04 运行时元模型](../../../L2_D04_运行时元模型.md)、[L3_D04 运行时标准模型](../../../L3_D04_运行时标准模型.md)；对象/属性/不变式见 [alignment-L2-L3-matrix](../../alignment-L2-L3-matrix.md)。
+- **标准与课程**：运行时与编排相关标准及课程对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)、[AUTHORITY_ALIGNMENT_INDEX](../../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–4 节。

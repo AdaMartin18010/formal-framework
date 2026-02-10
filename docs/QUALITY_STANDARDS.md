@@ -29,6 +29,7 @@
 ## 4. 图表与链接
 
 - **Mermaid/表格**：符合项目 Mermaid 规范（节点 ID 无空格、无 HTML 标签、子图使用显式 ID 与标签）；长表提供简要摘要或目录。
+- **图表/公式与正文邻近**（降低外在认知负荷）：图表、公式与对应解释应同屏或紧邻放置，避免「图在文远」、读者来回跳转；新写或修订长文档时遵守，以利于工作记忆与图式构建。依据见 [learning/LEARNING_AND_REVIEW_TIPS](learning/LEARNING_AND_REVIEW_TIPS.md) 认知负荷理论。
 - **内部链接**：文内链接、锚点、交叉引用有效；定期由 [scripts/internal_link_checker.py](../scripts/internal_link_checker.py) 校验。
 - **外部链接**：权威引用尽量使用稳定 URL；若为可变动链接，在证据条目中记录版本与日期。
 

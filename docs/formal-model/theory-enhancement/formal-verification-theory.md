@@ -1,5 +1,7 @@
 # 形式化验证理论
 
+**本理论与 core-concepts 对应**：本理论深化 [形式化验证](../core-concepts/formal-verification.md)，并可与 [程序验证](../core-concepts/program-verification.md)、[时序逻辑](../core-concepts/temporal-logic.md)、[形式化建模](../core-concepts/formal-modeling.md) 等核心概念结合使用。
+
 ## 1. 概述
 
 形式化验证（Formal Verification）是使用数学方法证明系统正确性的技术，为软件和硬件系统的可靠性提供理论基础。
@@ -701,6 +703,13 @@ RealTimeSystemVerification = (RealTimeSystem, TimingProperties) → Verification
 
 1. Aho, A. V., Lam, M. S., Sethi, R., & Ullman, J. D. (2006). *Compilers: Principles, Techniques, and Tools*. Addison-Wesley.
 2. Hopcroft, J. E., Motwani, R., & Ullman, J. D. (2001). *Introduction to Automata Theory, Languages, and Computation*. Addison-Wesley.
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论支撑 L2/L3 形式化验证与 L3_D08 测试/验证；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：形式化验证相关标准（IEEE 1012、TLA+、Alloy 等）及名校课程（Stanford CS 256/357S、CMU 15-414、Berkeley EECS 219C、UW CSE 507 等）见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[形式化验证](../core-concepts/formal-verification.md)、[程序验证](../core-concepts/program-verification.md)。
 
 ---
 

@@ -22,7 +22,7 @@
 - **政策含义**：Kang (2016) 在 *Policy Insights from the Behavioral and Brain Sciences* 中指出，间隔重复对教学与课程设计具有明确政策含义：将复习分散到多个时间点比集中复习更有利于长期保持；该结论同样适用于**技术文档与培训设计**，故本框架将间隔复习纳入 [LEARNING_PATHS](../LEARNING_PATHS.md) 与 [REVIEW_CHECKLIST](REVIEW_CHECKLIST.md) 的正式设计（详见 §6 延伸阅读）。
 - **复习节奏**：阶段内每 **1 天**回顾当日要点；阶段结束后 **1 周**、**1 月**各做一次总复习（见 [REVIEW_CHECKLIST](REVIEW_CHECKLIST.md) 使用说明）。
 - **可勾选清单**：[REVIEW_CHECKLIST](REVIEW_CHECKLIST.md) 提供按路径与阶段的可勾选检查点，便于按间隔执行复习并自测。
-- **可选工具**：可将检查点/自测问句制成 Anki、RemNote 等间隔重复卡片，按 1d/7d/30d 复习，便于长期记忆。
+- **可选工具**：可将检查点/自测问句制成 Anki、RemNote 等间隔重复卡片，按 1d/7d/30d 复习，便于长期记忆。具体做法见 [REVIEW_CHECKLIST](REVIEW_CHECKLIST.md) 使用说明中的「可选工具」。
 
 ## 4. 主动回忆（先写再对）
 

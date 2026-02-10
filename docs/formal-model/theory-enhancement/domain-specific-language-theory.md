@@ -1,5 +1,7 @@
 # 领域特定语言理论
 
+**本理论与 core-concepts 对应**：本理论深化 [领域特定语言 (DSL)](../core-concepts/domain-specific-language.md)，并可与 [抽象语法树](../core-concepts/abstract-syntax-tree.md)、[代码生成](../core-concepts/code-generation.md)、[形式化建模](../core-concepts/formal-modeling.md) 等核心概念结合使用。
+
 ## 1. 概述
 
 领域特定语言（Domain-Specific Language, DSL）是为特定应用领域设计的编程语言，具有针对性的语法和语义。在形式化框架中，DSL为模型定义、转换和验证提供理论基础。本文档详细阐述DSL理论在形式化建模中的应用。
@@ -672,6 +674,13 @@ RDF查询语言标准，定义了语义网查询的DSL。
 
 1. Aho, A. V., Lam, M. S., Sethi, R., & Ullman, J. D. (2006). *Compilers: Principles, Techniques, and Tools*. Addison-Wesley.
 2. Appel, A. W. (1998). *Modern Compiler Implementation in ML*. Cambridge University Press.
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论支撑 L2/L3 各元模型中的 DSL 与接口规格；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：DSL 与编译器相关标准及名校课程（MIT 6.035、Stanford CS 242、Berkeley CS 164 等）见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[领域特定语言](../core-concepts/domain-specific-language.md)、[抽象语法树](../core-concepts/abstract-syntax-tree.md)、[代码生成](../core-concepts/code-generation.md)。
 
 ---
 

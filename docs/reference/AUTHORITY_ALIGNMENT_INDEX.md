@@ -3,7 +3,7 @@
 > 本索引按主题与层次（L2/L3/L4）集中列出国际标准、名校课程与权威机构资源，并注明与本框架的映射关系。便于审稿、持续对齐与学习路径设计。  
 > **维护约定**：标准版本与日期建议每季度/年度检查更新；名校课程大纲链接按学期可能变动，**以各校官网为准**（季度检查时建议验证链接，断链任务进 [RECURSIVE_IMPROVEMENT_KANBAN](../RECURSIVE_IMPROVEMENT_KANBAN.md)）。  
 > **本表最后核查日期**：2025-02。  
-> **框架边界**：本框架侧重软件工程与系统建模的形式化与行业映射，不替代具体实现或运行时系统；形式化覆盖以 L2/L3 规格与不变式为主，不涵盖所有形式化理论（如深度类型论、同伦论等）。审稿与对标时请据此收敛范围。
+> **框架边界**：本框架侧重软件工程与系统建模的形式化与行业映射，不替代具体实现或运行时系统；形式化覆盖以 L2/L3 规格与不变式为主，不涵盖所有形式化理论（如深度类型论、同伦论等）。审稿与对标时请据此收敛范围。本框架与 ACM/IEEE-CS CS2023 对形式化方法在软件工程中地位的倡导一致；审稿时可对照 [The Role of Formal Methods in Computer Science Education](https://csed.acm.org/wp-content/uploads/2023/11/Formal-Methods-Nov-2023.pdf) 检查 L2/L3 知识点覆盖。
 
 **本节要点**：（1）国际标准与规范表（含 42010:2022、15288:2023 等）及 evidence 链接；（2）名校课程与 LEARNING_PATHS 映射；（3）CNCF 认证/课程与 L4_D90；（4）行业与 L4 索引映射。年度导出的「标准/课程 ↔ L2/L3 知识点」对照表见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。  
 **预计阅读时间**：全文约 15–20 分钟；仅查表约 5 分钟。
@@ -57,7 +57,7 @@ flowchart LR
 | Alloy | 现行 | 关系逻辑建模 | theory-enhancement、DSL 分析 | L2 关系与结构、轻量形式化 | evidence:STD-ALLOY |
 | ISO/IEC/IEEE DIS 42024 | 草案中（发布后更新） | 企业、系统与软件 — 架构基础（Architecture fundamentals） | L2/L3 架构视角、多域（AI/IoT/云等） | 架构词汇与概念、与 42010 互补 | 待跟踪；发布后建 evidence 并补充映射 |
 
-**待发布/在研标准与待补充课程**：完整清单见 [待跟踪标准与课程](PENDING_TRACKING_STANDARDS_COURSES.md)（含 P12207、24748-3、MIT 形式化相关课程等）；发布或确认后请更新本表并建立/更新 evidence。
+**待发布/在研标准与待补充课程**：完整清单见 [待跟踪标准与课程](PENDING_TRACKING_STANDARDS_COURSES.md)（含 P12207、24748-3、DIS 42024、SWEBOK v4.0（约 2025-09）、MIT 形式化相关课程等）；发布或确认后请更新本表并建立/更新 evidence。
 
 **脚注（业界采用）**：TLA+ 业界采用见 AWS、Intel、Microsoft 等；TLA+ Foundation（AWS、Oracle 等）；2024 社区调查要点见 [evidence/STD-TLA](../evidence/STD-TLA.md)。更多标准/方法的业界采用与案例见 [evidence 目录](../evidence/README.md) 及具体条目（如 STD-TLA、STD-ALLOY）。
 
@@ -65,9 +65,9 @@ flowchart LR
 
 以下为标准/课程与本框架对标时常用的「为何引用该标准」说明，便于非标准专家读者理解：
 
-- **ISO/IEC/IEEE 42010:2022**（架构描述）：定义软件、系统与企业架构描述的通用概念（视角、视点、利益相关方等），本框架 L3 各模型（交互/运行时/部署等）可视为架构视点下的规格化描述，对标 42010 便于与行业架构实践一致。**架构 vs 架构描述**：42010 区分「架构」（系统本身的关键决策与结构）与「架构描述」（表达该架构的制品，如文档、视图）；本框架 L2/L3 文档即架构描述，各 L3 标准模型对应不同视角下的视图。详见 [evidence:STD-42010](../evidence/STD-42010.md)。
-- **ISO/IEC/IEEE 15288:2023**（系统生命周期过程）：定义系统全生命周期的过程与活动（技术管理、技术过程等），本框架 L3 模型与 L3_D09 CI/CD 对应生命周期中的设计、实现、验证、部署等阶段，对标 15288 便于与系统工程与采购方语言对齐。**生命周期与 L3 对应**：15288 的技术过程（如需求、架构定义、实现、验证、部署、运维）与本框架 L3 各标准模型及 [L3_D09 CI/CD 标准模型](../L3_D09_CICD标准模型.md) 的流水线阶段、门禁一一对应；L3_D09 的 Pipeline/Stage/QualityGate 即生命周期阶段的具体化。详见 [evidence:STD-15288](../evidence/STD-15288.md)。
-- **IEEE 1012:2024**（验证与确认 V&V）：定义系统、软件与硬件的验证与确认过程与活动，本框架 L3_D08 测试标准模型及 formal-model 中的验证框架与 1012 的 V&V 活动对应，对标 1012 便于满足安全/合规场景下的 V&V 要求。
+- **ISO/IEC/IEEE 42010:2022**（架构描述）：定义软件、系统与企业架构描述的通用概念（视角、视点、利益相关方等），本框架 L3 各模型（交互/运行时/部署等）可视为架构视点下的规格化描述，对标 42010 便于与行业架构实践一致。**架构 vs 架构描述**：42010 区分「架构」（系统本身的关键决策与结构）与「架构描述」（表达该架构的制品，如文档、视图）；本框架 L2/L3 文档即架构描述，各 L3 标准模型对应不同视角下的视图。**一致点/扩展点**：一致点——L3 各模型对应 42010 的架构视点与视图；视角、视点、利益相关方与 L2/L3 角色、模型对应；扩展点——本框架对 L3 给出形式化 DSL 与不变式，42010 不规定具体规格语言。详见 [evidence:STD-42010](../evidence/STD-42010.md)。
+- **ISO/IEC/IEEE 15288:2023**（系统生命周期过程）：定义系统全生命周期的过程与活动（技术管理、技术过程等），本框架 L3 模型与 L3_D09 CI/CD 对应生命周期中的设计、实现、验证、部署等阶段，对标 15288 便于与系统工程与采购方语言对齐。**生命周期与 L3 对应**：15288 的技术过程（如需求、架构定义、实现、验证、部署、运维）与本框架 L3 各标准模型及 [L3_D09 CI/CD 标准模型](../L3_D09_CICD标准模型.md) 的流水线阶段、门禁一一对应；L3_D09 的 Pipeline/Stage/QualityGate 即生命周期阶段的具体化。详见 [evidence:STD-15288](../evidence/STD-15288.md)。**一致点/扩展点**：一致点——L3 各模型与 L3_D09 的流水线/阶段/门禁与 15288 技术过程一一对应；扩展点——本框架对 L2/L3 给出形式化不变式与 DSL 草案，15288 不规定具体规格语言。
+- **IEEE 1012:2024**（验证与确认 V&V）：定义系统、软件与硬件的验证与确认过程与活动，本框架 L3_D08 测试标准模型及 formal-model 中的验证框架与 1012 的 V&V 活动对应，对标 1012 便于满足安全/合规场景下的 V&V 要求。**一致点/扩展点**：一致点——L3_D08 的验证/确认活动、覆盖率与回归门禁与 1012 V&V 过程对应；扩展点——本框架将 V&V 与 L2 不变式、L3 各模型契约绑定，并链到 theory-enhancement 中的形式化验证理论。
 
 ### 2.2 权威机构规范入口
 
@@ -77,6 +77,8 @@ flowchart LR
 | NIST | 网络安全、容器、软件供应链 | [nist.gov](https://www.nist.gov/)；容器安全见 NIST SP 800-190 | L3_D04、L4_D90 安全；NIST SP 800-190 与 L3_D04 容器、L4_D90 云原生安全直接对应 |
 | ISO/IEC JTC1/SC7 | 软件与系统工程标准 | [iso.org/committee/45144](https://www.iso.org/committee/45144.html) | 12207、15288、25010 等 |
 | CNCF | 云原生技术、认证、课程 | [cncf.io/training](https://www.cncf.io/training/) | L4_D90 云原生 |
+| ACM/IEEE-CS/AAAI | CS2023 计算机科学课程指南 | [csed.acm.org](https://csed.acm.org/) | 形式化方法以 curricular practice 存在（[The Role of Formal Methods in CS Education](https://csed.acm.org/the-role-of-formal-methods-in-cs-education/)）；软件工程为 17 个 Knowledge Area 之一；与 L2/L3、[LEARNING_PATHS](../LEARNING_PATHS.md) 对应；框架边界与该倡导一致 |
+| FME (Formal Methods Europe) | FMTea 课程数据库 | [fme-teaching.github.io/courses](https://fme-teaching.github.io/courses/) | 可按主题/国家/工具筛选形式化方法课程；与 [LEARNING_PATHS](../LEARNING_PATHS.md) 进阶/专家路径互为补充；可选建 evidence:FMTea 或 COURSE-FMTea |
 
 ## 3. 名校课程与教材
 

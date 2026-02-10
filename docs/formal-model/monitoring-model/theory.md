@@ -732,6 +732,11 @@ ai_driven_monitoring:
 5. SRE Book (2016). "Site Reliability Engineering"
 6. Observability Engineering (2022). "Observability Engineering"
 
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论对应 [L2_D06 监控元模型](../../L2_D06_监控元模型.md)、[L3_D06 监控标准模型](../../L3_D06_监控标准模型.md)；对象/属性/不变式对齐见 [L2↔L3 映射总表](../alignment-L2-L3-matrix.md)。
+- **标准与课程**：监控与可观测性相关标准（ISO 25010、OpenTelemetry、Prometheus 等）及 CNCF 认证与 L2_D06/L3_D06 知识点对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md) 与 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–4 节。
+
 ---
 
 > 本文档持续递归完善，欢迎补充更多创新理论、推理伪代码、流程图与行业案例。

@@ -247,6 +247,7 @@
 - [🔧 故障排除](TROUBLESHOOTING_GUIDE.md)
 - [📊 项目状态](PROJECT_STATUS.md)
 - [🗺️ 路线图](ROADMAP.md)
+- [📋 权威对齐与认知分析](AUTHORITY_AND_COGNITION_ANALYSIS.md) — 权威覆盖、学习科学建议、链接/补充与可持续任务
 - [🤝 贡献指南](CONTRIBUTING.md)
 - [👥 社区准则](COMMUNITY_GUIDELINES.md)
 

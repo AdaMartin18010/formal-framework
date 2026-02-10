@@ -1,5 +1,7 @@
 # 逻辑学基础
 
+**本理论与 core-concepts 对应**：本理论支撑 [形式化验证](../core-concepts/formal-verification.md)、[自动推理](../core-concepts/automated-reasoning.md)、[程序验证](../core-concepts/program-verification.md)、[时序逻辑](../core-concepts/temporal-logic.md) 等核心概念中的推理与证明。
+
 ## 1. 概述
 
 逻辑学是研究推理和论证的学科，为形式化框架中的推理机制、证明系统和验证方法提供理论基础。本文档详细阐述逻辑学在形式化建模中的应用。
@@ -605,6 +607,13 @@ TransactionConsistency = ∀t : Transaction •
 
 1. Huth, M., & Ryan, M. (2004). *Logic in Computer Science: Modelling and Reasoning about Systems*. Cambridge University Press.
 2. Clarke, E. M., Grumberg, O., & Peled, D. A. (1999). *Model Checking*. MIT Press.
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论支撑 L2/L3 形式化规格、验证与 L3_D08；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：逻辑与形式化验证相关标准（TLA+、Alloy、Z 等）及名校课程（Stanford CS 256/357S、CMU 15-311/15-414、Berkeley EECS 219C 等）见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[形式化验证](../core-concepts/formal-verification.md)、[自动推理](../core-concepts/automated-reasoning.md)、[时序逻辑](../core-concepts/temporal-logic.md)。
 
 ---
 

@@ -1,5 +1,8 @@
 # 模型驱动工程理论 (Model-Driven Engineering Theory)
 
+**本节要点**：（1）MDE 的概念、理论与流程；（2）核心组件（元模型、模型转换）与 L2/L3 对应；（3）国际标准对标与工程实践。  
+**预计阅读时间**：约 50–60 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [模型驱动工程理论 (Model-Driven Engineering Theory)](#模型驱动工程理论-model-driven-engineering-theory)
@@ -65,6 +68,8 @@
 5. **平台无关性**：模型与具体技术平台的解耦
 
 ## 理论基础
+
+理论深化与形式化展开见 [模型驱动工程理论](../theory-enhancement/model-driven-engineering-theory.md)；与 L2/L3 及 [模型转换](./model-transformation.md) 的对应见该理论文档与 [alignment-L2-L3-matrix](../alignment-L2-L3-matrix.md)。
 
 ### 模型驱动工程理论
 
@@ -1199,6 +1204,7 @@ embedded_system_development:
 
 ### 核心概念关联
 
+- [模型驱动工程理论](../theory-enhancement/model-driven-engineering-theory.md) - 本概念的形式化理论与深化
 - [模型转换](./model-transformation.md) - 模型转换是MDE的核心技术，实现模型间的自动转换
 - [代码生成](./code-generation.md) - 代码生成是MDE的重要应用，实现从模型到代码的自动生成
 - [形式化验证](./formal-verification.md) - 形式化验证为MDE提供模型验证和正确性保证

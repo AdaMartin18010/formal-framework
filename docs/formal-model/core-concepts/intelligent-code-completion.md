@@ -1,5 +1,8 @@
 # 智能代码补全 (Intelligent Code Completion)
 
+**本节要点**：（1）智能代码补全的概念、理论与流程；（2）核心组件（上下文分析、语义理解）与多线程架构；（3）工程实践与应用案例。  
+**预计阅读时间**：约 35–45 分钟；建议分 2–3 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [智能代码补全 (Intelligent Code Completion)](#智能代码补全-intelligent-code-completion)

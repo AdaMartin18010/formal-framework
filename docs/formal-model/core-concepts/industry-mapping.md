@@ -1,5 +1,8 @@
 # 行业映射理论 (Industry Mapping Theory)
 
+**本节要点**：（1）行业映射的概念、理论与流程；（2）核心组件（标准映射、技术映射）与 L2/L3/L4 对应；（3）行业案例与最佳实践。  
+**预计阅读时间**：约 55–65 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [行业映射理论 (Industry Mapping Theory)](#行业映射理论-industry-mapping-theory)

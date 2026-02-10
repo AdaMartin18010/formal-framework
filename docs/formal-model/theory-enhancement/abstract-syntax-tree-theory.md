@@ -1,5 +1,7 @@
 # 抽象语法树理论
 
+**本理论与 core-concepts 对应**：本理论深化 [抽象语法树 (AST)](../core-concepts/abstract-syntax-tree.md)，并可与 [领域特定语言](../core-concepts/domain-specific-language.md)、[代码生成](../core-concepts/code-generation.md)、[语义分析](../core-concepts/semantic-analysis.md) 等核心概念结合使用。
+
 ## 1. 概述
 
 抽象语法树（Abstract Syntax Tree, AST）是源代码的树形表示，去除了语法细节，保留了程序的结构信息。在形式化框架中，AST为代码分析、转换和生成提供理论基础。本文档详细阐述AST理论在形式化建模中的应用。
@@ -526,6 +528,14 @@ GNU编译器集合，支持多种语言的AST表示。
 
 1. Knuth, D. E. (1997). *The Art of Computer Programming, Volume 1: Fundamental Algorithms*. Addison-Wesley.
 2. Sedgewick, R., & Wayne, K. (2011). *Algorithms*. Addison-Wesley.
+
+### 本节与 L2/L3 映射小结
+
+- **L2**：AST 支撑 [数据元模型](../data-model/theory.md)、[功能元模型](../functional-model/theory.md)、[交互元模型](../interaction-model/theory.md) 的 DSL 解析与中间表示；各 model 的 dsl-draft/theory 中语法树即 AST 的实例。
+- **L3**：L3_D01 契约/API、L3_D08 测试中的规格与断言可经 AST 表示；代码生成与模型转换见 [alignment-L2-L3-matrix](../alignment-L2-L3-matrix.md)。
+- **与标准/课程对照**：ESTree、Python AST、LLVM IR、GIMPLE 等见 [core-concepts 抽象语法树](../core-concepts/abstract-syntax-tree.md) 国际标准与课程对标；MIT 6.035、Stanford CS143、CMU 15-411 等见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 3 节。
+
+**参见（对应 core-concepts）**：[抽象语法树](../core-concepts/abstract-syntax-tree.md)。
 
 ---
 

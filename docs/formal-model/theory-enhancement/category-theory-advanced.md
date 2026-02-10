@@ -1,5 +1,7 @@
 # 高级范畴论在形式化框架中的应用
 
+**本理论与 core-concepts 对应**：本理论在 [范畴论基础](category-theory-foundation.md) 之上深化，与 [模型转换](../core-concepts/model-transformation.md)、[形式化验证](../core-concepts/formal-verification.md) 等核心概念的高阶应用相关。
+
 ## 1. 概述
 
 本文档深入探讨范畴论在形式化框架中的高级应用，包括同伦类型论、高阶范畴、以及范畴论在分布式系统和并发计算中的应用。
@@ -458,3 +460,10 @@ AICategory = {
 4. **可扩展性**：通过高阶范畴处理复杂的系统结构
 
 这些理论为构建更加健壮、可验证的形式化框架奠定了坚实的数学基础。
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论支撑 L2/L3 模型转换与形式化验证的高阶应用；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：形式化与建模相关课程见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[形式化建模](../core-concepts/formal-modeling.md)、[形式化验证](../core-concepts/formal-verification.md)、[模型转换](../core-concepts/model-transformation.md)。

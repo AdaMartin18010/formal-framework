@@ -791,3 +791,8 @@ tracing_analysis_pattern:
 4. Jaeger (2023). "Jaeger Documentation"
 5. Beyer, B., et al. (2016). "Site Reliability Engineering"
 6. Kleppmann, M. (2017). "Designing Data-Intensive Applications"
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：追踪建模属监控域，对应 [L2_D06 监控元模型](../../../L2_D06_监控元模型.md)、[L3_D06 监控标准模型](../../../L3_D06_监控标准模型.md)；对象/属性/不变式见 [alignment-L2-L3-matrix](../../alignment-L2-L3-matrix.md)。
+- **标准与课程**：监控与追踪相关标准及课程对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)、[AUTHORITY_ALIGNMENT_INDEX](../../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–4 节。

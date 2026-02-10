@@ -1,5 +1,8 @@
 # 形式化建模 (Formal Modeling)
 
+**本节要点**：（1）形式化建模的概念、数学基础与形式化定义；（2）建模方法（状态机、代数、逻辑）与在 Formal Framework 中的应用；（3）验证方法、工具与最佳实践。  
+**预计阅读时间**：约 40–50 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [形式化建模 (Formal Modeling)](#形式化建模-formal-modeling)
@@ -54,6 +57,8 @@
 4. **可执行性**：能够转换为可执行的代码或配置
 
 ## 理论基础
+
+理论深化见 [形式化方法集成](../theory-enhancement/formal-methods-integration.md)、[逻辑学基础](../theory-enhancement/logic-foundation.md)；与 L2 元模型的对应见 [theory-integration-framework](../theory-enhancement/theory-integration-framework.md)。
 
 ### 数学基础
 
@@ -437,6 +442,7 @@ security_verification:
 
 ### 核心概念关联
 
+- [形式化方法集成](../theory-enhancement/formal-methods-integration.md) - 形式化方法的统一整合；[集合论基础](../theory-enhancement/set-theory-foundation.md) - 形式化建模的数学基础
 - [递归建模](./recursive-modeling.md) - 递归建模是形式化建模的重要方法
 - [领域特定语言](./domain-specific-language.md) - DSL为形式化建模提供领域特定表达
 - [模型驱动工程](./model-driven-engineering.md) - MDE基于形式化建模实现自动化

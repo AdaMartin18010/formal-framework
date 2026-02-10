@@ -4,6 +4,8 @@
 
 本文档定义了形式化框架项目中所有文档的标准模板和格式规范，确保文档的一致性、可读性和可维护性。
 
+**可读性与认知负荷**：图表、公式与对应解释应**同屏或紧邻**放置，避免「图在文远」、读者来回跳转；新写或修订长文档时请遵守。详见 [QUALITY_STANDARDS](QUALITY_STANDARDS.md) §4 图表与链接及 [learning/LEARNING_AND_REVIEW_TIPS](learning/LEARNING_AND_REVIEW_TIPS.md) 认知负荷说明。
+
 ## 🎯 模板分类
 
 ### 1. 核心概念文档模板

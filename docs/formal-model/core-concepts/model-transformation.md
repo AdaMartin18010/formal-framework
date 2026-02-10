@@ -1,5 +1,8 @@
 # 模型转换理论与技术 (Model Transformation Theory and Technology)
 
+**本节要点**：（1）模型转换的概念、理论与转换类型；（2）核心组件（转换规则、转换引擎）与国际标准对标；（3）工程实践与应用案例。  
+**预计阅读时间**：约 50–60 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [模型转换理论与技术 (Model Transformation Theory and Technology)](#模型转换理论与技术-model-transformation-theory-and-technology)
@@ -915,6 +918,7 @@ model_synchronization_system:
 
 ### 核心概念关联
 
+- [范畴论基础](../theory-enhancement/category-theory-foundation.md) - 本概念中抽象结构与映射关系的理论基础
 - [形式化建模](./formal-modeling.md) - 形式化建模为模型转换提供理论基础
 - [抽象语法树](./abstract-syntax-tree.md) - AST为模型转换提供结构化表示
 - [领域特定语言](./domain-specific-language.md) - DSL为模型转换提供领域特定表达

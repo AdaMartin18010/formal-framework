@@ -1,5 +1,7 @@
 # 范畴论基础
 
+**本理论与 core-concepts 对应**：本理论为 [模型转换](../core-concepts/model-transformation.md)、[模型驱动工程](../core-concepts/model-driven-engineering.md) 等核心概念提供抽象结构与映射关系，与 [范畴论高级应用](category-theory-advanced.md) 衔接。
+
 ## 1. 概述
 
 范畴论是数学的一个抽象分支，研究数学对象之间的结构和关系。在形式化框架中，范畴论为模型间的映射关系、转换和组合提供理论基础。本文档详细阐述范畴论在形式化建模中的应用。
@@ -529,6 +531,13 @@ Martin-Löf类型论、同伦类型论等。
 
 1. Spivey, J. M. (1992). *The Z Notation: A Reference Manual*. Prentice Hall.
 2. Woodcock, J., & Davies, J. (1996). *Using Z: Specification, Refinement, and Proof*. Prentice Hall.
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论支撑 L2/L3 模型转换与抽象结构；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：形式化与建模相关课程见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[形式化建模](../core-concepts/formal-modeling.md)、[模型转换](../core-concepts/model-transformation.md)。
 
 ---
 

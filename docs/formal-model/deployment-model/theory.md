@@ -302,6 +302,11 @@ def detect_deploy_issues(node):
 5. Humble, J., & Farley, D. (2010). "Continuous Delivery"
 6. Kim, G., et al. (2016). "The DevOps Handbook"
 
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论对应 [L2_D05 部署元模型](../../L2_D05_部署元模型.md)、[L3_D05 部署标准模型](../../L3_D05_部署标准模型.md)；对象/属性/不变式对齐见 [L2↔L3 映射总表](../alignment-L2-L3-matrix.md)。
+- **标准与课程**：部署与 CI/CD 相关标准（15288、12207、CNCF GitOps 等）及名校课程与 L2_D05/L3_D05/L3_D09 知识点对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md) 与 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–4 节。
+
 ---
 
 > 本文档持续递归完善，欢迎补充更多创新理论、推理伪代码、流程图与行业案例。

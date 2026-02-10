@@ -1,5 +1,8 @@
 # 程序验证理论 (Program Verification Theory)
 
+**本节要点**：（1）程序验证的概念、形式化定义与 Hoare 逻辑；（2）程序不变式、推理规则与国际标准/课程对标；（3）工程实践与相关概念。  
+**预计阅读时间**：约 45–55 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [程序验证理论 (Program Verification Theory)](#程序验证理论-program-verification-theory)
@@ -88,6 +91,8 @@
 5. **可重用性**：验证结果可以重用和组合
 
 ## 理论基础
+
+理论深化见 [形式化验证理论](../theory-enhancement/formal-verification-theory.md)、[逻辑学基础](../theory-enhancement/logic-foundation.md)；与 L3_D08 测试标准模型、Hoare 逻辑及课程对标见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)。
 
 ### 形式化定义
 
@@ -630,21 +635,22 @@ producer_consumer()
 
 ### 核心概念关联
 
-- **[形式化验证](../formal-verification.md)** - 程序验证是形式化验证的应用
-- **[时序逻辑](../temporal-logic.md)** - 时序逻辑用于并发程序验证
-- **[自动推理](../automated-reasoning.md)** - 自动推理用于定理证明
+- [形式化验证理论](../theory-enhancement/formal-verification-theory.md) - 本概念的形式化理论与深化；[逻辑学基础](../theory-enhancement/logic-foundation.md) - 程序验证的推理基础
+- [形式化验证](./formal-verification.md) - 程序验证是形式化验证的应用
+- [时序逻辑](./temporal-logic.md) - 时序逻辑用于并发程序验证
+- [自动推理](./automated-reasoning.md) - 自动推理用于定理证明
 
 ### 应用领域关联
 
-- **[功能模型](../../functional-model/theory.md)** - 程序验证用于功能模型验证
-- **[测试模型](../../testing-model/theory.md)** - 程序验证补充测试方法
+- [功能建模](../functional-model/theory.md) - 程序验证用于功能模型验证
+- [测试建模](../testing-model/theory.md) - 程序验证补充测试方法
 - **[代码生成](../code-generation.md)** - 程序验证确保生成代码的正确性
 
 ### 行业应用关联
 
-- **[金融架构](../../../industry-model/finance-architecture/)** - 程序验证用于金融系统验证
-- **[IoT架构](../../../industry-model/iot-architecture/)** - 程序验证用于IoT系统验证
-- **[云原生架构](../../../industry-model/cloud-native-architecture/)** - 程序验证用于云原生系统验证
+- **[金融架构](../../industry-model/finance-architecture/)** - 程序验证用于金融系统验证
+- **[IoT架构](../../industry-model/iot-architecture/)** - 程序验证用于IoT系统验证
+- **[云原生架构](../../industry-model/cloud-native-architecture/)** - 程序验证用于云原生系统验证
 
 ## 思考与练习
 
@@ -686,5 +692,5 @@ producer_consumer()
 ---
 
 **难度等级**：⭐⭐⭐⭐ (高级)  
-**前置知识**：[形式化验证](../formal-verification.md), [逻辑学基础](#), [程序语言理论](#)  
+**前置知识**：[形式化验证](./formal-verification.md)、[逻辑学基础](../theory-enhancement/logic-foundation.md)；程序语言理论见 [领域特定语言](./domain-specific-language.md)、[抽象语法树](./abstract-syntax-tree.md)。  
 **学习时间**：约5-6小时

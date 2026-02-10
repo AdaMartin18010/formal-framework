@@ -1,5 +1,8 @@
 # 知识图谱建模理论 (Knowledge Graph Modeling Theory)
 
+**本节要点**：（1）知识图谱的概念、建模理论与构建流程；（2）核心组件（实体、关系、推理）与国际标准对标；（3）工程实践与应用案例。  
+**预计阅读时间**：约 55–65 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [知识图谱建模理论 (Knowledge Graph Modeling Theory)](#知识图谱建模理论-knowledge-graph-modeling-theory)
@@ -1300,6 +1303,7 @@ academic_knowledge_graph:
 
 ### 核心概念关联
 
+- [图论基础](../theory-enhancement/graph-theory-foundation.md) - 本概念中图结构与遍历的理论基础
 - [概念索引](./concept-index.md) - 概念索引为知识图谱提供概念分类和组织基础
 - [模型转换](./model-transformation.md) - 模型转换实现知识图谱的自动化构建和更新
 - [语义分析](./semantic-analysis.md) - 语义分析为知识图谱提供语义理解和抽取能力

@@ -19,6 +19,7 @@
 3. **评审记录**：至少一次专家评审记录与结论
 4. **质量规范**：语言风格、表述一致、图表正确、链接有效
 5. **术语链检查**（可选）：审稿或门禁时可抽查「核心术语首次出现是否链向 [术语表](knowledge-standards/glossary/GLOSSARY.md) 或 [概念索引](knowledge-standards/concept-index/CONCEPT_INDEX.md)」；详见 [QUALITY_STANDARDS](QUALITY_STANDARDS.md) 与 [ROADMAP 质量提升](ROADMAP.md#33-质量提升)
+6. **图表与正文邻近**（可选）：审稿或门禁时可抽查「图表、公式与对应解释是否同屏或紧邻」，以降低外在认知负荷；依据见 [QUALITY_STANDARDS](QUALITY_STANDARDS.md) 与 [learning/LEARNING_AND_REVIEW_TIPS](learning/LEARNING_AND_REVIEW_TIPS.md)。
 
 ## 当前完成度状态
 

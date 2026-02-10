@@ -1,5 +1,8 @@
 # 形式化验证理论与技术 (Formal Verification Theory and Technology)
 
+**本节要点**：（1）形式化验证的概念、理论与流程（含 Z Notation 集成框架）；（2）核心组件与多线程并行验证；（3）工程实践、应用案例与相关概念。  
+**预计阅读时间**：约 45–55 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [形式化验证理论与技术 (Formal Verification Theory and Technology)](#形式化验证理论与技术-formal-verification-theory-and-technology)
@@ -43,6 +46,8 @@
 5. **标准化**：支持国际标准的形式化方法
 
 ## 理论基础
+
+理论深化与形式化展开见 [形式化验证理论](../theory-enhancement/formal-verification-theory.md)；与 L2/L3 的衔接见该理论文档及 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 中 IEEE 1012 对标。
 
 ### 形式化验证理论
 
@@ -467,6 +472,7 @@ distributed_system_verification:
 
 ### 核心概念关联
 
+- [形式化验证理论](../theory-enhancement/formal-verification-theory.md) - 本概念的形式化理论与深化；[逻辑学基础](../theory-enhancement/logic-foundation.md) - 形式化验证的推理基础
 - [形式化建模](./formal-modeling.md) - 形式化建模为形式化验证提供基础模型
 - [抽象语法树](./abstract-syntax-tree.md) - AST为形式化验证提供程序结构信息
 - [代码生成](./code-generation.md) - 代码生成与形式化验证相结合确保代码正确性

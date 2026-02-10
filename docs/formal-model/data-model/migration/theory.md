@@ -881,3 +881,8 @@ cloud_migration_case:
 3. Kleppmann, M. (2017). "Designing Data-Intensive Applications"
 4. Sadalage, P. J., & Fowler, M. (2012). "NoSQL Distilled"
 5. DAMA International (2017). "DAMA-DMBOK: Data Management Body of Knowledge"
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：数据迁移属数据域，对应 [L2_D02](../../../L2_D02_数据元模型.md)、[L3_D02](../../../L3_D02_数据标准模型.md)；对象/属性/不变式见 [alignment-L2-L3-matrix](../../alignment-L2-L3-matrix.md)。
+- **标准与课程**：数据与迁移相关标准及课程对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)、[AUTHORITY_ALIGNMENT_INDEX](../../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。

@@ -1,5 +1,8 @@
 # 抽象语法树 (Abstract Syntax Tree)
 
+**本节要点**：（1）AST 的概念定义、形式化定义与节点类型（表达式/语句/声明）；（2）国际标准与名校课程对标（ESTree、Python AST、LLVM、MIT 6.035、Stanford CS143、CMU 15-411 等）；（3）工程实践（递归下降、访问者模式、常量折叠）与相关概念。  
+**预计阅读时间**：约 45–55 分钟；建议分 2–4 次阅读，每次 1–2 节（每段 25–40 分钟）。
+
 ## 目录（Table of Contents）
 
 - [抽象语法树 (Abstract Syntax Tree)](#抽象语法树-abstract-syntax-tree)
@@ -68,6 +71,8 @@ AST去除了语法细节（如括号、分号等），保留了程序的结构�
 5. **可变换性**：支持树节点的增删改查操作
 
 ## 理论基础
+
+理论深化与形式化展开见 [抽象语法树理论](../theory-enhancement/abstract-syntax-tree-theory.md)；与 L2/L3 的衔接见该理论文档末尾的映射小结。
 
 ### 形式化定义
 
@@ -693,6 +698,7 @@ public class CodeGenerator implements ASTVisitor<String> {
 
 ### 核心概念关联
 
+- [抽象语法树理论](../theory-enhancement/abstract-syntax-tree-theory.md) - 本概念的形式化理论与深化
 - [形式化建模](./formal-modeling.md) - AST是形式化建模的重要数据结构，提供程序的结构化表示
 - [领域特定语言](./domain-specific-language.md) - AST是DSL解析的核心数据结构，用于表示DSL程序的语法结构
 - [代码生成](./code-generation.md) - AST到目标代码的转换过程，是代码生成的基础输入

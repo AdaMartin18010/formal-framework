@@ -1,5 +1,7 @@
 # 自动推理理论
 
+**本理论与 core-concepts 对应**：本理论深化 [自动推理](../core-concepts/automated-reasoning.md)，并可与 [形式化验证](../core-concepts/formal-verification.md)、[逻辑学基础](logic-foundation.md)、[知识图谱](../core-concepts/knowledge-graph.md) 等结合使用。
+
 ## 1. 概述
 
 自动推理（Automated Reasoning）是使用计算机自动进行逻辑推理和定理证明的技术，为形式化框架中的智能推理、知识发现和问题求解提供理论基础。本文档详细阐述自动推理理论在形式化建模中的应用。
@@ -815,6 +817,13 @@ Web本体语言标准，支持本体推理。
 
 1. Hopcroft, J. E., Motwani, R., & Ullman, J. D. (2001). *Introduction to Automata Theory, Languages, and Computation*. Addison-Wesley.
 2. Huth, M., & Ryan, M. (2004). *Logic in Computer Science: Modelling and Reasoning about Systems*. Cambridge University Press.
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论支撑 L2/L3 自动推理与验证；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：自动推理与形式化验证相关课程（Stanford CS 357S、CMU 15-311、Berkeley EECS 219C 等）见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[自动推理](../core-concepts/automated-reasoning.md)、[形式化验证](../core-concepts/formal-verification.md)。
 
 ---
 

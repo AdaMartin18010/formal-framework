@@ -1156,3 +1156,8 @@ realtime_api_case:
 3. GraphQL Foundation (2021). "GraphQL Specification"
 4. gRPC Documentation (2023). "gRPC Protocol Buffers"
 5. Fielding, R. T. (2000). "Architectural Styles and the Design of Network-based Software Architectures"
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：API 建模属交互域，对应 [L2_D01 交互元模型](../../../L2_D01_交互元模型.md)、[L3_D01 交互标准模型](../../../L3_D01_交互标准模型.md)；对象/属性/不变式见 [alignment-L2-L3-matrix](../../alignment-L2-L3-matrix.md)。
+- **标准与课程**：交互与 API 相关标准及课程对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)、[AUTHORITY_ALIGNMENT_INDEX](../../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。

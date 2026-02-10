@@ -665,3 +665,8 @@ continuous_testing:
 4. Myers, G. J., et al. (2011). "The Art of Software Testing"
 5. Beizer, B. (1990). "Software Testing Techniques"
 6. Kaner, C., et al. (1999). "Testing Computer Software"
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论对应 [L2_D08 测试元模型](../../L2_D08_测试元模型.md)、[L3_D08 测试标准模型](../../L3_D08_测试标准模型.md)；对象/属性/不变式对齐见 [L2↔L3 映射总表](../alignment-L2-L3-matrix.md)；V&V 与 IEEE 1012 对应见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)。
+- **标准与课程**：测试与验证相关标准（IEEE 1012、29119-5、TLA+、Alloy 等）及名校课程（Stanford CS 256/357S、CMU 15-414、Berkeley EECS 219C 等）与 L2_D08/L3_D08 知识点对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md) 与 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。

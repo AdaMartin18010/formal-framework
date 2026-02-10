@@ -36,9 +36,11 @@
 | 每季度 | 断链修复 | 运行 internal_link_checker；根据报告创建/认领任务，**优先处理高流量文档**（[QUICK_NAVIGATION](QUICK_NAVIGATION.md)、[README](README.md)、[LEARNING_PATHS](LEARNING_PATHS.md)、[AUTHORITY_ALIGNMENT_INDEX](reference/AUTHORITY_ALIGNMENT_INDEX.md)、各 [L4 索引](L4_D90_CN_行业索引与对标.md)）中的无效链接，再扩展至其他文档；修复或标记已废弃并更新引用 | `quality`、`documentation` |
 | 每半年 | 学习路径与认知优化 | 审阅 [LEARNING_PATHS](LEARNING_PATHS.md) 与 1–2 条行业路径；增加或统一「5 分钟版」、复习检查点、自测问句；确保与 AUTHORITY_ALIGNMENT_INDEX 双向链接；可选补充「间隔归来建议」、扩展 [CONCEPT_INDEX 自测问句汇总](knowledge-standards/concept-index/CONCEPT_INDEX.md#自测问句汇总便于检索与主动回忆)（为高引用概念补自测问句）；可选更新 [learning/REVIEW_CHECKLIST](learning/REVIEW_CHECKLIST.md) | `documentation`、`authority-alignment` |
 | 每半年 | 长文档可读性 | 为 3–5 个高流量长文档补全「本节要点」「预计阅读时间」、可选「5 分钟版」及**「单次阅读建议：建议分 2–4 次阅读，每次 1–2 节」**（超过约 40 分钟阅读时长的文档）；认知负荷自查（分段、图表邻近） | `documentation`、`quality` |
-| 每半年 | 概念与术语 | 为 2–3 个高引用但无概念页的概念新增概念页或强化术语表；核心术语首次出现链向术语表/概念索引的抽查与补全 | `documentation`、`quality` |
+| 每半年 | 概念与术语 | 为 2–3 个高引用但无概念页的概念新增概念页或强化术语表；**术语首现链抽查**（高流量文档如 README、LEARNING_PATHS、AUTHORITY_ALIGNMENT_INDEX、L4、L3_D01/D08 中核心术语首次出现是否链向术语表/概念索引）与补全 | `documentation`、`quality` |
+| 每半年 | theory-enhancement 与 core-concepts 双向链 | 在 theory-enhancement 各文档末尾「相关概念」或「参见」中补全对应 [core-concepts](formal-model/core-concepts/) 条目的反向链；抽查并修复缺失 | `documentation`、`quality` |
 | 每年 | 标准与课程全面对照 | 完整过一遍 12207、15288、25010、27001、42010、1012、29119-5、24641 及 2–3 所名校形式化/软件工程课程大纲；更新 AUTHORITY_ALIGNMENT_INDEX 与 evidence；修订 ROADMAP 与项目状态 | `authority-alignment`、`documentation` |
 | 每年 | 权威对齐年度对照表 | 生成一版「标准/课程 ↔ L2/L3 知识点」对照表（可从 AUTHORITY_ALIGNMENT_INDEX 与 [alignment-L2-L3-matrix](formal-model/alignment-L2-L3-matrix.md) 导出），供审稿与培训使用 | `authority-alignment`、`documentation` |
+| 每年 | 权威来源扩展 | 从 [FMTea 课程数据库](https://fme-teaching.github.io/courses/) 补充 1–2 门欧洲/亚洲与 L2/L3 强相关课程；CS2023 形式化方法白皮书与框架对齐说明核查；SWEBOK v4、DIS 42024、P12207 发布后入表并建 evidence | `authority-alignment`、`documentation` |
 | 每半年/每年 | 待跟踪标准/课程维护 | 更新 [reference/PENDING_TRACKING_STANDARDS_COURSES](reference/PENDING_TRACKING_STANDARDS_COURSES.md)（P12207、DIS 42024、24748-3、MIT 形式化相关等）；已发布/已确认项迁入 AUTHORITY_ALIGNMENT_INDEX 并建 evidence | `authority-alignment`、`documentation` |
 | 每半年 | 学习与复习建议审阅 | 审阅 [learning/LEARNING_AND_REVIEW_TIPS](learning/LEARNING_AND_REVIEW_TIPS.md)，确保与 REVIEW_CHECKLIST、CONCEPT_INDEX 一致；必要时补充认知负荷、间隔重复、主动回忆的引用或说明 | `documentation` |
 | 每季度 | 证据优先级认领 | 从 [evidence/README 待补充证据优先级列表](evidence/README.md#待补充证据优先级列表) 中认领 2–4 条补全，优先 STD-*、COURSE-* 与 L4 高引用 | `documentation`、`quality` |
@@ -50,8 +52,8 @@
 本看板可用于承接「权威对齐、认知与学习、链接与补充」三类任务（参见项目全面分析与改进方案）：
 
 - **权威对齐**：使用标签 `authority-alignment`；任务示例：更新 AUTHORITY_ALIGNMENT_INDEX、补充 evidence、L2/L3 权威对标小节。
-- **认知与学习**：使用标签 `documentation`；任务示例：LEARNING_PATHS 前置依赖图与掌握度标志、**为何先 X 后 Y**（各阶段总结中增加顺序理由，如数据→功能→交互 因契约依赖实体与行为）、**间隔归来建议**（各阶段末「若间隔 N 天后回来先做哪几条自测」）、**自测问句扩展**（CONCEPT_INDEX 高引用概念补自测问句并维护[自测问句汇总](knowledge-standards/concept-index/CONCEPT_INDEX.md#自测问句汇总便于检索与主动回忆)）、[learning/LEARNING_AND_REVIEW_TIPS](learning/LEARNING_AND_REVIEW_TIPS.md) 学习与复习建议、REVIEW_CHECKLIST 先写再对、**长文档分次阅读建议**（L3 长文档顶部「建议分 2–4 次阅读，每次 1–2 节」）、**形式化语言选型**（[FORMAL_SPEC_LANGUAGES](reference/FORMAL_SPEC_LANGUAGES.md) §2.1 按场景选型与课程对应）。
-- **链接与补充**：使用标签 `quality`、`documentation`；任务示例：修复 CONCEPT_INDEX 悬空链接、行业 README 本行业证据条目、术语首现链向术语表；断链修复时**优先高流量文档**（README、QUICK_NAVIGATION、LEARNING_PATHS、AUTHORITY_ALIGNMENT_INDEX、各 L4 索引），再扩展至占位链接等。
+- **认知与学习**：使用标签 `documentation`；任务示例：LEARNING_PATHS 前置依赖图与掌握度标志、**为何先 X 后 Y**（各阶段总结中增加顺序理由，如数据→功能→交互 因契约依赖实体与行为）、**间隔归来建议**（各阶段末「若间隔 N 天后回来先做哪几条自测」）、**自测问句扩展**（CONCEPT_INDEX 高引用概念补自测问句并维护[自测问句汇总](knowledge-standards/concept-index/CONCEPT_INDEX.md#自测问句汇总便于检索与主动回忆)）、[learning/LEARNING_AND_REVIEW_TIPS](learning/LEARNING_AND_REVIEW_TIPS.md) 学习与复习建议、REVIEW_CHECKLIST 先写再对、**长文档分次阅读建议**（L3 长文档顶部「建议分 2–4 次阅读，每次 1–2 节」）、**形式化语言选型**（[FORMAL_SPEC_LANGUAGES](reference/FORMAL_SPEC_LANGUAGES.md) §2.1 按场景选型与课程对应）、**交错学习策略说明**（进阶路径中可选，已见于 [LEARNING_PATHS](LEARNING_PATHS.md) 与 [REVIEW_CHECKLIST](learning/REVIEW_CHECKLIST.md)）。
+- **链接与补充**：使用标签 `quality`、`documentation`；任务示例：修复 CONCEPT_INDEX 悬空链接、行业 README 本行业证据条目、**术语首现链抽查**（高流量文档中核心术语首次出现链向术语表/概念索引）与补全；断链修复时**优先高流量文档**（README、QUICK_NAVIGATION、LEARNING_PATHS、AUTHORITY_ALIGNMENT_INDEX、各 L4 索引），再扩展至占位链接等。
 
 按周期（月/季/半年/年）从上述三类中拆解具体 Issue 并纳入看板列「待认领」→「进行中」→「已完成」。
 
@@ -90,6 +92,7 @@
 
 ## 7. 相关文档
 
+- [AUTHORITY_AND_COGNITION_ANALYSIS](AUTHORITY_AND_COGNITION_ANALYSIS.md) — 权威对齐与认知批判性分析（权威覆盖、认知/学习建议、链接与补充及可持续任务规划）
 - [QUALITY_STANDARDS](QUALITY_STANDARDS.md)
 - [CITATION_STANDARDS](CITATION_STANDARDS.md)
 - [EXPERT_REVIEW_SYSTEM](EXPERT_REVIEW_SYSTEM.md)

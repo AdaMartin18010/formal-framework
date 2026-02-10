@@ -1,5 +1,8 @@
 # 自动推理机制 (Automated Reasoning)
 
+**本节要点**：（1）自动推理的概念、逻辑推理理论与推理类型；（2）核心组件（知识表示、推理引擎、推理策略）与国际标准对标（SMT、Model Checking、OWL/RDF）；（3）名校课程对标与工程实践。  
+**预计阅读时间**：约 50–60 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [自动推理机制 (Automated Reasoning)](#自动推理机制-automated-reasoning)
@@ -70,6 +73,8 @@
 5. **可扩展性**：支持复杂推理场景的扩展
 
 ## 理论基础
+
+理论深化与形式化展开见 [自动推理理论](../theory-enhancement/automated-reasoning-theory.md)；与 [逻辑学基础](../theory-enhancement/logic-foundation.md)、[形式化验证理论](../theory-enhancement/formal-verification-theory.md) 的衔接见各理论文档。
 
 ### 逻辑推理理论
 
@@ -752,6 +757,7 @@ intelligent_decision_system:
 
 ### 核心概念关联
 
+- [自动推理理论](../theory-enhancement/automated-reasoning-theory.md) - 本概念的形式化理论与深化
 - [形式化建模](./formal-modeling.md) - 形式化建模为自动推理提供基础模型
 - [形式化验证](./formal-verification.md) - 形式化验证使用自动推理进行模型验证
 - [语义分析](./semantic-analysis.md) - 语义分析基于自动推理进行语义理解

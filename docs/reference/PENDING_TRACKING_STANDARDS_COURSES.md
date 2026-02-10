@@ -20,6 +20,7 @@
 | 机构 | 课程/方向 | 说明 | 本框架拟映射 | 核查/补充动作 |
 | ---- | --------- | ---- | ------------ | ------------- |
 | MIT | 形式化方法/逻辑/验证相关 6.xxx | 检索未直接对应到单门形式化方法课；6.042 为数学基础已列入 | L2 逻辑、L3_D08 验证 | **年度核查**：每年度核查 MIT 6.xxx 形式化/验证相关课程目录，若有新开或更名则补充至 AUTHORITY_ALIGNMENT_INDEX 并同步 LEARNING_PATHS |
+| FME / FMTea | 全球形式化方法课程 | [FMTea 课程数据库](https://fme-teaching.github.io/courses/) 可按主题/国家/工具筛选 | L2/L3 形式化、验证、规格 | **年度/半年核查**：可从 FMTea 补充欧洲、澳洲、亚洲等与 L2/L3 强相关课程并加入 AUTHORITY_ALIGNMENT_INDEX；可选建 evidence:FMTea 或 COURSE-FMTea |
 | 其他名校 | 形式化方法、软件工程新课程 | 新发现与 L2/L3 强相关的课程 | 按课程主题对应 L2/L3 | 发现后补充至 AUTHORITY_ALIGNMENT_INDEX 并同步 LEARNING_PATHS |
 
 ## 3. 使用说明

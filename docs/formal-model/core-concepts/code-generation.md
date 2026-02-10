@@ -1,5 +1,8 @@
 # 代码生成理论与技术 (Code Generation Theory and Technology)
 
+**本节要点**：（1）代码生成的概念、理论与流程；（2）核心组件（模板引擎、模型转换）与国际标准/课程对标；（3）工程实践与应用案例。  
+**预计阅读时间**：约 50–60 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [代码生成理论与技术 (Code Generation Theory and Technology)](#代码生成理论与技术-code-generation-theory-and-technology)
@@ -823,6 +826,7 @@ api_code_generation:
 
 ### 核心概念关联
 
+- [模型驱动工程理论](../theory-enhancement/model-driven-engineering-theory.md) - 本概念在 MDE 中的理论定位；[领域特定语言理论](../theory-enhancement/domain-specific-language-theory.md) - DSL 到代码转换的理论基础
 - [抽象语法树](./abstract-syntax-tree.md) - AST是代码生成的核心数据结构
 - [领域特定语言](./domain-specific-language.md) - DSL解析后通过代码生成转换为可执行代码
 - [模型转换](./model-transformation.md) - 模型转换是代码生成的重要环节

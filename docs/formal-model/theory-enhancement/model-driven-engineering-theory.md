@@ -1,5 +1,7 @@
 # 模型驱动工程理论
 
+**本理论与 core-concepts 对应**：本理论深化 [模型驱动工程 (MDE)](../core-concepts/model-driven-engineering.md)，并可与 [模型转换](../core-concepts/model-transformation.md)、[代码生成](../core-concepts/code-generation.md)、[形式化建模](../core-concepts/formal-modeling.md) 等核心概念结合使用。
+
 ## 1. 概述
 
 模型驱动工程（Model-Driven Engineering, MDE）是一种软件开发方法，以模型为核心，通过模型转换和代码生成实现软件开发。在形式化框架中，MDE为模型到代码的自动化转换提供理论基础。本文档详细阐述MDE理论在形式化建模中的应用。
@@ -661,6 +663,13 @@ MOF标准，支持元模型定义。
 
 1. Aho, A. V., Lam, M. S., Sethi, R., & Ullman, J. D. (2006). *Compilers: Principles, Techniques, and Tools*. Addison-Wesley.
 2. Fowler, M. (2010). *Domain-Specific Languages*. Addison-Wesley.
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论支撑 L2/L3 模型驱动与转换；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)；ISO/IEC 24641（MBSSE）见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md)。
+- **标准与课程**：MDE/MDA 相关标准（OMG MDA、24641 等）及课程见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[模型驱动工程](../core-concepts/model-driven-engineering.md)、[模型转换](../core-concepts/model-transformation.md)、[代码生成](../core-concepts/code-generation.md)。
 
 ---
 

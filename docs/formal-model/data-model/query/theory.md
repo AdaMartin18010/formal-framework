@@ -757,3 +757,8 @@ query_rewrite_pattern:
 4. Codd, E. F. (1970). "A Relational Model of Data for Large Shared Data Banks"
 5. Stonebraker, M., & Hellerstein, J. M. (2005). "Readings in Database Systems"
 6. Abadi, D. J., et al. (2008). "Column-Stores vs. Row-Stores: How Different Are They Really?"
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：查询建模属数据域，对应 [L2_D02](../../../L2_D02_数据元模型.md)、[L3_D02](../../../L3_D02_数据标准模型.md)；对象/属性/不变式见 [alignment-L2-L3-matrix](../../alignment-L2-L3-matrix.md)。
+- **标准与课程**：数据与查询相关标准及课程对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)、[AUTHORITY_ALIGNMENT_INDEX](../../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。

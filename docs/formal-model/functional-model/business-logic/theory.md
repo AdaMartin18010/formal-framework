@@ -611,3 +611,8 @@ decision_table_implementation:
 4. Evans, E. (2003). "Domain-Driven Design: Tackling Complexity in the Heart of Software"
 5. Allman, E. (2012). "Designing Data-Intensive Applications"
 6. Kleppmann, M. (2017). "Designing Data-Intensive Applications"
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：业务逻辑建模属功能域，对应 [L2_D03 功能元模型](../../../L2_D03_功能元模型.md)、[L3_D03 功能标准模型](../../../L3_D03_功能标准模型.md)；对象/属性/不变式见 [alignment-L2-L3-matrix](../../alignment-L2-L3-matrix.md)。
+- **标准与课程**：功能与业务建模相关标准及课程对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)、[AUTHORITY_ALIGNMENT_INDEX](../../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。

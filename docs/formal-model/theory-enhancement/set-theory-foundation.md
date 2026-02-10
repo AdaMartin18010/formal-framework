@@ -1,5 +1,7 @@
 # 集合论基础
 
+**本理论与 core-concepts 对应**：本理论支撑 [形式化建模](../core-concepts/formal-modeling.md)、[数据模型](../data-model/theory.md) 等中的集合与关系表述，与 [形式化方法集成](formal-methods-integration.md) 协同。
+
 ## 1. 概述
 
 集合论是形式化框架的数学基础，为模型的定义、关系和操作提供理论基础。本文档详细阐述集合论在形式化建模中的应用。
@@ -389,6 +391,13 @@ SQL标准，涉及关系数据库中的集合操作。
 
 1. Aho, A. V., Lam, M. S., Sethi, R., & Ullman, J. D. (2006). *Compilers: Principles, Techniques, and Tools*. Addison-Wesley.
 2. Hopcroft, J. E., Motwani, R., & Ullman, J. D. (2001). *Introduction to Automata Theory, Languages, and Computation*. Addison-Wesley.
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论支撑 L2/L3 各元模型中的集合与关系表述；对象/属性/不变式对齐见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md)。
+- **标准与课程**：集合论与形式化规格相关标准（如 Z、VDM）及名校课程（MIT 6.042、Berkeley CS 70、Stanford CS 103 等）见 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–3 节。
+
+**参见（对应 core-concepts）**：[形式化建模](../core-concepts/formal-modeling.md)、[抽象语法树](../core-concepts/abstract-syntax-tree.md)、[领域特定语言](../core-concepts/domain-specific-language.md)。
 
 ---
 

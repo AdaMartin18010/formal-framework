@@ -906,3 +906,8 @@ distributed_computing_patterns:
 6. Fowler, M. (2018). "Patterns of Enterprise Application Architecture"
 7. Tanenbaum, A. S., & Van Steen, M. (2017). "Distributed Systems: Principles and Paradigms"
 8. Coulouris, G., Dollimore, J., Kindberg, T., & Blair, G. (2011). "Distributed Systems: Concepts and Design"
+
+## 与标准/课程对照要点
+
+- **L2/L3 映射**：本理论对应 [L3_D10 分布式模式标准模型](../../L3_D10_分布式模式标准模型.md)；对象/属性/不变式对齐见 [L2↔L3 映射总表](../alignment-L2-L3-matrix.md)。
+- **标准与课程**：分布式系统相关标准及名校课程（如 ETH Distributed Systems、Stanford CS 210 等）与 L3_D10 知识点对照见 [AUTHORITY_STANDARD_COURSE_L2L3_MATRIX](../../reference/AUTHORITY_STANDARD_COURSE_L2L3_MATRIX.md) 与 [AUTHORITY_ALIGNMENT_INDEX](../../reference/AUTHORITY_ALIGNMENT_INDEX.md) 第 2–5 节。

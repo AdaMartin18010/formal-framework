@@ -5,19 +5,19 @@
 
 ## 1. 国际标准 ↔ L2/L3 知识点
 
-| 标准/规范 | 主要 L2 映射 | 主要 L3 映射 | 不变式/要点 |
-|-----------|--------------|--------------|-------------|
-| ISO/IEC/IEEE 42010:2022 | L2 各元模型（架构视角） | L3_D01/D04/D05 视图与视角 | 架构描述、利益相关方 |
-| ISO/IEC/IEEE 15288:2023 | L2 全域（生命周期过程） | L3 各模型、系统级过程 | 技术管理、技术过程 |
-| IEEE 1012:2024 | L2_D08 测试元模型 | L3_D08 验证与确认、V&V | Determinism, CoverageGate, RegressionSafety |
-| ISO/IEC/IEEE 24748-2:2024 | 同上（15288 应用指南） | 同上 | 与 15288 配套 |
-| ISO/IEC 12207 | L2 过程视角 | L3_D09 CI/CD、生命周期 | CI1–CI4, 流程阶段 |
-| IEEE/ISO 29119-5:2024 | L2_D08 | L3_D08 关键词驱动测试 | 测试框架、互操作 |
-| ISO/IEC/IEEE 24641:2023 | L2 模型驱动 | L3 各模型、theory-enhancement | 模型转换、验证、工具能力 |
-| ISO/IEC 27001:2022 | L2_D05/D06 | L3_D05 配置安全、L3_D06 审计 | 安全与审计 |
-| TLA+ / Alloy | L2 行为/关系规约 | L3_D08、theory-enhancement | 并发、不变式、轻量形式化 |
-| OpenAPI 3.x | L2_D01 | L3_D01 API、契约 | ContractCompleteness, VersionCompatibility |
-| NIST SP 800-190 | L2_D04 | L3_D04 容器、L4_D90 安全 | 容器安全 |
+| 标准/规范 | 主要 L2 映射 | 主要 L3 映射 | 不变式/要点 | 一致点/扩展点（摘要） |
+|-----------|--------------|--------------|-------------|------------------------|
+| ISO/IEC/IEEE 42010:2022 | L2 各元模型（架构视角） | L3_D01/D04/D05 视图与视角 | 架构描述、利益相关方 | — |
+| ISO/IEC/IEEE 15288:2023 | L2 全域（生命周期过程） | L3 各模型、系统级过程 | 技术管理、技术过程 | 一致：L3 与 L3_D09 与 15288 技术过程对应；扩展：本框架给出形式化不变式与 DSL，15288 不规定规格语言 |
+| IEEE 1012:2024 | L2_D08 测试元模型 | L3_D08 验证与确认、V&V | Determinism, CoverageGate, RegressionSafety | 一致：L3_D08 与 1012 V&V 对应；扩展：V&V 与 L2 不变式、L3 契约及 theory-enhancement 绑定 |
+| ISO/IEC/IEEE 24748-2:2024 | 同上（15288 应用指南） | 同上 | 与 15288 配套 | — |
+| ISO/IEC 12207 | L2 过程视角 | L3_D09 CI/CD、生命周期 | CI1–CI4, 流程阶段 | — |
+| IEEE/ISO 29119-5:2024 | L2_D08 | L3_D08 关键词驱动测试 | 测试框架、互操作 | — |
+| ISO/IEC/IEEE 24641:2023 | L2 模型驱动 | L3 各模型、theory-enhancement | 模型转换、验证、工具能力 | — |
+| ISO/IEC 27001:2022 | L2_D05/D06 | L3_D05 配置安全、L3_D06 审计 | 安全与审计 | — |
+| TLA+ / Alloy | L2 行为/关系规约 | L3_D08、theory-enhancement | 并发、不变式、轻量形式化 | — |
+| OpenAPI 3.x | L2_D01 | L3_D01 API、契约 | ContractCompleteness, VersionCompatibility | — |
+| NIST SP 800-190 | L2_D04 | L3_D04 容器、L4_D90 安全 | 容器安全 | — |
 
 ## 2. 名校课程 ↔ L2/L3 知识点（选列）
 

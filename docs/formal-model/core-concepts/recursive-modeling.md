@@ -1,5 +1,8 @@
 # 递归建模理论 (Recursive Modeling Theory)
 
+**本节要点**：（1）递归建模的概念、理论与流程；（2）核心组件（递归结构、递归转换）与 L2/L3 对应；（3）国际标准对标与工程实践。  
+**预计阅读时间**：约 50–60 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [递归建模理论 (Recursive Modeling Theory)](#递归建模理论-recursive-modeling-theory)
@@ -1040,6 +1043,7 @@ recursive_data_structure_implementation:
 
 ### 核心概念关联
 
+- [图论基础](../theory-enhancement/graph-theory-foundation.md) - 本概念中图结构与递归遍历的理论基础
 - [抽象语法树](./abstract-syntax-tree.md) - AST是递归建模的典型应用，具有递归的树形结构
 - [模型转换](./model-transformation.md) - 模型转换使用递归建模处理复杂结构的转换
 - [语义分析](./semantic-analysis.md) - 语义分析基于递归建模进行语法树的递归分析

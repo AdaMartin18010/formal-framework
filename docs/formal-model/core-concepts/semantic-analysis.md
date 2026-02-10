@@ -1,5 +1,8 @@
 # 语义分析理论与技术 (Semantic Analysis Theory and Technology)
 
+**本节要点**：（1）语义分析的概念、理论与流程；（2）核心组件（符号表、类型系统）与国际标准/课程对标；（3）工程实践与应用案例。  
+**预计阅读时间**：约 50–60 分钟；建议分 2–4 次阅读，每次 1–2 节。
+
 ## 目录（Table of Contents）
 
 - [语义分析理论与技术 (Semantic Analysis Theory and Technology)](#语义分析理论与技术-semantic-analysis-theory-and-technology)
@@ -71,6 +74,8 @@
 5. **优化支持**：为程序优化提供语义信息
 
 ## 理论基础
+
+理论深化见 [类型论基础](../theory-enhancement/type-theory-foundation.md)、[抽象语法树理论](../theory-enhancement/abstract-syntax-tree-theory.md)；与 DSL、代码生成的衔接见 [领域特定语言理论](../theory-enhancement/domain-specific-language-theory.md)。
 
 ### 语义分析理论
 
@@ -1065,6 +1070,7 @@ static_analysis_tool:
 
 ### 核心概念关联
 
+- [类型论基础](../theory-enhancement/type-theory-foundation.md) - 本概念中类型系统与类型检查的理论基础
 - [抽象语法树](./abstract-syntax-tree.md) - AST为语义分析提供程序结构信息
 - [形式化验证](./formal-verification.md) - 形式化验证基于语义分析进行程序验证
 - [自动推理](./automated-reasoning.md) - 自动推理用于语义分析的智能处理
